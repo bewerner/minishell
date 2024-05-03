@@ -1,6 +1,6 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	minishell.c
+SRC					=	minishell.c lexer/init_tokens.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 LDFLAGS				=	-lreadline
@@ -27,11 +27,12 @@ $(LIBFT):
 
 obj/%.o: src/%.c
 	mkdir -p obj
+	mkdir -p obj/lexer
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	$(MAKE) -C libft clean > /dev/null
-	rm -f $(OBJ)
+	rm -rf obj
 	echo "$(COL_GREEN)Object files have been removed.$(COL_DEFAULT)"
 
 fclean: clean
