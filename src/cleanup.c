@@ -1,30 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 00:33:17 by bwerner          ###   ########.fr       */
+/*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
+/*   Updated: 2024/05/05 00:24:18 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(void)
+void	free_tokens(t_token **head)
 {
-	t_minishell	ms;
+	t_token	*ptr;
+	t_token	*next;
 
-	ft_bzero(&ms, sizeof(ms));
-	while (1)
+	ptr = *head;
+	while (ptr)
 	{
-		ms.line = readline("minishell: ");
-		// ms.line = ft_strdup("asdf asdf asdf asdf asdf && || >><<>><>>>> asdjhafkljsfh");
-		if (!ms.line)
-			continue ;
-		init_tokens(ms.line, &ms);
-		cleanup(&ms);
-		exit(0);
+		next = ptr->next;
+		free(ptr->content);
+		free(ptr);
+		ptr = next;
 	}
+	head = NULL;
+}
+
+void	cleanup(t_minishell *ms)
+{
+	free(ms->line);
+	free_tokens(&ms->head);
 }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/04 01:25:10 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/04 22:08:00 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,31 @@ enum e_char_type	get_char_type(char c)
 {
 	if (ft_isspace(c))
 		return (LEX_SPACE);
-	if (c == '|' || c == '<' || c == '>')
-		return (LEX_SPECIAL);
+	else if (c == '|')
+		return (LEX_PIPE);
+	else if (c == '<')
+		return (LEX_LESS);
+	else if (c == '>')
+		return (LEX_GREATER);
+	else if (c == '&')
+		return (LEX_AND);
 	return (LEX_WORD);
+}
+
+bool	token_is_full(char *line, size_t start, size_t end)
+{
+	size_t	len;
+
+	len = end - start;
+	if (len == 3 && ft_strncmp(line + start, "<<<", 3) == 0)
+		return (true);
+	else if (len == 2 && ft_strncmp(line + start, ">>", 2) == 0)
+		return (true);
+	else if (len == 2 && ft_strncmp(line + start, "||", 2) == 0)
+		return (true);
+	else if (len == 2 && ft_strncmp(line + start, "&&", 2) == 0)
+		return (true);
+	return (false);
 }
 
 char	*get_next_token_content(char *line)
@@ -77,7 +99,7 @@ char	*get_next_token_content(char *line)
 	while (line[i])
 	{
 		if (!in_single_quotes && !in_double_quotes)
-			if (type != get_char_type(line[i]))
+			if (type != get_char_type(line[i]) || token_is_full(line, start, i))
 				break ;
 		if (line[i] == '\'' && !in_double_quotes)
 			in_single_quotes = !in_single_quotes;
@@ -87,6 +109,36 @@ char	*get_next_token_content(char *line)
 	}
 	return (ft_substr(line, start, i - start));
 }
+
+void	set_token_type(t_token *token)
+{
+	size_t	len;
+
+	len = ft_strlen(token->content);
+	if (len == 3 && ft_strncmp(token->content, "<<<", 3) == 0)
+		token->type = TKN_HERESTRING;
+	else if (len == 2 && ft_strncmp(token->content, "<<", 2) == 0)
+		token->type = TKN_HEREDOC;
+	else if (len == 1 && ft_strncmp(token->content, "<", 1) == 0)
+		token->type = TKN_IN;
+	else if (len == 1 && ft_strncmp(token->content, ">", 1) == 0)
+		token->type = TKN_OUT;
+	else if (len == 2 && ft_strncmp(token->content, ">>", 2) == 0)
+		token->type = TKN_APPEND;
+	else if (len == 2 && ft_strncmp(token->content, "||", 2) == 0)
+		token->type = TKN_OR;
+	else if (len == 2 && ft_strncmp(token->content, "&&", 2) == 0)
+		token->type = TKN_AND;
+	else if (len == 1 && ft_strncmp(token->content, "|", 1) == 0)
+		token->type = TKN_PIPE;
+	else
+		token->type = TKN_WORD;
+}
+
+// void	remove_quotes(t_token *token)
+// {
+// 	while (token)
+// }
 
 void	init_tokens(char *line, t_minishell *ms)
 {
@@ -101,11 +153,13 @@ void	init_tokens(char *line, t_minishell *ms)
 			break ;
 		token = token_new(content);
 		token_add_back(&ms->head, token);
+		// remove_quotes(token);
+		set_token_type(token);
 	}
 	token = ms->head;
 	while (token)
 	{
-		printf("%s, ", token->content);
+		printf("(%d)%s, ", token->type, token->content);
 		token = token->next;
 	}
 	printf("\n");

@@ -1,6 +1,6 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	minishell.c lexer/init_tokens.c
+SRC					=	cleanup.c lexer/init_tokens.c minishell.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 LDFLAGS				=	-lreadline
@@ -11,13 +11,13 @@ COL_YELLOW			= 	\033[38;2;214;189;28m
 COL_PINK			= 	\033[95m
 COL_DEFAULT			= 	\033[0m
 
-.SILENT:
+# .SILENT:
 
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJ)
 	echo "$(COL_YELLOW)Building $(NAME)...$(COL_DEFAULT)"
-	$(CC) $(LIBFT) $(OBJ) -o $(NAME) $(LDFLAGS)
+	$(CC) $(OBJ) $(LIBFT) -o $(NAME) $(LDFLAGS)
 	echo "$(COL_GREEN)Successfully built $(NAME).$(COL_DEFAULT)"
 
 $(LIBFT):
