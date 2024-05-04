@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/04 22:08:00 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/05 01:53:59 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,11 +135,6 @@ void	set_token_type(t_token *token)
 		token->type = TKN_WORD;
 }
 
-// void	remove_quotes(t_token *token)
-// {
-// 	while (token)
-// }
-
 void	init_tokens(char *line, t_minishell *ms)
 {
 	t_token	*token;
@@ -152,8 +147,9 @@ void	init_tokens(char *line, t_minishell *ms)
 		if (!content)
 			break ;
 		token = token_new(content);
+		if (!token)
+			break ;
 		token_add_back(&ms->head, token);
-		// remove_quotes(token);
 		set_token_type(token);
 	}
 	token = ms->head;

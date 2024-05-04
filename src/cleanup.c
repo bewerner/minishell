@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 00:24:18 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/05 01:30:58 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_tokens(t_token **head)
 		free(ptr);
 		ptr = next;
 	}
-	head = NULL;
+	*head = NULL;
 }
 
 void	cleanup(t_minishell *ms)
