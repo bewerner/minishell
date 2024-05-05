@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 01:53:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/05 20:06:37 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,13 @@ char	*get_next_token_content(char *line)
 	in_double_quotes = false;
 	while (ft_isspace(line[i]))
 		i++;
-	start = i;
-	type = get_char_type(line[i]);
 	if (!line[i])
 	{
 		i = 0;
 		return (NULL);
 	}
+	start = i;
+	type = get_char_type(line[i]);
 	while (line[i])
 	{
 		if (!in_single_quotes && !in_double_quotes)
@@ -148,7 +148,7 @@ void	init_tokens(char *line, t_minishell *ms)
 			break ;
 		token = token_new(content);
 		if (!token)
-			break ;
+			ms_error("lexer", NULL, 1, ms);
 		token_add_back(&ms->head, token);
 		set_token_type(token);
 	}

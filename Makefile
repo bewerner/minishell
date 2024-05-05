@@ -1,6 +1,7 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	cleanup.c lexer/init_tokens.c minishell.c
+SRC					=	minishell.c error.c cleanup.c \
+						lexer/init_tokens.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 LDFLAGS				=	-lreadline
@@ -11,7 +12,7 @@ COL_YELLOW			= 	\033[38;2;214;189;28m
 COL_PINK			= 	\033[95m
 COL_DEFAULT			= 	\033[0m
 
-# .SILENT:
+.SILENT:
 
 all: $(LIBFT) $(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/04 23:31:20 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/05 19:51:53 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,17 @@ typedef struct s_minishell
 {
 	t_token				*head;
 	char				*line;
+	uint8_t				exit_code;
+	bool				error;
 }						t_minishell;
 
-void		init_tokens(char *line, t_minishell *ms);
+// cleanup.c
 void		cleanup(t_minishell *ms);
+
+// error.c
+void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
+
+// lexer/init_tokens.c
+void		init_tokens(char *line, t_minishell *ms);
 
 #endif
