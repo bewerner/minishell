@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 01:30:58 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/05 23:18:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,5 @@ void	free_tokens(t_token **head)
 void	cleanup(t_minishell *ms)
 {
 	free(ms->line);
-	free_tokens(&ms->head);
+	free_tokens(&ms->head_token);
 }

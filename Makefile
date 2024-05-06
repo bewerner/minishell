@@ -1,7 +1,8 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
 SRC					=	minishell.c error.c cleanup.c \
-						lexer/init_tokens.c
+						lexer/init_tokens.c \
+						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 LDFLAGS				=	-lreadline
@@ -29,6 +30,7 @@ $(LIBFT):
 obj/%.o: src/%.c
 	mkdir -p obj
 	mkdir -p obj/lexer
+	mkdir -p obj/parser
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

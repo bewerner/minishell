@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 19:51:53 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/06 02:49:14 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # include <stdbool.h>
 
 typedef struct s_token	t_token;
+typedef struct s_leaf	t_leaf;
 
 enum e_char_type
 {
@@ -66,21 +67,57 @@ struct s_token
 	t_token				*next;
 };
 
-typedef struct s_minishell
+enum e_leaf_type
+{
+	LEAF_WORD,
+	LEAF_PIPE,
+	LEAF_OR,
+	LEAF_AND,
+	LEAF_IN,
+	LEAF_OUT,
+	LEAF_APPEND,
+	LEAF_HEREDOC,
+	LEAF_HERESTRING
+};
+
+struct s_leaf
 {
 	t_token				*head;
+	size_t				size;
+	char				**content;
+	enum e_leaf_type	type;
+	t_leaf				*next;
+	t_leaf				*left;
+	t_leaf				*right;
+};
+
+typedef struct s_minishell
+{
+	bool				debug;
+	t_token				*head_token;
+	t_leaf				*head_leaf;
 	char				*line;
 	uint8_t				exit_code;
 	bool				error;
 }						t_minishell;
+
+// lexer/init_tokens.c
+void		debug_print_tokens(t_token **head); //TEMP
+void		init_tokens(char *line, t_minishell *ms);
+
+// parser/init_leafs.c
+void		init_leafs(t_minishell *ms);
+
+// parser/init_tree.c
+void		init_tree(t_minishell *ms);
+
+// parser/rearrange_tokens.c
+void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c
 void		cleanup(t_minishell *ms);
 
 // error.c
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
-
-// lexer/init_tokens.c
-void		init_tokens(char *line, t_minishell *ms);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 20:06:37 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/06 02:22:16 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ t_token	*token_new(char *content)
 	newtoken = (t_token *)malloc(sizeof(t_token));
 	if (newtoken == NULL)
 		return (NULL);
+	ft_bzero(newtoken, sizeof(t_token));
 	newtoken->content = content;
-	newtoken->next = NULL;
 	return (newtoken);
 }
 
@@ -77,16 +77,34 @@ bool	token_is_full(char *line, size_t start, size_t end)
 	return (false);
 }
 
-char	*get_next_token_content(char *line)
+char	*read_token(char *line, size_t start, size_t *i, enum e_char_type type)
 {
-	static size_t		i;
-	size_t				start;
-	enum e_char_type	type;
 	bool				in_single_quotes;
 	bool				in_double_quotes;
 
 	in_single_quotes = false;
 	in_double_quotes = false;
+	while (line[*i])
+	{
+		if (!in_single_quotes && !in_double_quotes \
+		&& (type != get_char_type(line[*i]) || token_is_full(line, start, *i)))
+			break ;
+		if (line[*i] == '\'' && !in_double_quotes)
+			in_single_quotes = !in_single_quotes;
+		if (line[*i] == '\"' && !in_single_quotes)
+			in_double_quotes = !in_double_quotes;
+		(*i)++;
+	}
+	return (ft_substr(line, start, *i - start));
+}
+
+char	*get_next_token_content(char *line, t_minishell *ms)
+{
+	static size_t		i;
+	size_t				start;
+	enum e_char_type	type;
+	char				*content;
+
 	while (ft_isspace(line[i]))
 		i++;
 	if (!line[i])
@@ -96,18 +114,10 @@ char	*get_next_token_content(char *line)
 	}
 	start = i;
 	type = get_char_type(line[i]);
-	while (line[i])
-	{
-		if (!in_single_quotes && !in_double_quotes)
-			if (type != get_char_type(line[i]) || token_is_full(line, start, i))
-				break ;
-		if (line[i] == '\'' && !in_double_quotes)
-			in_single_quotes = !in_single_quotes;
-		if (line[i] == '\"' && !in_single_quotes)
-			in_double_quotes = !in_double_quotes;
-		i++;
-	}
-	return (ft_substr(line, start, i - start));
+	content = read_token(line, start, &i, type);
+	if (!content)
+		ms_error("lexer", NULL, 1, ms);
+	return (content);
 }
 
 void	set_token_type(t_token *token)
@@ -135,28 +145,39 @@ void	set_token_type(t_token *token)
 		token->type = TKN_WORD;
 }
 
-void	init_tokens(char *line, t_minishell *ms)
+void	debug_print_tokens(t_token **head)
 {
 	t_token	*token;
-	char	*content;
 
-	token = ms->head;
-	while (1)
-	{
-		content = get_next_token_content(line);
-		if (!content)
-			break ;
-		token = token_new(content);
-		if (!token)
-			ms_error("lexer", NULL, 1, ms);
-		token_add_back(&ms->head, token);
-		set_token_type(token);
-	}
-	token = ms->head;
+	token = *head;
 	while (token)
 	{
 		printf("(%d)%s, ", token->type, token->content);
 		token = token->next;
 	}
 	printf("\n");
+}
+
+void	init_tokens(char *line, t_minishell *ms)
+{
+	t_token	*token;
+	char	*content;
+
+	token = ms->head_token;
+	while (1)
+	{
+		content = get_next_token_content(line, ms);
+		if (!content)
+			break ;
+		token = token_new(content);
+		if (!token)
+		{
+			ms_error("lexer", NULL, 1, ms);
+			break ;
+		}
+		token_add_back(&ms->head_token, token);
+		set_token_type(token);
+	}
+	if (ms->debug)
+		debug_print_tokens(&ms->head_token);
 }
