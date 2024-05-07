@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/06 02:22:16 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 21:13:19 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,9 @@ t_token	*token_new(char *content)
 {
 	t_token	*newtoken;
 
-	newtoken = (t_token *)malloc(sizeof(t_token));
+	newtoken = (t_token *)ft_calloc(1, sizeof(t_token));
 	if (newtoken == NULL)
 		return (NULL);
-	ft_bzero(newtoken, sizeof(t_token));
 	newtoken->content = content;
 	return (newtoken);
 }
@@ -158,6 +157,25 @@ void	debug_print_tokens(t_token **head)
 	printf("\n");
 }
 
+enum e_operator	get_operator_type(t_token *token)
+{
+	if (token->type == TKN_IN
+		|| token->type == TKN_OUT
+		|| token->type == TKN_APPEND
+		|| token->type == TKN_HEREDOC
+		|| token->type == TKN_HERESTRING)
+	{
+		return (OP_REDIRECT);
+	}
+	else if (token->type == TKN_AND
+		|| token->type == TKN_OR
+		|| token->type == TKN_PIPE)
+	{
+		return (OP_CONTROL);
+	}
+	return (OP_NONE);
+}
+
 void	init_tokens(char *line, t_minishell *ms)
 {
 	t_token	*token;
@@ -177,6 +195,7 @@ void	init_tokens(char *line, t_minishell *ms)
 		}
 		token_add_back(&ms->head_token, token);
 		set_token_type(token);
+		token->operator = get_operator_type(token);
 	}
 	if (ms->debug)
 		debug_print_tokens(&ms->head_token);

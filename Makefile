@@ -5,6 +5,7 @@ SRC					=	minishell.c error.c cleanup.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
+FSANITIZE			=	-g -fsanitize=address
 LDFLAGS				=	-lreadline
 CC					=	cc
 COL_GREEN			= 	\033[32m
@@ -44,9 +45,13 @@ fclean: clean
 	rm -f $(NAME)
 	echo "$(COL_GREEN)$(NAME) has been removed.$(COL_DEFAULT)"
 
+re: fclean all
+
 t: all
 	./$(NAME)
 
-re: fclean all
+f: LDFLAGS += $(FSANITIZE)
+f: CFLAGS += $(FSANITIZE)
+f: re
 
-.PHONY: all clean fclean re t
+.PHONY: all clean fclean re t f

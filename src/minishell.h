@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/06 02:49:14 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 21:02:30 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,18 @@ enum e_token_type
 	TKN_HERESTRING
 };
 
+enum e_operator
+{
+	OP_NONE,
+	OP_REDIRECT,
+	OP_CONTROL
+};
+
 struct s_token
 {
 	char				*content;
 	enum e_token_type	type;
+	enum e_operator		operator;
 	bool				is_literal;
 	t_token				*next;
 };
@@ -82,10 +90,11 @@ enum e_leaf_type
 
 struct s_leaf
 {
-	t_token				*head;
+	t_token				*head_token;
 	size_t				size;
 	char				**content;
 	enum e_leaf_type	type;
+	enum e_operator		operator;
 	t_leaf				*next;
 	t_leaf				*left;
 	t_leaf				*right;

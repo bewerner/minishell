@@ -1,0 +1,10 @@
+# blacklist
+
+*
+
+# whitelist
+
+!libft
+!src
+!Makefile
+!.gitignore

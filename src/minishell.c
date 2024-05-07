@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/06 02:38:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 21:13:21 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	run_line(char *line, t_minishell *ms)
 	init_tokens(line, ms);
 	rearrange_tokens(ms);
 	init_leafs(ms);
-	// init_tree(ms);
+	init_tree(ms);
 	cleanup(ms);
 }
 
