@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:13:19 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 23:36:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void	debug_print_tokens(t_token **head)
 	token = *head;
 	while (token)
 	{
-		printf("(%d)%s, ", token->type, token->content);
+		printf("(%d)(%d)%s, ", token->operator, token->type, token->content);
 		token = token->next;
 	}
 	printf("\n");
@@ -167,12 +167,10 @@ enum e_operator	get_operator_type(t_token *token)
 	{
 		return (OP_REDIRECT);
 	}
-	else if (token->type == TKN_AND
-		|| token->type == TKN_OR
-		|| token->type == TKN_PIPE)
-	{
-		return (OP_CONTROL);
-	}
+	else if (token->type == TKN_AND || token->type == TKN_OR)
+		return (OP_LOGICAL);
+	else if (token->type == TKN_PIPE)
+		return (OP_PIPE);
 	return (OP_NONE);
 }
 
@@ -198,5 +196,8 @@ void	init_tokens(char *line, t_minishell *ms)
 		token->operator = get_operator_type(token);
 	}
 	if (ms->debug)
+	{
+		printf("\ntokens:             ");
 		debug_print_tokens(&ms->head_token);
+	}
 }

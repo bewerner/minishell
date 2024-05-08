@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 01:05:15 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:12:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 22:03:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ void	rearrange_tokens(t_minishell *ms)
 	{
 		prev = get_previous_token(&ms->head_token, token);
 		if (token->type == TKN_WORD
-			&& token->next && token->next->type == OP_REDIRECT)
+			&& token->next && token->next->operator == OP_REDIRECT)
 		{
-			if (token->next->next && prev->operator != OP_REDIRECT)
+			if (token->next->next && (!prev || prev->operator != OP_REDIRECT))
 			{
 				move_back_by_two(&ms->head_token, token);
 				token = ms->head_token;
@@ -67,5 +67,8 @@ void	rearrange_tokens(t_minishell *ms)
 		token = token->next;
 	}
 	if (ms->debug)
+	{
+		printf("\nrearranged tokens:  ");
 		debug_print_tokens(&ms->head_token);
+	}
 }

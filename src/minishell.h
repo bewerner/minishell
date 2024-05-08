@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:02:30 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 23:34:38 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ enum e_operator
 {
 	OP_NONE,
 	OP_REDIRECT,
-	OP_CONTROL
+	OP_PIPE,
+	OP_LOGICAL
 };
 
 struct s_token
@@ -96,6 +97,7 @@ struct s_leaf
 	enum e_leaf_type	type;
 	enum e_operator		operator;
 	t_leaf				*next;
+	t_leaf				*prev;
 	t_leaf				*left;
 	t_leaf				*right;
 };
@@ -105,6 +107,7 @@ typedef struct s_minishell
 	bool				debug;
 	t_token				*head_token;
 	t_leaf				*head_leaf;
+	t_leaf				*root;
 	char				*line;
 	uint8_t				exit_code;
 	bool				error;

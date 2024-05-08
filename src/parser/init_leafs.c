@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:12:21 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/07 21:50:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,10 @@ void	leaf_add_back(t_leaf **lst, t_leaf *new)
 	if (*lst == NULL)
 		*lst = new;
 	else
+	{
 		ptr->next = new;
+		new->prev = ptr;
+	}
 }
 
 t_leaf	*leaf_new(t_token *head)
@@ -51,6 +54,7 @@ void	debug_print_leafs(t_leaf **head)
 	t_token	*token;
 	size_t	i;
 
+	printf("\nleafs:              ");
 	leaf = *head;
 	while (leaf)
 	{
