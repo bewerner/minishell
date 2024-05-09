@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:50:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/08 22:20:30 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,32 +46,6 @@ t_leaf	*leaf_new(t_token *head)
 		return (NULL);
 	newleaf->head_token = head;
 	return (newleaf);
-}
-
-void	debug_print_leafs(t_leaf **head)
-{
-	t_leaf	*leaf;
-	t_token	*token;
-	size_t	i;
-
-	printf("\nleafs:              ");
-	leaf = *head;
-	while (leaf)
-	{
-		i = 0;
-		token = leaf->head_token;
-		printf("(%d)", leaf->operator);
-		printf("(%d)", leaf->type);
-		while (i < leaf->size && token)
-		{
-			printf("%s ", token->content);
-			token = token->next;
-			i++;
-		}
-		printf(", ");
-		leaf = leaf->next;
-	}
-	printf("\n");
 }
 
 enum e_leaf_type	get_leaf_type(t_token *head_token)

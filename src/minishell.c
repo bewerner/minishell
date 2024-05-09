@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 21:20:33 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/08 22:33:24 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,11 @@
 void	run_line(char *line, t_minishell *ms)
 {
 	init_tokens(line, ms);
+	if (!ms->head_token)
+		return ;
 	rearrange_tokens(ms);
 	init_leafs(ms);
 	init_tree(ms);
-	cleanup(ms);
 }
 
 void	read_arguments(int argc, char **argv, t_minishell *ms)
@@ -37,6 +38,7 @@ void	read_arguments(int argc, char **argv, t_minishell *ms)
 	if (!ms->line)
 		ms_error("read_arguments", NULL, 1, ms);
 	run_line(ms->line, ms);
+	cleanup(ms);
 }
 
 int	main(int argc, char **argv)
@@ -53,9 +55,13 @@ int	main(int argc, char **argv)
 		ms.line = readline("minishell: ");
 		if (!ms.line && errno == ENOMEM)
 			ms_error("readline", NULL, 1, &ms);
-		if (!ms.line)
+		if (!ms.line || !ms.line[0])
+		{
+			free(ms.line);
 			continue ;
+		}
 		run_line(ms.line, &ms);
+		cleanup(&ms);
 	}
 	return (ms.exit_code);
 }

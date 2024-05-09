@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 01:05:15 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 22:03:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/08 22:34:42 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,5 @@ void	rearrange_tokens(t_minishell *ms)
 		token = token->next;
 	}
 	if (ms->debug)
-	{
-		printf("\nrearranged tokens:  ");
-		debug_print_tokens(&ms->head_token);
-	}
+		debug_print_tokens(&ms->head_token, 2);
 }

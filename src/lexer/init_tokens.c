@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/07 23:36:02 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/08 22:34:43 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,19 +144,6 @@ void	set_token_type(t_token *token)
 		token->type = TKN_WORD;
 }
 
-void	debug_print_tokens(t_token **head)
-{
-	t_token	*token;
-
-	token = *head;
-	while (token)
-	{
-		printf("(%d)(%d)%s, ", token->operator, token->type, token->content);
-		token = token->next;
-	}
-	printf("\n");
-}
-
 enum e_operator	get_operator_type(t_token *token)
 {
 	if (token->type == TKN_IN
@@ -196,8 +183,5 @@ void	init_tokens(char *line, t_minishell *ms)
 		token->operator = get_operator_type(token);
 	}
 	if (ms->debug)
-	{
-		printf("\ntokens:             ");
-		debug_print_tokens(&ms->head_token);
-	}
+		debug_print_tokens(&ms->head_token, 1);
 }
