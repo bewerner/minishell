@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:33:24 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/10 01:50:33 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	run_line(char *line, t_minishell *ms)
 	init_tree(ms);
 }
 
+// temp for debugging. remember to handle 'if (argc != 1)' in main!
 void	read_arguments(int argc, char **argv, t_minishell *ms)
 {
 	if (ft_strncmp(argv[1], "-c\0", 3))
@@ -41,25 +42,21 @@ void	read_arguments(int argc, char **argv, t_minishell *ms)
 	cleanup(ms);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	ms;
 
 	ft_bzero(&ms, sizeof(ms));
+	init_env(envp, &ms);
 	ms.debug = 1;
 	if (argc != 1)
 		read_arguments(argc, argv, &ms);
 	while (argc == 1)
 	{
 		ms.error = false;
-		ms.line = readline("minishell: ");
-		if (!ms.line && errno == ENOMEM)
-			ms_error("readline", NULL, 1, &ms);
+		ms.line = get_input(&ms);
 		if (!ms.line || !ms.line[0])
-		{
-			free(ms.line);
 			continue ;
-		}
 		run_line(ms.line, &ms);
 		cleanup(&ms);
 	}

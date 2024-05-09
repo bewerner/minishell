@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:20:30 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/09 21:55:48 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_leaf	*leaf_new(t_token *head)
 	return (newleaf);
 }
 
-enum e_leaf_type	get_leaf_type(t_token *head_token)
+t_leaf_type	get_leaf_type(t_token *head_token)
 {
 	if (head_token->type == TKN_WORD)
 		return (LEAF_WORD);

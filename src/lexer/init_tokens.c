@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:34:43 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/10 01:42:07 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,17 +45,19 @@ t_token	*token_new(char *content)
 	return (newtoken);
 }
 
-enum e_char_type	get_char_type(char c)
+t_char_type	get_char_type(char *str, size_t pos)
 {
-	if (ft_isspace(c))
+	if (ft_isspace(str[pos]))
 		return (LEX_SPACE);
-	else if (c == '|')
+	else if (str[pos] == '|')
 		return (LEX_PIPE);
-	else if (c == '<')
+	else if (str[pos] == '<')
 		return (LEX_LESS);
-	else if (c == '>')
+	else if (str[pos] == '>')
 		return (LEX_GREATER);
-	else if (c == '&')
+	else if (str[pos] == '&' && str[pos + 1] == '&')
+		return (LEX_AND);
+	else if (pos > 0 && str[pos] == '&' && str[pos - 1] == '&')
 		return (LEX_AND);
 	return (LEX_WORD);
 }
@@ -76,7 +78,7 @@ bool	token_is_full(char *line, size_t start, size_t end)
 	return (false);
 }
 
-char	*read_token(char *line, size_t start, size_t *i, enum e_char_type type)
+char	*read_token(char *line, size_t start, size_t *i, t_char_type type)
 {
 	bool				in_single_quotes;
 	bool				in_double_quotes;
@@ -86,7 +88,8 @@ char	*read_token(char *line, size_t start, size_t *i, enum e_char_type type)
 	while (line[*i])
 	{
 		if (!in_single_quotes && !in_double_quotes \
-		&& (type != get_char_type(line[*i]) || token_is_full(line, start, *i)))
+		&& (type != get_char_type(line, *i) \
+		|| token_is_full(line, start, *i)))
 			break ;
 		if (line[*i] == '\'' && !in_double_quotes)
 			in_single_quotes = !in_single_quotes;
@@ -101,7 +104,7 @@ char	*get_next_token_content(char *line, t_minishell *ms)
 {
 	static size_t		i;
 	size_t				start;
-	enum e_char_type	type;
+	t_char_type			type;
 	char				*content;
 
 	while (ft_isspace(line[i]))
@@ -112,7 +115,7 @@ char	*get_next_token_content(char *line, t_minishell *ms)
 		return (NULL);
 	}
 	start = i;
-	type = get_char_type(line[i]);
+	type = get_char_type(line, i);
 	content = read_token(line, start, &i, type);
 	if (!content)
 		ms_error("lexer", NULL, 1, ms);
@@ -144,7 +147,7 @@ void	set_token_type(t_token *token)
 		token->type = TKN_WORD;
 }
 
-enum e_operator	get_operator_type(t_token *token)
+t_operator	get_operator_type(t_token *token)
 {
 	if (token->type == TKN_IN
 		|| token->type == TKN_OUT
@@ -175,6 +178,7 @@ void	init_tokens(char *line, t_minishell *ms)
 		token = token_new(content);
 		if (!token)
 		{
+			free(content);
 			ms_error("lexer", NULL, 1, ms);
 			break ;
 		}

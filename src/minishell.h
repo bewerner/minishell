@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:37:23 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/10 01:37:20 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 typedef struct s_token	t_token;
 typedef struct s_leaf	t_leaf;
 
-enum e_char_type
+typedef enum e_char_type
 {
 	LEX_WORD,
 	LEX_SPACE,
@@ -44,9 +44,9 @@ enum e_char_type
 	LEX_GREATER,
 	LEX_PIPE,
 	LEX_AND
-};
+}	t_char_type;
 
-enum e_token_type
+typedef enum e_token_type
 {
 	TKN_WORD,
 	TKN_PIPE,
@@ -57,15 +57,15 @@ enum e_token_type
 	TKN_APPEND,
 	TKN_HEREDOC,
 	TKN_HERESTRING
-};
+}	t_token_type;
 
-enum e_operator
+typedef enum e_operator
 {
 	OP_NONE,
 	OP_REDIRECT,
 	OP_PIPE,
 	OP_LOGICAL
-};
+}	t_operator;
 
 struct s_token
 {
@@ -76,7 +76,7 @@ struct s_token
 	t_token				*next;
 };
 
-enum e_leaf_type
+typedef enum e_leaf_type
 {
 	LEAF_WORD,
 	LEAF_PIPE,
@@ -87,7 +87,7 @@ enum e_leaf_type
 	LEAF_APPEND,
 	LEAF_HEREDOC,
 	LEAF_HERESTRING
-};
+}	t_leaf_type;
 
 struct s_leaf
 {
@@ -103,13 +103,24 @@ struct s_leaf
 	t_leaf				*right;
 };
 
+typedef struct s_env	t_env;
+
+struct s_env
+{
+	char				*content;
+	t_env				*prev;
+	t_env				*next;
+};
+
 typedef struct s_minishell
 {
 	bool				debug;
 	t_token				*head_token;
 	t_leaf				*head_leaf;
 	t_leaf				*root;
+	t_env				*head_env;
 	char				*line;
+	bool				line_is_complete;
 	uint8_t				exit_code;
 	bool				error;
 }						t_minishell;
@@ -122,6 +133,7 @@ void		debug_print_leafs(t_leaf **head);
 void		debug_print_tree(t_leaf *root, t_leaf *head);
 
 // lexer/init_tokens.c
+t_char_type	get_char_type(char *str, size_t pos);
 void		init_tokens(char *line, t_minishell *ms);
 
 // parser/init_leafs.c
@@ -138,5 +150,11 @@ void		cleanup(t_minishell *ms);
 
 // error.c
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
+
+// get_input.c
+char		*get_input(t_minishell *ms);
+
+// init_env.c
+void		init_env(char **envp, t_minishell *ms);
 
 #endif
