@@ -6,5 +6,6 @@
 
 !libft
 !src
+!src/**
 !Makefile
 !.gitignore
