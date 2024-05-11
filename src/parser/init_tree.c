@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 22:55:41 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/09 02:14:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/10 19:56:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,15 @@ t_leaf	*get_root(t_leaf *leaf)
 	}
 	while (leaf->prev)
 		leaf = leaf->prev;
+	return (leaf);
+}
+
+t_leaf	*get_first_leaf(t_leaf *leaf, t_leaf *root)
+{
+	if (root->operator != OP_LOGICAL)
+		return (root);
+	while (leaf->left && leaf->operator == OP_LOGICAL)
+		leaf = leaf->left;
 	return (leaf);
 }
 
@@ -167,4 +176,11 @@ void	init_tree(t_minishell *ms)
 	connect_pipes(ms->root, ms->head_leaf);
 	connect_rest(ms->head_leaf, ms->head_leaf, ms->root);
 	debug_print_tree(ms->root, ms->head_leaf);
+	ms->first_leaf = get_first_leaf(ms->root, ms->root);
+	if (ms->debug)
+		printf("\nfirst leaf is: %s\n",
+			ms->first_leaf->head_token->content);
+	if (ms->debug && ms->first_leaf->left)
+		printf("(left child: %s)\n",
+			ms->first_leaf->left->head_token->content);
 }

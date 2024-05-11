@@ -3,7 +3,8 @@ LIBFT				=	libft/libft.a
 SRC					=	minishell.c cleanup.c error.c get_input.c init_env.c \
 						lexer/init_tokens.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
-						debug/print.c debug/print_tree.c
+						debug/print.c debug/print_tree.c \
+						executor/start_executor.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address
@@ -34,6 +35,7 @@ obj/%.o: src/%.c
 	mkdir -p obj/lexer
 	mkdir -p obj/parser
 	mkdir -p obj/debug
+	mkdir -p obj/executor
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

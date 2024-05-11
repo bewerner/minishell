@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/10 01:37:20 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/11 02:59:07 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,9 @@ struct s_leaf
 	t_leaf				*parent;
 	t_leaf				*left;
 	t_leaf				*right;
+	int					fd_read[2];
+	int					fd_write[2];
+	bool				executed;
 };
 
 typedef struct s_env	t_env;
@@ -118,7 +121,9 @@ typedef struct s_minishell
 	t_token				*head_token;
 	t_leaf				*head_leaf;
 	t_leaf				*root;
+	t_leaf				*first_leaf;
 	t_env				*head_env;
+	char				**envp;
 	char				*line;
 	bool				line_is_complete;
 	uint8_t				exit_code;
@@ -131,6 +136,9 @@ void		debug_print_leafs(t_leaf **head);
 
 // debug/print_tree.c
 void		debug_print_tree(t_leaf *root, t_leaf *head);
+
+// executor/start_executor.c
+void		start_executor(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_tokens.c
 t_char_type	get_char_type(char *str, size_t pos);

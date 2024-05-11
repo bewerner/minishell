@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/09 23:54:38 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/10 20:19:23 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,21 +59,32 @@ char	*join_input(char *s1, char *s2, t_minishell *ms)
 		free(s2);
 		return (s1);
 	}
-	input = ms_strjoin(s1, " ", s2);
+	input = ms_strjoin(s1, "\n", s2);
 	free(s1);
 	free(s2);
 	return (input);
 }
 
-// bash would perform syntax check at end of while loop;
+// add syntax check and unclosed quotes check
+bool	input_is_valid(char *input)
+{
+	if (!input)
+		return (false);
+	return (true);
+}
+
+// at end of while loop, check if we have two pipe/logical operators without
+// anything between them. if so, break. will detect syntax error after building
+// tree;
 char	*get_input(t_minishell *ms)
 {
 	char		*input;
 	size_t		last_char_pos;
 	t_char_type	last_char;
 
+	ms->line_is_complete = false;
 	input = NULL;
-	while (!input || last_char == LEX_PIPE || last_char == LEX_AND)
+	while (!input_is_valid(input) || last_char == LEX_PIPE || last_char == LEX_AND)
 	{
 		if (!input)
 			input = readline("minishell: ");
