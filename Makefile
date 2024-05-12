@@ -4,7 +4,7 @@ SRC					=	minishell.c cleanup.c error.c get_input.c init_env.c \
 						lexer/init_tokens.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
 						debug/print.c debug/print_tree.c \
-						executor/start_executor.c
+						executor/exec_tree.c executor/exec_word.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address

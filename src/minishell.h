@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/11 02:59:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 03:31:19 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,10 @@ struct s_leaf
 	t_leaf				*parent;
 	t_leaf				*left;
 	t_leaf				*right;
-	int					fd_read[2];
-	int					fd_write[2];
+	int					read_pipe[2];
+	int					write_pipe[2];
 	bool				executed;
+	pid_t				child_pid;
 };
 
 typedef struct s_env	t_env;
@@ -137,8 +138,11 @@ void		debug_print_leafs(t_leaf **head);
 // debug/print_tree.c
 void		debug_print_tree(t_leaf *root, t_leaf *head);
 
-// executor/start_executor.c
-void		start_executor(t_leaf *leaf, t_minishell *ms);
+// executor/exec_tree.c
+void		exec_tree(t_leaf *leaf, t_minishell *ms);
+
+// executor/exec_word.c
+void		exec_word(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_tokens.c
 t_char_type	get_char_type(char *str, size_t pos);
@@ -155,6 +159,7 @@ void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c
 void		cleanup(t_minishell *ms);
+void		terminate(uint8_t exit_code, t_minishell *ms);
 
 // error.c
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);

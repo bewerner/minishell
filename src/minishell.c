@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/10 23:31:09 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 03:31:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	run_line(char *line, t_minishell *ms)
 	rearrange_tokens(ms);
 	init_leafs(ms);
 	init_tree(ms);
-	start_executor(ms->first_leaf, ms);
+	exec_tree(ms->first_leaf, ms);
 }
 
 // temp for debugging. remember to handle 'if (argc != 1)' in main!
