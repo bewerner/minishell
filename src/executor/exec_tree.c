@@ -60,12 +60,6 @@ void	exec_pipe(t_leaf *leaf)
 	leaf->right->read_pipe[1] = fd[1];
 }
 
-void	exec_redirect(t_leaf *leaf, t_minishell *ms)
-{
-	(void)ms;
-	(void)leaf;
-}
-
 void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 {
 	// expand_content(leaf)
@@ -82,7 +76,9 @@ void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 
 void	exec_tree(t_leaf *leaf, t_minishell *ms)
 {
-	while (leaf && !ms->error)
+	if (ms->error)
+		return ;
+	while (leaf)
 	{
 		if (!leaf->executed)
 			exec_leaf(leaf, ms);

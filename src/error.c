@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/05 20:41:14 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 22:00:57 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,24 @@
 
 void	ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms)
 {
-	ft_putstr_fd("minishell: ", 2);
-	if (errno)
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	if (s1 && s2)
+	{
+		ft_putstr_fd(s1, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putstr_fd(s2, STDERR_FILENO);
+		ft_putchar_fd('\n', STDERR_FILENO);
+	}
+	else if (errno)
+	{
 		perror(s1);
+		if (errno == EACCES)
+			exit_code = 126;
+	}
 	else
 	{
-		if (s1)
-			ft_putstr_fd(s1, 2);
-		if (s2)
-			ft_putstr_fd(s2, 2);
-		ft_putchar_fd('\n', 2);
+		ft_putstr_fd(s1, STDERR_FILENO);
+		ft_putchar_fd('\n', STDERR_FILENO);
 	}
 	errno = 0;
 	ms->error = true;

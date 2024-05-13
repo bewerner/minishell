@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 03:31:19 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 23:11:34 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,7 @@ typedef enum e_token_type
 	TKN_IN,
 	TKN_OUT,
 	TKN_APPEND,
-	TKN_HEREDOC,
-	TKN_HERESTRING
+	TKN_HEREDOC
 }	t_token_type;
 
 typedef enum e_operator
@@ -85,8 +84,7 @@ typedef enum e_leaf_type
 	LEAF_IN,
 	LEAF_OUT,
 	LEAF_APPEND,
-	LEAF_HEREDOC,
-	LEAF_HERESTRING
+	LEAF_HEREDOC
 }	t_leaf_type;
 
 struct s_leaf
@@ -129,7 +127,9 @@ typedef struct s_minishell
 	bool				line_is_complete;
 	uint8_t				exit_code;
 	bool				error;
-}						t_minishell;
+	int					fd_stdin_dup;
+	int					fd_stdout_dup;
+}	t_minishell;
 
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
@@ -137,6 +137,9 @@ void		debug_print_leafs(t_leaf **head);
 
 // debug/print_tree.c
 void		debug_print_tree(t_leaf *root, t_leaf *head);
+
+// executor/exec_redirect.c
+void		exec_redirect(t_leaf *leaf, t_minishell *ms);
 
 // executor/exec_tree.c
 void		exec_tree(t_leaf *leaf, t_minishell *ms);

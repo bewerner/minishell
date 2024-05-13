@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 03:31:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 23:12:43 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ int	main(int argc, char **argv, char **envp)
 	t_minishell	ms;
 
 	ft_bzero(&ms, sizeof(ms));
+	ms.fd_stdin_dup = dup(STDIN_FILENO);
+	ms.fd_stdout_dup = dup(STDOUT_FILENO);
 	ms.envp = envp; // TEMP
 	init_env(envp, &ms);
 	ms.debug = 1;

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 03:31:27 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 23:14:10 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,7 @@ void	terminate(uint8_t exit_code, t_minishell *ms)
 {
 	cleanup(ms);
 	free_env(&ms->head_env);
+	close(ms->fd_stdin_dup);
+	close(ms->fd_stdout_dup);
 	exit(exit_code);
 }

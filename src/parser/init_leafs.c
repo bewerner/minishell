@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/11 01:57:29 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 20:50:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,6 @@ t_leaf_type	get_leaf_type(t_token *head_token)
 		return (LEAF_APPEND);
 	else if (head_token->type == TKN_HEREDOC)
 		return (LEAF_HEREDOC);
-	else if (head_token->type == TKN_HERESTRING)
-		return (LEAF_HERESTRING);
 	return (LEAF_WORD);
 }
 

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/10 01:42:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/12 20:50:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ bool	token_is_full(char *line, size_t start, size_t end)
 	size_t	len;
 
 	len = end - start;
-	if (len == 3 && ft_strncmp(line + start, "<<<", 3) == 0)
+	if (len == 2 && ft_strncmp(line + start, "<<", 2) == 0)
 		return (true);
 	else if (len == 2 && ft_strncmp(line + start, ">>", 2) == 0)
 		return (true);
@@ -127,9 +127,7 @@ void	set_token_type(t_token *token)
 	size_t	len;
 
 	len = ft_strlen(token->content);
-	if (len == 3 && ft_strncmp(token->content, "<<<", 3) == 0)
-		token->type = TKN_HERESTRING;
-	else if (len == 2 && ft_strncmp(token->content, "<<", 2) == 0)
+	if (len == 2 && ft_strncmp(token->content, "<<", 2) == 0)
 		token->type = TKN_HEREDOC;
 	else if (len == 1 && ft_strncmp(token->content, "<", 1) == 0)
 		token->type = TKN_IN;
@@ -152,8 +150,7 @@ t_operator	get_operator_type(t_token *token)
 	if (token->type == TKN_IN
 		|| token->type == TKN_OUT
 		|| token->type == TKN_APPEND
-		|| token->type == TKN_HEREDOC
-		|| token->type == TKN_HERESTRING)
+		|| token->type == TKN_HEREDOC)
 	{
 		return (OP_REDIRECT);
 	}

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 03:32:11 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/13 01:40:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,12 +89,12 @@ char	*get_path(char *cmd, t_minishell *ms)
 	while (env_path[0])
 	{
 		path = join_path(&env_path, "/", cmd);
-		printf("path is: %s\n", path);
+		// printf("path is: %s\n", path);
 		if (!access(path, F_OK))
 			return (path);
 		free(path);
 	}
-	return(cmd);
+	return(NULL);
 }
 
 void	exec_word(t_leaf *leaf, t_minishell *ms)
@@ -115,21 +115,28 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 			close(leaf->read_pipe[1]);
 		}
 		path = get_path(leaf->head_token->content, ms);
-		printf("path is: %s\n", path);
-		// path = leaf->head_token->content;
+		if (!path)
+			ms_error(leaf->head_token->content, "command not found", 127, ms);
+		// printf("path is: %s\n", path);
 		init_leaf_content(leaf);
-		execve(path, leaf->content, ms->envp);
+		if (path && execve(path, leaf->content, ms->envp) == -1)
+			ms_error(path, NULL, 1, ms);
 		free(path);
 		if (leaf->write_pipe[0])
 			close(leaf->write_pipe[1]);
 		if (leaf->read_pipe[0])
 			close(leaf->read_pipe[0]);
-		terminate(1, ms);	// find out exit code. also print error.
+		terminate(ms->exit_code, ms);	// find out exit code. also print error.
 	}
 	if (leaf->read_pipe[0])
 	{
 		// printf("closing %d and %d\n", leaf->read_pipe[0], leaf->read_pipe[1]);
 		close(leaf->read_pipe[0]);
 		close(leaf->read_pipe[1]);
+	}
+	if (leaf->parent->operator == OP_REDIRECT)
+	{
+		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
+		dup2(ms->fd_stdin_dup, STDIN_FILENO);
 	}
 }
