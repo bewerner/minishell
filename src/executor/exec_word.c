@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 01:40:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/13 20:52:15 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,6 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		close(leaf->read_pipe[0]);
 		close(leaf->read_pipe[1]);
 	}
-	if (leaf->parent->operator == OP_REDIRECT)
-	{
-		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-		dup2(ms->fd_stdin_dup, STDIN_FILENO);
-	}
+	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
+	dup2(ms->fd_stdin_dup, STDIN_FILENO);
 }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 23:11:34 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/14 01:30:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,8 @@ typedef struct s_env	t_env;
 struct s_env
 {
 	char				*content;
+	char				*key;
+	char				*value;
 	t_env				*prev;
 	t_env				*next;
 };
@@ -146,6 +148,9 @@ void		exec_tree(t_leaf *leaf, t_minishell *ms);
 
 // executor/exec_word.c
 void		exec_word(t_leaf *leaf, t_minishell *ms);
+
+// executor/expander.c
+void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_tokens.c
 t_char_type	get_char_type(char *str, size_t pos);

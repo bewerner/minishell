@@ -4,10 +4,11 @@ SRC					=	minishell.c cleanup.c error.c get_input.c init_env.c \
 						lexer/init_tokens.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
 						debug/print.c debug/print_tree.c \
-						executor/exec_redirect.c executor/exec_tree.c executor/exec_word.c
+						executor/exec_redirect.c executor/exec_tree.c executor/exec_word.c executor/expander.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address
+DEBUG				=	-g
 LDFLAGS				=	-lreadline
 CC					=	cc
 COL_GREEN			= 	\033[32m
@@ -57,5 +58,9 @@ t: all
 f: LDFLAGS += $(FSANITIZE)
 f: CFLAGS += $(FSANITIZE)
 f: re
+
+d: LDFLAGS += $(DEBUG)
+d: CFLAGS += $(DEBUG)
+d: re
 
 .PHONY: all clean fclean re t f

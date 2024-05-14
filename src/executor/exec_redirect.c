@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 02:53:56 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/13 21:11:00 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,28 +58,34 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 
 void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 {
-	int		fd;
 	char	*line;
 	char	*delimiter;
 	int		p[2];
 
 	(void)ms;
-	leaf->left->write_pipe[0] = leaf->write_pipe[0];
-	leaf->left->write_pipe[1] = leaf->write_pipe[1];
+	if (leaf->left)
+	{
+		leaf->left->write_pipe[0] = leaf->write_pipe[0];
+		leaf->left->write_pipe[1] = leaf->write_pipe[1];
+	}
 	delimiter = leaf->head_token->next->content;
-	fd = dup(STDIN_FILENO);
 	pipe(p);
 	line = readline("> ");
-	while (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1))
+	while (line && ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1))
 	{
 		write(p[1], line, ft_strlen(line));
 		write(p[1], "\n", 1);
 		free(line);
 		line = readline("> ");
 	}
+	if (!line && errno)
+		ms_error("readline", NULL, 1, ms);
 	free(line);
-	leaf->left->read_pipe[0] = p[0];
-	leaf->left->read_pipe[1] = p[1];
+	if (leaf->left)
+	{
+		leaf->left->read_pipe[0] = p[0];
+		leaf->left->read_pipe[1] = p[1];
+	}
 }
 
 void	exec_redirect(t_leaf *leaf, t_minishell *ms)

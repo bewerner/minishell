@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/10 20:19:23 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/13 20:58:09 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ char	*join_input(char *s1, char *s2, t_minishell *ms)
 		free(s2);
 		return (s1);
 	}
-	input = ms_strjoin(s1, "\n", s2);
+	input = ms_strjoin(s1, " ", s2);
 	free(s1);
 	free(s2);
 	return (input);

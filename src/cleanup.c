@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 23:14:10 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/13 23:48:50 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void	free_env(t_env **head)
 	{
 		next = ptr->next;
 		free(ptr->content);
+		free(ptr->key);
+		free(ptr->value);
 		free(ptr);
 		ptr = next;
 	}
