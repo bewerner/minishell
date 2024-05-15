@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/14 01:30:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/15 01:03:46 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,10 @@ typedef enum e_operator
 struct s_token
 {
 	char				*content;
+	char				*original_content;
 	enum e_token_type	type;
 	enum e_operator		operator;
-	bool				is_literal;
+	bool				split;
 	t_token				*next;
 };
 
@@ -153,6 +154,7 @@ void		exec_word(t_leaf *leaf, t_minishell *ms);
 void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_tokens.c
+t_token		*token_new(char *content);
 t_char_type	get_char_type(char *str, size_t pos);
 void		init_tokens(char *line, t_minishell *ms);
 
