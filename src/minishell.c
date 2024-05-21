@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 23:56:42 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 00:24:29 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,23 +43,41 @@ void	read_arguments(int argc, char **argv, t_minishell *ms)
 	cleanup(ms);
 }
 
+// void	sigint_handler(int signum)
+// {
+// 	(void)signum;
+// }
+
+// void	init_signals(t_minishell *ms)
+// {
+// 	struct sigaction	sa;
+
+// 	(void)ms;
+// 	// sa.sa_sigaction = sigint_handler;
+// 	sa.sa_handler = sigint_handler;
+// 	sa.sa_flags = 0;
+// 	sigemptyset(&sa.sa_mask);
+// 	sigaction(SIGINT, &sa, NULL);
+// }
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	ms;
 
 	ft_bzero(&ms, sizeof(ms));
+	// init_signals(&ms);
 	ms.fd_stdin_dup = dup(STDIN_FILENO);
 	ms.fd_stdout_dup = dup(STDOUT_FILENO);
 	ms.envp = envp; // TEMP
 	init_env(envp, &ms);
-	ms.debug = 1;
+	ms.debug = 0;
 	if (argc != 1)
 		read_arguments(argc, argv, &ms);
 	while (argc == 1)
 	{
 		ms.error = false;
 		ms.line = get_input(&ms);
-		if (!ms.line || !ms.line[0])
+		if (!ms.line)
 			continue ;
 		add_history(ms.line);
 		run_line(ms.line, &ms);

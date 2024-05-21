@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/15 01:03:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 20:59:37 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef enum e_operator
 struct s_token
 {
 	char				*content;
+	char				*remove;
 	char				*original_content;
 	enum e_token_type	type;
 	enum e_operator		operator;
@@ -179,5 +180,11 @@ char		*get_input(t_minishell *ms);
 
 // init_env.c
 void		init_env(char **envp, t_minishell *ms);
+
+// quote_check.c
+bool		in_single_quotes(char *str, size_t pos);
+bool		in_double_quotes(char *str, size_t pos);
+bool		in_quotes(char *str, size_t pos);
+bool		is_removable_quote(char *str, size_t pos);
 
 #endif

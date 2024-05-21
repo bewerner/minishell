@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/15 02:20:29 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 23:20:28 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 	return (rt);
 }
 
-char	*get_expanded_content(char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
+char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
 {
 	size_t	i;
 	size_t	key_len;
@@ -67,29 +67,23 @@ char	*get_expanded_content(char *str, size_t key_pos, size_t *new_pos, t_minishe
 	if (!value)
 		return (NULL);
 	*new_pos = key_pos - 1 + ft_strlen(value);
+	if (token->remove)
+		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
 	return (ft_replace_substr(str, key_pos - 1, key_len + 1, value));
 }
 
 void	expand_variables(t_token *token, t_minishell *ms)
 {
 	size_t	i;
-	bool	in_double_quotes;
-	bool	in_single_quotes;
 	char	*expanded_content;
 	size_t	new_pos;
 
 	i = 0;
-	in_double_quotes = false;
-	in_single_quotes = false;
 	while (token->content[i])
 	{
-		if (token->content[i] == '\"' && !in_single_quotes)
-			in_double_quotes = !in_double_quotes;
-		else if (token->content[i] == '\'' && !in_double_quotes)
-			in_single_quotes = !in_single_quotes;
-		else if (token->content[i] == '$' && !in_single_quotes)
+		if (token->content[i] == '$' && !in_single_quotes(token->content, i))
 		{
-			expanded_content = get_expanded_content(token->content, i + 1, &new_pos, ms);
+			expanded_content = get_expanded_content(token, token->content, i + 1, &new_pos, ms);
 			if (expanded_content)
 			{
 				if (!token->original_content)
@@ -123,8 +117,12 @@ t_token	*split_token(t_token *token, size_t split_pos)
 	substr_len = ft_strlen(token->content) - substr_start;
 	content = ft_substr(token->content, substr_start, substr_len);
 	new_token = token_new(content);
+	if (token->remove)
+		new_token->remove = ft_substr(token->remove, substr_start, substr_len);
 	new_token->split = true;
 	token->content[split_pos] = '\0';
+	if (token->remove)
+		token->remove[split_pos] = '\0';
 	return (new_token);
 }
 
@@ -142,20 +140,12 @@ void	token_insert(t_token *token, t_token *new_token)
 void	split_words(t_token *token, t_leaf *leaf)
 {
 	size_t	i;
-	bool	in_double_quotes;
-	bool	in_single_quotes;
 	t_token	*new_token;
 
 	i = 0;
-	in_double_quotes = false;
-	in_single_quotes = false;
 	while (token->content[i])
 	{
-		if (token->content[i] == '\"' && !in_single_quotes)
-			in_double_quotes = !in_double_quotes;
-		else if (token->content[i] == '\'' && !in_double_quotes)
-			in_single_quotes = !in_single_quotes;
-		if (ft_isspace(token->content[i]) && !in_single_quotes && !in_double_quotes)
+		if (ft_isspace(token->content[i]) && !in_quotes(token->content, i))
 		{
 			new_token = split_token(token, i);
 			token_insert(token, new_token);
@@ -172,9 +162,27 @@ void	expand_token(t_token *token, t_leaf *leaf, t_minishell *ms)
 {
 	expand_variables(token, ms);
 	split_words(token, leaf);
-	debug_print_tokens(&ms->head_token, 1);
-	debug_print_leafs(&ms->head_leaf);
-	// remove_quotes()
+}
+
+void	remove_quotes(t_token *token, t_minishell *ms)
+{
+	size_t	i;
+	size_t	len;
+
+	if (ms->error || !token->remove)
+		return ;
+	i = 0;
+	len = ft_strlen(token->content);
+	while (token->content[i])
+	{
+		if(token->remove[i] == '1')
+		{
+			ft_memmove(token->content + i, token->content + i + 1, len - i);
+			ft_memmove(token->remove + i, token->remove + i + 1, len - i);
+		}
+		else
+			i++;
+	}
 }
 
 void	expand_leaf(t_leaf *leaf, t_minishell *ms)
@@ -188,6 +196,7 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 	{
 		if (!token->split)
 			expand_token(token, leaf, ms);
+		remove_quotes(token, ms);
 		token = token->next;
 		i++;
 	}

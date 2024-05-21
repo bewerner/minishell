@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/14 23:04:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 23:21:48 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void	wait_for_child_processes(t_minishell *ms)
 		}
 		leaf = leaf->next;
 	}
-	printf("exiting wait\n");
+	if (ms->debug)
+		printf("exiting wait_for_child_processes\n");
 }
 
 void	exec_logical(t_leaf *leaf, t_minishell *ms)

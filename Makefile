@@ -1,6 +1,6 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	minishell.c cleanup.c error.c get_input.c init_env.c \
+SRC					=	minishell.c cleanup.c error.c get_input.c init_env.c quote_check.c \
 						lexer/init_tokens.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
 						debug/print.c debug/print_tree.c \

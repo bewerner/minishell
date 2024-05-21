@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 20:58:09 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 00:02:50 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,15 @@ char	*get_input(t_minishell *ms)
 			return (input);
 		if (!input && errno)
 			ms_error("readline", NULL, 1, ms);
-		if (!input || !input[0])
+		else if (!input)
+		{
+			printf("exit\n");
+			exit(ms->exit_code);
+		}
+		else if (!input[0])
 		{
 			free(input);
-			return (NULL);
+			return (NULL) ;
 		}
 		last_char_pos = get_last_char_pos(input);
 		last_char = get_char_type(input, last_char_pos);

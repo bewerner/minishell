@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 22:55:41 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/10 19:56:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 23:21:04 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,8 @@ void	init_tree(t_minishell *ms)
 	connect_logical_operators(ms->root);
 	connect_pipes(ms->root, ms->head_leaf);
 	connect_rest(ms->head_leaf, ms->head_leaf, ms->root);
-	debug_print_tree(ms->root, ms->head_leaf);
+	if (ms->debug)
+		debug_print_tree(ms->root, ms->head_leaf);
 	ms->first_leaf = get_first_leaf(ms->root, ms->root);
 	if (ms->debug)
 		printf("\nfirst leaf is: %s\n",

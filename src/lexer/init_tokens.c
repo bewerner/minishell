@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 20:50:39 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 21:07:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,56 @@ t_operator	get_operator_type(t_token *token)
 	return (OP_NONE);
 }
 
+bool	mark_for_removal(t_token *token)
+{
+	size_t	i;
+
+	if (!ft_strchr(token->content, '\'') && !ft_strchr(token->content, '\"'))
+		return (true);
+	token->remove = ft_strdup(token->content);
+	if (!token->remove)
+		return (false);
+	i = 0;
+	while (token->content[i])
+	{
+		if (is_removable_quote(token->content, i))
+			token->remove[i] = '1';
+		else
+			token->remove[i] = '0';
+		i++;
+	}
+	return (true);
+}
+
+// bool	mark_for_removal(t_token *token)
+// {
+// 	bool	in_double_quotes;
+// 	bool	in_single_quotes;
+// 	size_t	i;
+
+// 	if (!ft_strchr(token->content, '\'') && !ft_strchr(token->content, '\"'))
+// 		return (true);
+// 	token->remove = ft_strdup(token->content);
+// 	if (!token->remove)
+// 		return (false);
+// 	i = 0;
+// 	in_double_quotes = false;
+// 	in_single_quotes = false;
+// 	while (token->content[i])
+// 	{
+// 		token->remove[i] = '0';
+// 		if ((token->content[i] == '\"' && !in_single_quotes)
+// 			|| (token->content[i] == '\'' && !in_double_quotes))
+// 			token->remove[i] = '1';
+// 		if (token->content[i] == '\"' && !in_single_quotes)
+// 			in_double_quotes = !in_double_quotes;
+// 		else if (token->content[i] == '\'' && !in_double_quotes)
+// 			in_single_quotes = !in_single_quotes;
+// 		i++;
+// 	}
+// 	return (true);
+// }
+
 void	init_tokens(char *line, t_minishell *ms)
 {
 	t_token	*token;
@@ -173,7 +223,7 @@ void	init_tokens(char *line, t_minishell *ms)
 		if (!content)
 			break ;
 		token = token_new(content);
-		if (!token)
+		if (!token || !mark_for_removal(token))
 		{
 			free(content);
 			ms_error("lexer", NULL, 1, ms);

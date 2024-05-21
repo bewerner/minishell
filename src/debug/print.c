@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 22:17:10 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:38:18 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/21 21:09:33 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,13 @@ void	debug_print_tokens(t_token **head, size_t option)
 	while (token)
 	{
 		printf("(%d)(%d)%s, ", token->operator, token->type, token->content);
+		token = token->next;
+	}
+	printf("\n                    ");
+	token = *head;
+	while (token)
+	{
+		printf("(%d)(%d)%s, ", token->operator, token->type, token->remove);
 		token = token->next;
 	}
 	printf("\n");
