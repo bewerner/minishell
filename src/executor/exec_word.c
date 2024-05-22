@@ -6,11 +6,49 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 22:13:32 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 01:32:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+// bool	token_content_is_empty(char *content)
+// {
+// 	size_t	i;
+
+// 	i = 0;
+// 	if (!content)
+// 		return (true);
+// 	while (content[i])
+// 	{
+// 		if (!ft_isspace(content[i]))
+// 			return (false);
+// 		i++;
+// 	}
+// 	return (true);
+// }
+
+// void	init_leaf_content(t_leaf *leaf)
+// {
+// 	size_t	i;
+// 	size_t	j;
+// 	t_token	*token;
+
+// 	i = 0;
+// 	j = 0;
+// 	token = leaf->head_token;
+// 	leaf->content = (char **)ft_calloc(leaf->size + 1, sizeof(char *));
+// 	while (i < leaf->size)
+// 	{
+// 		if (!token_content_is_empty(token->content))
+// 		{
+// 			leaf->content[j] = token->content;
+// 			j++;
+// 		}
+// 		token = token->next;
+// 		i++;
+// 	}
+// }
 
 void	init_leaf_content(t_leaf *leaf)
 {
@@ -125,6 +163,8 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		init_leaf_content(leaf);
 		if (path && execve(path, leaf->content, ms->envp) == -1)
 			ms_error(path, NULL, 1, ms);
+		if (errno == EACCES)
+			ms->exit_code = 126;
 		free(path);
 		if (leaf->write_pipe[0])
 			close(leaf->write_pipe[1]);

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 22:30:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 01:45:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,9 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	else
 		value = ft_itoa(ms->exit_code);
 	if (!value)
-		return (NULL);
+		value = "";
+	// if (!value)
+	// 	return (NULL);
 	*new_pos = key_pos - 1 + ft_strlen(value);
 	if (token->remove)
 		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
@@ -163,12 +165,33 @@ void	token_insert(t_token *token, t_token *new_token)
 	new_token->operator = token->operator;
 }
 
+bool	token_content_is_empty(char *content)
+{
+	size_t	i;
+
+	i = 0;
+	if (!content)
+		return (true);
+	while (content[i])
+	{
+		if (!ft_isspace(content[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 void	split_words(t_token *token, t_leaf *leaf)
 {
 	size_t	i;
 	t_token	*new_token;
 
 	i = 0;
+	if (token_content_is_empty(token->content))
+	{
+		token_delete(token);
+		return ;
+	}
 	while (token->content[i])
 	{
 		if (ft_isspace(token->content[i]) && !in_quotes(token->content, i))

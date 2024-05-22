@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 22:04:53 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 00:54:08 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,20 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 {
 	int	fd;
 
-
-	leaf->left->read_pipe[0] = leaf->read_pipe[0];
-	leaf->left->read_pipe[1] = leaf->read_pipe[1];
+	if (leaf->left)
+	{
+		leaf->left->read_pipe[0] = leaf->read_pipe[0];
+		leaf->left->read_pipe[1] = leaf->read_pipe[1];
+	}
 	fd = open(leaf->head_token->next->content, options, 0644);
 	if (fd == -1)
 	{
 		ms_error(leaf->head_token->next->content, NULL, 1, ms);
+		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(ms->fd_stdin_dup, STDIN_FILENO);
 		leaf->left->executed = true;
+		leaf->left->child_pid = -1;
 	}
 	else
 	{
@@ -38,16 +42,20 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 {
 	int	fd;
 
-
-	leaf->left->write_pipe[0] = leaf->write_pipe[0];
-	leaf->left->write_pipe[1] = leaf->write_pipe[1];
+	if (leaf->left)
+	{
+		leaf->left->write_pipe[0] = leaf->write_pipe[0];
+		leaf->left->write_pipe[1] = leaf->write_pipe[1];
+	}
 	fd = open(leaf->head_token->next->content, O_RDONLY);
 	if (fd == -1)
 	{
 		ms_error(leaf->head_token->next->content, NULL, 1, ms);
+		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(ms->fd_stdin_dup, STDIN_FILENO);
 		leaf->left->executed = true;
+		leaf->left->child_pid = -1;
 	}
 	else
 	{

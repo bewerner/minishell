@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 22:55:41 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 23:21:04 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 00:05:46 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@ void	connect_rest(t_leaf *head, t_leaf *branch, t_leaf *root)
 				if (leaf && leaf->operator < OP_PIPE)
 				{
 					connect_to_right_branch(branch, leaf);
+					branch = leaf;
 					leaf = leaf->next;
 				}
 				while (leaf && leaf->operator < OP_PIPE)

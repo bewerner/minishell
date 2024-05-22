@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/12 22:00:57 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 00:40:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void	ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms)
 	else if (errno)
 	{
 		perror(s1);
-		if (errno == EACCES)
-			exit_code = 126;
+		// if (errno == EACCES)
+		// 	exit_code = 126;
 	}
 	else
 	{

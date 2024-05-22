@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 23:29:40 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/23 00:55:42 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,23 @@ void	wait_for_child_processes(t_minishell *ms)
 	leaf = ms->head_leaf;
 	while (leaf)
 	{
-		if (leaf->child_pid)
+		if (leaf->child_pid < 0)
+			ms->exit_code = 1;
+		else if (leaf->child_pid)
 		{
 			// signal(SIGQUIT, temp);
 			waitpid(leaf->child_pid, &status, 0);
 				// ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
 			if (WIFSIGNALED(status))
+			{
 				ms->exit_code = 128 + g_signal; // ????????? double check this. temp
+				// printf("exit code: %d", ms->exit_code);
+			}
 			else if (WIFEXITED(status))
+			{
 				ms->exit_code = WEXITSTATUS(status);
+				// printf("exit code: %d", ms->exit_code);
+			}
 			// printf("exit status of %s is %d\n", leaf->head_token->content, ms->exit_code);
 			leaf->child_pid = 0;
 		}
