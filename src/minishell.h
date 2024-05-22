@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 20:59:37 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 22:41:58 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/ioctl.h>
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <signal.h>
@@ -32,6 +33,8 @@
 # include <termios.h>
 # include <curses.h>
 # include <stdbool.h>
+
+extern int				g_signal;
 
 typedef struct s_token	t_token;
 typedef struct s_leaf	t_leaf;
@@ -186,5 +189,14 @@ bool		in_single_quotes(char *str, size_t pos);
 bool		in_double_quotes(char *str, size_t pos);
 bool		in_quotes(char *str, size_t pos);
 bool		is_removable_quote(char *str, size_t pos);
+
+// signals.c
+void		sigint_handler_heredoc(int signum);
+void		sigquit_handler_exec(int signum);
+void		sigint_handler_exec(int signum);
+void		sigint_handler(int signum);
+void		set_signal(int signum, void (*handler_function)(int));
+void		init_signals(t_minishell *ms);
+
 
 #endif

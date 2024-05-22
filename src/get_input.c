@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 00:02:50 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 21:58:01 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ char	*get_input(t_minishell *ms)
 	while (!input_is_valid(input) || last_char == LEX_PIPE || last_char == LEX_AND)
 	{
 		if (!input)
-			input = readline("minishell: ");
+			input = readline("minishell $ ");
 		else
 			input = join_input(input, readline("> "), ms);
 		if (ms->line_is_complete)
@@ -96,8 +96,8 @@ char	*get_input(t_minishell *ms)
 			ms_error("readline", NULL, 1, ms);
 		else if (!input)
 		{
-			printf("exit\n");
-			exit(ms->exit_code);
+			printf("\033[Aminishell $ exit\n");
+			terminate(ms->exit_code, ms);
 		}
 		else if (!input[0])
 		{

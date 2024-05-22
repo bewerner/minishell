@@ -6,11 +6,13 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 00:24:29 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 23:23:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	g_signal = 0;
 
 void	run_line(char *line, t_minishell *ms)
 {
@@ -46,18 +48,7 @@ void	read_arguments(int argc, char **argv, t_minishell *ms)
 // void	sigint_handler(int signum)
 // {
 // 	(void)signum;
-// }
-
-// void	init_signals(t_minishell *ms)
-// {
-// 	struct sigaction	sa;
-
-// 	(void)ms;
-// 	// sa.sa_sigaction = sigint_handler;
-// 	sa.sa_handler = sigint_handler;
-// 	sa.sa_flags = 0;
-// 	sigemptyset(&sa.sa_mask);
-// 	sigaction(SIGINT, &sa, NULL);
+// 	ioctl(0, TIOCSTI, "\4");
 // }
 
 int	main(int argc, char **argv, char **envp)
@@ -65,9 +56,9 @@ int	main(int argc, char **argv, char **envp)
 	t_minishell	ms;
 
 	ft_bzero(&ms, sizeof(ms));
-	// init_signals(&ms);
 	ms.fd_stdin_dup = dup(STDIN_FILENO);
 	ms.fd_stdout_dup = dup(STDOUT_FILENO);
+	init_signals(&ms);
 	ms.envp = envp; // TEMP
 	init_env(envp, &ms);
 	ms.debug = 0;
@@ -77,6 +68,12 @@ int	main(int argc, char **argv, char **envp)
 	{
 		ms.error = false;
 		ms.line = get_input(&ms);
+		if (g_signal)
+		{
+			if (!ms.exit_code)
+				ms.exit_code = 1;
+			g_signal = 0;
+		}
 		if (!ms.line)
 			continue ;
 		add_history(ms.line);

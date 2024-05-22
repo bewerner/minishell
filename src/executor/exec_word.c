@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 20:52:15 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 22:13:32 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,13 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 {
 	char	*path;
 
+	set_signal(SIGINT, sigint_handler_exec);
+	set_signal(SIGQUIT, sigquit_handler_exec);
 	leaf->child_pid = fork();
 	if (leaf->child_pid == 0)
 	{
+		set_signal(SIGQUIT, SIG_DFL);
+		set_signal(SIGINT, SIG_DFL);
 		if (leaf->write_pipe[0])
 		{
 			dup2(leaf->write_pipe[1], STDOUT_FILENO);

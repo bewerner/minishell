@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/13 21:11:00 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 22:04:53 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 	int		p[2];
 
 	(void)ms;
+	set_signal(SIGINT, sigint_handler_heredoc);
 	if (leaf->left)
 	{
 		leaf->left->write_pipe[0] = leaf->write_pipe[0];
@@ -86,6 +87,9 @@ void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 		leaf->left->read_pipe[0] = p[0];
 		leaf->left->read_pipe[1] = p[1];
 	}
+	if (g_signal && leaf->left)
+		leaf->left->executed = true;
+	set_signal(SIGINT, sigint_handler);
 }
 
 void	exec_redirect(t_leaf *leaf, t_minishell *ms)

@@ -6,11 +6,17 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 23:21:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 23:29:40 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	temp(int signum)
+{
+	(void)signum;
+	// write(2, "Quit: 3\n", 8);
+}
 
 void	wait_for_child_processes(t_minishell *ms)
 {
@@ -22,9 +28,11 @@ void	wait_for_child_processes(t_minishell *ms)
 	{
 		if (leaf->child_pid)
 		{
+			// signal(SIGQUIT, temp);
 			waitpid(leaf->child_pid, &status, 0);
+				// ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
 			if (WIFSIGNALED(status))
-				ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
+				ms->exit_code = 128 + g_signal; // ????????? double check this. temp
 			else if (WIFEXITED(status))
 				ms->exit_code = WEXITSTATUS(status);
 			// printf("exit status of %s is %d\n", leaf->head_token->content, ms->exit_code);
@@ -32,6 +40,8 @@ void	wait_for_child_processes(t_minishell *ms)
 		}
 		leaf = leaf->next;
 	}
+	set_signal(SIGQUIT, SIG_IGN);
+	set_signal(SIGINT, sigint_handler);
 	if (ms->debug)
 		printf("exiting wait_for_child_processes\n");
 }

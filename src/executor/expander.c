@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 23:20:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/22 22:30:26 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 	size_t	s_len;
 	size_t	rt_len;
 
-	printf("replacement is: %s\n", replacement);
+	// printf("replacement is: %s\n", replacement);
 	if (!replacement)
 		replacement = "";
 	rp_len = ft_strlen(replacement);
@@ -45,7 +45,7 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 	ft_strlcpy(rt, s, start + 1);
 	ft_strlcat(rt, replacement, start + rp_len + 1);
 	ft_strlcat(rt, s + start + len, rt_len + 1);
-	printf("new string is: %s\n", rt);
+	// printf("new string is: %s\n", rt);
 	return (rt);
 }
 
@@ -56,14 +56,17 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	char	*value;
 
 	i = key_pos;
-	if(ft_isalpha(str[i]) || str[i] == '_')
+	if(ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
 		i++;
 	else
 		return (NULL);
-	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+	while (str[i - 1] != '?' && str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
 	key_len = i - key_pos;
-	value = get_env_value(ms->head_env, str + key_pos, key_len);
+	if (str[i - 1] != '?')
+		value = get_env_value(ms->head_env, str + key_pos, key_len);
+	else
+		value = ft_itoa(ms->exit_code);
 	if (!value)
 		return (NULL);
 	*new_pos = key_pos - 1 + ft_strlen(value);
@@ -71,6 +74,29 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
 	return (ft_replace_substr(str, key_pos - 1, key_len + 1, value));
 }
+
+// char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
+// {
+// 	size_t	i;
+// 	size_t	key_len;
+// 	char	*value;
+
+// 	i = key_pos;
+// 	if(ft_isalpha(str[i]) || str[i] == '_')
+// 		i++;
+// 	else
+// 		return (NULL);
+// 	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+// 		i++;
+// 	key_len = i - key_pos;
+// 	value = get_env_value(ms->head_env, str + key_pos, key_len);
+// 	if (!value)
+// 		return (NULL);
+// 	*new_pos = key_pos - 1 + ft_strlen(value);
+// 	if (token->remove)
+// 		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
+// 	return (ft_replace_substr(str, key_pos - 1, key_len + 1, value));
+// }
 
 void	expand_variables(t_token *token, t_minishell *ms)
 {
