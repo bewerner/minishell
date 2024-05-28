@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/23 01:45:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/28 19:02:56 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,17 +181,60 @@ bool	token_content_is_empty(char *content)
 	return (true);
 }
 
+// deletes a token and returns a pointer to the token now in it's place
+t_token	*remove_token_from_leaf(t_token *token, t_leaf *leaf, t_minishell *ms)
+{
+	t_token	*rt;
+
+	rt = token->next;
+	if (token == leaf->head_token)
+		leaf->head_token = token->next;
+	if (token == ms->head_token)
+		ms->head_token = token->next;
+	else
+		get_previous_token(&ms->head_token, token)->next = rt;
+	free(token->content);
+	free(token->remove);
+	free(token->original_content);
+	free(token);
+	leaf->size--;
+	if (!leaf->size)
+	{
+		leaf->head_token = NULL;
+		leaf->executed = true;
+	}
+	return (rt);
+}
+
+// t_token	*token_delete(t_token **ms_head, t_token **leaf_head, t_token *token)
+// {
+// 	t_token	*prev;
+
+// 	if (token == *ms_head)
+// 	{
+// 		*ms_head = token->next;
+// 		prev = token->next;
+// 	}
+// 	else
+// 	{
+// 		prev = *ms_head;
+// 		while (prev->next != token)
+// 			prev = prev->next;
+// 		prev->next = token->next;
+// 	}
+// 	free(token->content);
+// 	free(token->remove);
+// 	free(token->original_content);
+// 	free(token);
+// 	return (prev);
+// }
+
 void	split_words(t_token *token, t_leaf *leaf)
 {
 	size_t	i;
 	t_token	*new_token;
 
 	i = 0;
-	if (token_content_is_empty(token->content))
-	{
-		token_delete(token);
-		return ;
-	}
 	while (token->content[i])
 	{
 		if (ft_isspace(token->content[i]) && !in_quotes(token->content, i))
@@ -205,12 +248,6 @@ void	split_words(t_token *token, t_leaf *leaf)
 		}
 		i++;
 	}
-}
-
-void	expand_token(t_token *token, t_leaf *leaf, t_minishell *ms)
-{
-	expand_variables(token, ms);
-	split_words(token, leaf);
 }
 
 void	remove_quotes(t_token *token, t_minishell *ms)
@@ -244,9 +281,52 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 	while (i < leaf->size && !ms->error)
 	{
 		if (!token->split)
-			expand_token(token, leaf, ms);
+		{
+			expand_variables(token, ms);
+			split_words(token, leaf);
+		}
+		if (token_content_is_empty(token->content))
+		{
+			token = remove_token_from_leaf(token, leaf, ms);
+			continue ;
+		}
 		remove_quotes(token, ms);
 		token = token->next;
 		i++;
 	}
+	// debug_print_leafs(&ms->head_leaf);
+	// debug_print_tokens(&ms->head_token, 1);
 }
+
+// void	expand_leaf(t_leaf *leaf, t_minishell *ms)
+// {
+// 	t_token *token;
+// 	size_t	i;
+
+// 	token = leaf->head_token;
+// 	i = 0;
+// 	while (i < leaf->size && !ms->error)
+// 	{
+// 		if (!token->split)
+// 		{
+// 			expand_variables(token, ms);
+// 			if (token_content_is_empty(token->content))
+// 			{
+// 				if (leaf->size > 1)
+// 				{
+
+// 					token = token_delete(&ms->head_token, &leaf->head_token, token); // leaf->head_token needs to be updated!
+// 					leaf->size--;
+// 					continue ;
+// 				}
+// 			}
+// 			else
+// 				split_words(token, leaf);
+// 		}
+// 		remove_quotes(token, ms);
+// 		token = token->next;
+// 		i++;
+// 	}
+// 	debug_print_leafs(&ms->head_leaf);
+// 	debug_print_tokens(&ms->head_token, 1);
+// }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/23 01:32:02 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/28 20:28:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,16 @@ char	*get_path(char *cmd, t_minishell *ms)
 	return(NULL);
 }
 
+bool	is_directory(char *path)
+{
+	struct stat	tmp;
+
+	stat(path, &tmp);
+	if (S_ISDIR(tmp.st_mode))
+		return (true);
+	return (false);
+}
+
 void	exec_word(t_leaf *leaf, t_minishell *ms)
 {
 	char	*path;
@@ -162,7 +172,11 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		// printf("path is: %s\n", path);
 		init_leaf_content(leaf);
 		if (path && execve(path, leaf->content, ms->envp) == -1)
-			ms_error(path, NULL, 1, ms);
+		{
+			if (is_directory(path))
+				errno = EISDIR;
+			ms_error(path, NULL, 126, ms);
+		}
 		if (errno == EACCES)
 			ms->exit_code = 126;
 		free(path);

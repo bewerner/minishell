@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/23 00:55:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/26 20:20:07 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ void		init_leafs(t_minishell *ms);
 void		init_tree(t_minishell *ms);
 
 // parser/rearrange_tokens.c
+t_token		*get_previous_token(t_token **head, t_token *current);
 void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c

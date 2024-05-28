@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/23 00:55:42 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/28 19:30:55 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ void	exec_pipe(t_leaf *leaf)
 
 void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 {
-	expand_leaf(leaf, ms);
 	if (ms->error)
 		return ;
 	if (leaf->operator == OP_LOGICAL)
@@ -99,6 +98,7 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 {
 	while (leaf && !ms->error)
 	{
+		expand_leaf(leaf, ms);
 		if (!leaf->executed)
 			exec_leaf(leaf, ms);
 		if (leaf->left && !leaf->left->executed)
