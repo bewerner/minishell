@@ -6,39 +6,11 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 05:44:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 06:14:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// void	update_history(t_input *head, t_input *input, t_minishell *ms)
-// {
-// 	char	*content;
-// 	size_t	len;
-
-// 	len = 0;
-// 	while (input)
-// 	{
-// 		len += ft_strlen(input->content) + 1;
-// 		input = input->next;
-// 	}
-// 	content = (char *)ft_calloc(len + 1, sizeof(char));
-// 	if (!content)
-// 		ms_error("Failed to update history", NULL, 1, ms);
-// 	if (!content)
-// 		return ;
-// 	input = head;
-// 	while (input)
-// 	{
-// 		if (input != ms->head_input)
-// 			ft_strlcat(content, " ", len + 1);
-// 		ft_strlcat(content, input->content, len + 1);
-// 		input = input->next;
-// 	}
-// 	add_history(content);
-// 	free(content);
-// }
 
 t_input	*input_last(t_input *lst)
 {
@@ -153,7 +125,7 @@ char	*get_user_input(t_minishell *ms)
 	}
 	else if (!user_input) // ctrl + D (EOT)
 		ms->head_input->complete = true;
-	else if (user_input && !user_input[0]) // enter (empty input)
+	else if (!ms->head_input && user_input && !user_input[0]) // enter (empty input)
 	{
 		free(user_input);
 		return (NULL) ;

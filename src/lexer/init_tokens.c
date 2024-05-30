@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 05:31:51 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 06:13:26 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ bool	mark_for_removal(t_token *token)
 // 	}
 // }
 
-char	*get_line(t_input *head, t_input *input, t_minishell *ms)
+char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 {
 	char	*content;
 	size_t	len;
@@ -209,15 +209,15 @@ char	*get_line(t_input *head, t_input *input, t_minishell *ms)
 	}
 	content = (char *)ft_calloc(len + 1, sizeof(char));
 	if (!content)
-		ms_error("lexer", NULL, 1, ms);
+		ms_error("get_joined_input_content", NULL, 1, ms);
 	if (!content)
 		return (NULL);
 	input = head;
 	while (input)
 	{
-		if (input != ms->head_input && is_unclosed(content))
+		if (input != head && is_unclosed(content))
 			ft_strlcat(content, "\n", len + 1);
-		else if (input != ms->head_input)
+		else if (input != head)
 			ft_strlcat(content, " ", len + 1);
 		ft_strlcat(content, input->content, len + 1);
 		input = input->next;
@@ -231,7 +231,7 @@ void	init_tokens(t_minishell *ms)
 	char	*content;
 
 	free(ms->line);
-	ms->line = get_line(ms->head_input, ms->head_input, ms);
+	ms->line = get_joined_input_content(ms->head_input, ms->head_input, ms);
 	while (ms->line)
 	{
 		content = get_next_token_content(ms->line, ms);
