@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 20:26:32 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 21:15:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 04:47:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,16 @@ bool	in_quotes(char *str, size_t pos)
 		i++;
 	}
 	return (in_single_quotes + in_double_quotes);
+}
+
+bool	is_unclosed(char *str)
+{
+	size_t	len;
+
+	len = ft_strlen(str);
+	if (len && in_quotes(str, len - 1))
+		return (true);
+	return (false);
 }
 
 bool	is_removable_quote(char *str, size_t pos)

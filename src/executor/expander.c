@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/28 19:02:56 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 00:31:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,7 +280,7 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 	i = 0;
 	while (i < leaf->size && !ms->error)
 	{
-		if (!token->split)
+		if (!token->split && leaf->type != LEAF_HEREDOC)
 		{
 			expand_variables(token, ms);
 			split_words(token, leaf);

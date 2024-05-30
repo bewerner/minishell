@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/28 19:30:55 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 03:51:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,16 @@ void	wait_for_child_processes(t_minishell *ms)
 				// ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
 			if (WIFSIGNALED(status))
 			{
+				printf("s: %d\n", ms->exit_code);
 				ms->exit_code = 128 + g_signal; // ????????? double check this. temp
+				printf("s: %d\n", ms->exit_code);
 				// printf("exit code: %d", ms->exit_code);
 			}
 			else if (WIFEXITED(status))
 			{
+				printf("e: %d\n", ms->exit_code);
 				ms->exit_code = WEXITSTATUS(status);
+				printf("e: %d\n", ms->exit_code);
 				// printf("exit code: %d", ms->exit_code);
 			}
 			// printf("exit status of %s is %d\n", leaf->head_token->content, ms->exit_code);
@@ -57,6 +61,7 @@ void	wait_for_child_processes(t_minishell *ms)
 void	exec_logical(t_leaf *leaf, t_minishell *ms)
 {
 	wait_for_child_processes(ms);
+	printf("ec: %d\n", ms->exit_code);
 	if (ms->exit_code == 0 && leaf->type == LEAF_OR)
 		leaf->right->executed = true;
 	else if (ms->exit_code > 0 && leaf->type == LEAF_AND)

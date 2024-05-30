@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 23:22:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 03:15:59 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,18 @@ void	sigint_handler_exec(int signum)
 void	sigint_handler(int signum)
 {
 	g_signal = signum;
-	write(1, "\n", 1);
 	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
+	ioctl(0, TIOCSTI, "\n");
 }
+
+// void	sigint_handler(int signum)
+// {
+// 	g_signal = signum;
+// 	write(1, "\n", 1);
+// 	rl_replace_line("", 0);
+// 	rl_on_new_line();
+// 	rl_redisplay();
+// }
 
 void	set_signal(int signum, void (*handler_function)(int))
 {

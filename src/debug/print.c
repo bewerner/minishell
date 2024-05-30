@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 22:17:10 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 21:09:33 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 03:37:09 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,32 @@ void	debug_print_tokens(t_token **head, size_t option)
 		printf("\nrearranged tokens:  ");
 	while (token)
 	{
-		printf("(%d)(%d)%s, ", token->operator, token->type, token->content);
+		printf("\033[30m(%d)(%d)\033[0m%s  ", token->operator, token->type, token->content);
 		token = token->next;
 	}
 	printf("\n                    ");
 	token = *head;
 	while (token)
 	{
-		printf("(%d)(%d)%s, ", token->operator, token->type, token->remove);
+		if (token->remove)
+		{
+			printf("      ");
+			for (size_t i = 0; token->remove[i]; i++)
+			{
+				if (token->remove[i] == '1')
+					printf("x");
+				else
+					printf(" ");
+			}
+			printf("  ");
+		}
+		else
+		{
+			for (size_t i = 0; i < strlen(token->content) + 8; i++)
+				printf(" ");
+		}
+		// else
+		// 	printf("      \033[30m%s  \033[0m", token->content);
 		token = token->next;
 	}
 	printf("\n");
@@ -51,15 +69,14 @@ void	debug_print_leafs(t_leaf **head)
 	{
 		i = 0;
 		token = leaf->head_token;
-		printf("(%d)", leaf->operator);
-		printf("(%d)", leaf->type);
+		printf("\033[30m(%d)\033[0m", leaf->operator);
+		printf("\033[30m(%d)\033[0m", leaf->type);
 		while (i < leaf->size && token)
 		{
-			printf("%s ", token->content);
+			printf("%s   ", token->content);
 			token = token->next;
 			i++;
 		}
-		printf(", ");
 		leaf = leaf->next;
 	}
 	printf("\n");

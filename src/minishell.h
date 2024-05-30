@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/26 20:20:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 04:52:24 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 
 extern int				g_signal;
 
+typedef struct s_input	t_input;
 typedef struct s_token	t_token;
 typedef struct s_leaf	t_leaf;
 
@@ -77,6 +78,7 @@ struct s_token
 	enum e_token_type	type;
 	enum e_operator		operator;
 	bool				split;
+	t_input				*head_heredoc;
 	t_token				*next;
 };
 
@@ -121,9 +123,17 @@ struct s_env
 	t_env				*next;
 };
 
+struct s_input
+{
+	char				*content;
+	bool				complete;
+	t_input				*next;
+};
+
 typedef struct s_minishell
 {
 	bool				debug;
+	t_input				*head_input;
 	t_token				*head_token;
 	t_leaf				*head_leaf;
 	t_leaf				*root;
@@ -158,9 +168,10 @@ void		exec_word(t_leaf *leaf, t_minishell *ms);
 void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_tokens.c
+t_token		*token_last(t_token *lst);
 t_token		*token_new(char *content);
 t_char_type	get_char_type(char *str, size_t pos);
-void		init_tokens(char *line, t_minishell *ms);
+void		init_tokens(t_minishell *ms);
 
 // parser/init_leafs.c
 void		init_leafs(t_minishell *ms);
@@ -173,22 +184,25 @@ t_token		*get_previous_token(t_token **head, t_token *current);
 void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c
+void		free_tokens(t_token **head);
 void		cleanup(t_minishell *ms);
 void		terminate(uint8_t exit_code, t_minishell *ms);
 
 // error.c
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
 
-// get_input.c
-char		*get_input(t_minishell *ms);
-
 // init_env.c
 void		init_env(char **envp, t_minishell *ms);
+
+// init_input.c
+void		free_inputs(t_input **head);
+void		init_input(t_minishell *ms);
 
 // quote_check.c
 bool		in_single_quotes(char *str, size_t pos);
 bool		in_double_quotes(char *str, size_t pos);
 bool		in_quotes(char *str, size_t pos);
+bool		is_unclosed(char *str);
 bool		is_removable_quote(char *str, size_t pos);
 
 // signals.c

@@ -1,0 +1,184 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_input.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
+/*   Updated: 2024/05/30 05:44:12 by bwerner          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+// void	update_history(t_input *head, t_input *input, t_minishell *ms)
+// {
+// 	char	*content;
+// 	size_t	len;
+
+// 	len = 0;
+// 	while (input)
+// 	{
+// 		len += ft_strlen(input->content) + 1;
+// 		input = input->next;
+// 	}
+// 	content = (char *)ft_calloc(len + 1, sizeof(char));
+// 	if (!content)
+// 		ms_error("Failed to update history", NULL, 1, ms);
+// 	if (!content)
+// 		return ;
+// 	input = head;
+// 	while (input)
+// 	{
+// 		if (input != ms->head_input)
+// 			ft_strlcat(content, " ", len + 1);
+// 		ft_strlcat(content, input->content, len + 1);
+// 		input = input->next;
+// 	}
+// 	add_history(content);
+// 	free(content);
+// }
+
+t_input	*input_last(t_input *lst)
+{
+	if (lst == NULL)
+		return (NULL);
+	while (lst->next != NULL)
+	{
+		lst = lst->next;
+	}
+	return (lst);
+}
+
+void	input_add_back(t_input **lst, t_input *new)
+{
+	t_input	*ptr;
+
+	ptr = input_last(*lst);
+	if (*lst == NULL)
+		*lst = new;
+	else
+		ptr->next = new;
+}
+
+t_input	*input_new(char *content)
+{
+	t_input	*newinput;
+
+	newinput = (t_input *)ft_calloc(1, sizeof(t_input));
+	if (newinput == NULL)
+		return (NULL);
+	newinput->content = content;
+	return (newinput);
+}
+
+void	free_inputs(t_input **head)
+{
+	t_input	*ptr;
+	t_input	*next;
+
+	ptr = *head;
+	while (ptr)
+	{
+		next = ptr->next;
+		free(ptr->content);
+		free(ptr);
+		ptr = next;
+	}
+	*head = NULL;
+}
+
+bool	syntax_is_valid(t_token *token, t_minishell *ms)
+{
+	if (token && token->operator >= OP_PIPE)
+		ms_error(token->next->content, NULL, 234, ms);
+	if (ms->head_input && ms->head_input->complete
+		&& is_unclosed(token_last(ms->head_token)->content))
+	{
+		ms_error("unexpected EOF while looking for matching `\"'", NULL, 1, ms);
+		ms->exit_code = 234;
+	}
+	while (!ms->error && token)
+	{
+		if (token->operator)
+		{
+			if (token->next && token->next->operator >= token->operator)
+				ms_error(token->next->content, NULL, 234, ms);
+			else if (!token->next && ms->head_input->complete)
+				ms_error("syntax error", "unexpected end of file", 234, ms);
+			else if (!token->next && token->operator == OP_REDIRECT)
+				ms_error("newline", NULL, 234, ms);
+		}
+		token = token->next;
+	}
+	if (ms->error)
+		return (false);
+	return (true);
+}
+
+bool	input_is_complete(t_input *input, t_token *token)
+{
+	(void)token;
+	if (!input)
+		return (false);
+	if (input->complete)
+		return (true);
+	if (!token)
+		return (true);
+	if (token_last(token)->operator >= OP_PIPE)
+		return (false);
+	if (is_unclosed(token_last(token)->content))
+		return (false);
+	return (true);
+}
+
+char	*get_user_input(t_minishell *ms)
+{
+	char	*user_input;
+
+	if (!ms->head_input)
+		user_input = readline("minishell: ");
+	else
+	{
+		set_signal(SIGINT, sigint_handler_heredoc);
+		user_input = readline("> ");
+	}
+	if (!user_input && errno) // malloc error
+		ms_error("readline", NULL, 1, ms);
+	else if (!ms->head_input && !user_input) // ctrl + D (EOT)
+	{
+		printf("\033[Aminishell $ exit\n");
+		terminate(ms->exit_code, ms);
+	}
+	else if (!user_input) // ctrl + D (EOT)
+		ms->head_input->complete = true;
+	else if (user_input && !user_input[0]) // enter (empty input)
+	{
+		free(user_input);
+		return (NULL) ;
+	}
+	return (user_input);
+}
+
+void	init_input(t_minishell *ms)
+{
+	t_input	*input;
+	char	*content;
+
+	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
+		&& !input_is_complete(ms->head_input, ms->head_token))
+	{
+		content = get_user_input(ms);
+		if (!content)
+			continue ;
+		input = input_new(content);
+		input_add_back(&ms->head_input, input);
+		free_tokens(&ms->head_token);
+		init_tokens(ms);
+		debug_print_tokens(&ms->head_token, 1);
+	}
+	if (ms->line)
+		add_history(ms->line);
+	set_signal(SIGINT, sigint_handler);
+}

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/22 21:21:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/28 23:57:49 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,13 @@ void	cleanup(t_minishell *ms)
 {
 	free(ms->line);
 	ms->line = NULL;
+	free_inputs(&ms->head_input);
 	free_leafs(&ms->head_leaf);
 	free_tokens(&ms->head_token);
 	if (g_signal && !ms->exit_code)
 		ms->exit_code = 1;
 	g_signal = 0;
+	ms->error = false;
 }
 
 void	terminate(uint8_t exit_code, t_minishell *ms)
@@ -82,5 +84,6 @@ void	terminate(uint8_t exit_code, t_minishell *ms)
 	free_env(&ms->head_env);
 	close(ms->fd_stdin_dup);
 	close(ms->fd_stdout_dup);
+	rl_clear_history();
 	exit(ms->exit_code);
 }

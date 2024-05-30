@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/28 20:28:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/28 23:55:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 		if (!path)
 		{
 			ms_error("executor", NULL, 1, ms);
-			cleanup(ms);
-			exit (1);
+			terminate(1, ms);
 		}
 		return (path);
 	}

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/21 21:07:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 05:31:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,44 +182,59 @@ bool	mark_for_removal(t_token *token)
 	return (true);
 }
 
-// bool	mark_for_removal(t_token *token)
+// void	join_unclosed_tokens(t_minishell *ms)
 // {
-// 	bool	in_double_quotes;
-// 	bool	in_single_quotes;
-// 	size_t	i;
+// 	t_token *token;
 
-// 	if (!ft_strchr(token->content, '\'') && !ft_strchr(token->content, '\"'))
-// 		return (true);
-// 	token->remove = ft_strdup(token->content);
-// 	if (!token->remove)
-// 		return (false);
-// 	i = 0;
-// 	in_double_quotes = false;
-// 	in_single_quotes = false;
-// 	while (token->content[i])
+// 	while (token)
 // 	{
-// 		token->remove[i] = '0';
-// 		if ((token->content[i] == '\"' && !in_single_quotes)
-// 			|| (token->content[i] == '\'' && !in_double_quotes))
-// 			token->remove[i] = '1';
-// 		if (token->content[i] == '\"' && !in_single_quotes)
-// 			in_double_quotes = !in_double_quotes;
-// 		else if (token->content[i] == '\'' && !in_double_quotes)
-// 			in_single_quotes = !in_single_quotes;
-// 		i++;
+// 		if (token->remove && token->next && is_unclosed(token->content))
+// 		{
+// 			token_join(token, token->next)
+// 		}
+// 		token = token->next;
 // 	}
-// 	return (true);
 // }
 
-void	init_tokens(char *line, t_minishell *ms)
+char	*get_line(t_input *head, t_input *input, t_minishell *ms)
+{
+	char	*content;
+	size_t	len;
+
+	len = 0;
+	while (input)
+	{
+		len += ft_strlen(input->content) + 1;
+		input = input->next;
+	}
+	content = (char *)ft_calloc(len + 1, sizeof(char));
+	if (!content)
+		ms_error("lexer", NULL, 1, ms);
+	if (!content)
+		return (NULL);
+	input = head;
+	while (input)
+	{
+		if (input != ms->head_input && is_unclosed(content))
+			ft_strlcat(content, "\n", len + 1);
+		else if (input != ms->head_input)
+			ft_strlcat(content, " ", len + 1);
+		ft_strlcat(content, input->content, len + 1);
+		input = input->next;
+	}
+	return (content);
+}
+
+void	init_tokens(t_minishell *ms)
 {
 	t_token	*token;
 	char	*content;
 
-	token = ms->head_token;
-	while (1)
+	free(ms->line);
+	ms->line = get_line(ms->head_input, ms->head_input, ms);
+	while (ms->line)
 	{
-		content = get_next_token_content(line, ms);
+		content = get_next_token_content(ms->line, ms);
 		if (!content)
 			break ;
 		token = token_new(content);
@@ -236,3 +251,29 @@ void	init_tokens(char *line, t_minishell *ms)
 	if (ms->debug)
 		debug_print_tokens(&ms->head_token, 1);
 }
+
+// void	init_tokens(char *line, t_minishell *ms)
+// {
+// 	t_token	*token;
+// 	char	*content;
+
+// 	while (1)
+// 	{
+// 		content = get_next_token_content(line, ms);
+// 		if (!content)
+// 			break ;
+// 		token = token_new(content);
+// 		if (!token || !mark_for_removal(token))
+// 		{
+// 			free(content);
+// 			ms_error("lexer", NULL, 1, ms);
+// 			break ;
+// 		}
+// 		token_add_back(&ms->head_token, token);
+// 		set_token_type(token);
+// 		token->operator = get_operator_type(token);
+// 	}
+// 	// join_unclosed_tokens(ms);
+// 	if (ms->debug)
+// 		debug_print_tokens(&ms->head_token, 1);
+// }

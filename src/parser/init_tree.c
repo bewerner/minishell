@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 22:55:41 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/23 00:05:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/29 02:05:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ void	connect_rest(t_leaf *head, t_leaf *branch, t_leaf *root)
 
 void	init_tree(t_minishell *ms)
 {
-	if (ms->error)
+	if (ms->error || !ms->head_leaf)
 		return ;
 	ms->root = get_root(ms->head_leaf);
 	if (ms->debug)
