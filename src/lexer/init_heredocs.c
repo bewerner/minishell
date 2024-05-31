@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 03:54:00 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/31 04:19:54 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,10 @@ void	init_heredocs(t_token *token, t_minishell *ms)
 	while (token && !ms->error)
 	{
 		if (token->type == TKN_HEREDOC && !token->heredoc && token->next)
+		{
+			remove_quotes(token->next, ms);
 			read_heredoc(token, token->next->content, ms);
+		}
 		token = token->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 03:45:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/31 04:19:04 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,7 @@ void		exec_tree(t_leaf *leaf, t_minishell *ms);
 void		exec_word(t_leaf *leaf, t_minishell *ms);
 
 // executor/expander.c
+void		remove_quotes(t_token *token, t_minishell *ms);
 void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 
 // lexer/init_heredocs.c
