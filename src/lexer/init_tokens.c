@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 06:13:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/31 00:32:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,16 +225,37 @@ char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 	return (content);
 }
 
+char	*skip_tokenized_content(char *content, t_token *token)
+{
+	char	*rt;
+	size_t	i;
+
+	if (!content)
+		return (NULL);
+	i = 0;
+	rt = content;
+	while (token)
+	{
+		while (ft_isspace(*rt))
+			rt++;
+		rt += ft_strlen(token->content);
+		token = token->next;
+	}
+	return (rt);
+}
+
 void	init_tokens(t_minishell *ms)
 {
 	t_token	*token;
 	char	*content;
+	char	*line;
 
 	free(ms->line);
 	ms->line = get_joined_input_content(ms->head_input, ms->head_input, ms);
-	while (ms->line)
+	line = skip_tokenized_content(ms->line, ms->head_token);
+	while (line)
 	{
-		content = get_next_token_content(ms->line, ms);
+		content = get_next_token_content(line, ms);
 		if (!content)
 			break ;
 		token = token_new(content);

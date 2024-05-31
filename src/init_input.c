@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 06:14:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/31 03:54:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ char	*get_user_input(t_minishell *ms)
 	char	*user_input;
 
 	if (!ms->head_input)
-		user_input = readline("minishell: ");
+		user_input = readline("minishell$ ");
 	else
 	{
 		set_signal(SIGINT, sigint_handler_heredoc);
@@ -128,9 +128,32 @@ char	*get_user_input(t_minishell *ms)
 	else if (!ms->head_input && user_input && !user_input[0]) // enter (empty input)
 	{
 		free(user_input);
-		return (NULL) ;
+		user_input = NULL;
 	}
+	set_signal(SIGINT, sigint_handler);
 	return (user_input);
+}
+
+void	free_unclosed_token(t_token **head)
+{
+	t_token	*last;
+	t_token	*prev;
+
+	last = token_last(*head);
+	prev = get_previous_token(head, last);
+	if (last && is_unclosed(last->content))
+	{
+		if (!prev)
+			free_tokens(head);
+		else
+		{
+			prev->next = NULL;
+			free(last->content);
+			free(last->remove);
+			free(last->original_content);
+			free(last);
+		}
+	}
 }
 
 void	init_input(t_minishell *ms)
@@ -138,19 +161,26 @@ void	init_input(t_minishell *ms)
 	t_input	*input;
 	char	*content;
 
-	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
+	while (!g_signal && !ms->error
 		&& !input_is_complete(ms->head_input, ms->head_token))
 	{
 		content = get_user_input(ms);
 		if (!content)
 			continue ;
 		input = input_new(content);
+		if (!input)
+		{
+			free(content);
+			ms_error("init_input", NULL, 1, ms);
+			return ;
+		}
 		input_add_back(&ms->head_input, input);
-		free_tokens(&ms->head_token);
+		free_unclosed_token(&ms->head_token);
 		init_tokens(ms);
-		debug_print_tokens(&ms->head_token, 1);
+		if (syntax_is_valid(ms->head_token, ms))
+			init_heredocs(ms->head_token, ms);
+		// debug_print_tokens(&ms->head_token, 1);
 	}
 	if (ms->line)
 		add_history(ms->line);
-	set_signal(SIGINT, sigint_handler);
 }

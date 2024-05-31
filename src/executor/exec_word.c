@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/28 23:55:39 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/30 07:14:57 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ char	*get_path(char *cmd, t_minishell *ms)
 
 	if (is_path(cmd))
 	{
+		if (access(cmd, F_OK))
+		{
+			ms_error(cmd, "No such file or directory", 127, ms);
+			return (NULL);
+		}
 		path = strdup(cmd);
 		if (!path)
 		{
@@ -131,6 +136,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 			return (path);
 		free(path);
 	}
+	ms_error(cmd, "command not found", 127, ms);
 	return(NULL);
 }
 
@@ -166,15 +172,17 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 			close(leaf->read_pipe[1]);
 		}
 		path = get_path(leaf->head_token->content, ms);
-		if (!path)
-			ms_error(leaf->head_token->content, "command not found", 127, ms);
+		// if (!path)
+		// 	ms_error(leaf->head_token->content, "command not found", 127, ms);
 		// printf("path is: %s\n", path);
 		init_leaf_content(leaf);
 		if (path && execve(path, leaf->content, ms->envp) == -1)
 		{
 			if (is_directory(path))
-				errno = EISDIR;
-			ms_error(path, NULL, 126, ms);
+				ms_error(path, "is a directory", 126, ms);
+			else
+				ms_error(path, NULL, 126, ms);
+				// errno = EISDIR;
 		}
 		if (errno == EACCES)
 			ms->exit_code = 126;

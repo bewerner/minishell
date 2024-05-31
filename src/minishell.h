@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 04:52:24 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/05/31 03:45:46 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ struct s_token
 	enum e_operator		operator;
 	bool				split;
 	t_input				*head_heredoc;
+	bool				heredoc;
 	t_token				*next;
 };
 
@@ -167,6 +168,9 @@ void		exec_word(t_leaf *leaf, t_minishell *ms);
 // executor/expander.c
 void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 
+// lexer/init_heredocs.c
+void		init_heredocs(t_token *token, t_minishell *ms);
+
 // lexer/init_tokens.c
 t_token		*token_last(t_token *lst);
 t_token		*token_new(char *content);
@@ -195,6 +199,8 @@ void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c
+void		input_add_back(t_input **lst, t_input *new);
+t_input		*input_new(char *content);
 void		free_inputs(t_input **head);
 void		init_input(t_minishell *ms);
 
