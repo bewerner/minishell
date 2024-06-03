@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 13:01:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 15:50:07 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,10 +147,8 @@ typedef struct s_minishell
 	bool				error;
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
-	int					fd_read;
-	int					fd_write;
-	int					fd_close_after_read;
-	int					fd_close_after_write;
+	int					close_in_child;
+	int					close_in_parent;
 }	t_minishell;
 
 // debug/print.c

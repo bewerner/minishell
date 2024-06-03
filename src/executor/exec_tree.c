@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 06:54:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 15:50:30 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,45 @@ void	exec_logical(t_leaf *leaf, t_minishell *ms)
 		leaf->right->executed = true;
 }
 
-void	exec_pipe(t_leaf *leaf)
+void	exec_pipe(t_leaf *leaf, t_minishell *ms)
 {
-	int	fd[2];
+	static size_t	i;
+	static int		fd[2];
 
-	if (leaf->parent && leaf->parent->operator == OP_PIPE)
+	i++;
+	if (i == 1)
 	{
-		leaf->left->read_pipe[0] = leaf->read_pipe[0];
-		leaf->left->read_pipe[1] = leaf->read_pipe[1];
+		pipe(fd);
+		dup2(fd[1], STDOUT_FILENO);
+		ms->close_in_child = fd[0];
+		ms->close_in_parent = fd[1];
 	}
-	pipe(fd);
-	leaf->left->write_pipe[0] = fd[0];
-	leaf->left->write_pipe[1] = fd[1];
-	leaf->right->read_pipe[0] = fd[0];
-	leaf->right->read_pipe[1] = fd[1];
+	if (i == 2)
+	{
+		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
+		dup2(fd[0], STDIN_FILENO);
+		ms->close_in_child = fd[1];
+		ms->close_in_parent = fd[0];
+		leaf->executed = true;
+		i = 0;
+	}
 }
+
+// void	exec_pipe(t_leaf *leaf)
+// {
+// 	int	fd[2];
+
+// 	if (leaf->parent && leaf->parent->operator == OP_PIPE)
+// 	{
+// 		leaf->left->read_pipe[0] = leaf->read_pipe[0];
+// 		leaf->left->read_pipe[1] = leaf->read_pipe[1];
+// 	}
+// 	pipe(fd);
+// 	leaf->left->write_pipe[0] = fd[0];
+// 	leaf->left->write_pipe[1] = fd[1];
+// 	leaf->right->read_pipe[0] = fd[0];
+// 	leaf->right->read_pipe[1] = fd[1];
+// }
 
 void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 {
@@ -87,12 +111,13 @@ void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 	if (leaf->operator == OP_LOGICAL)
 		exec_logical(leaf, ms);
 	else if (leaf->operator == OP_PIPE)
-		exec_pipe(leaf);
+		exec_pipe(leaf, ms);
 	else if (leaf->operator == OP_REDIRECT)
 		exec_redirect(leaf, ms);
 	else if (leaf->operator == OP_NONE)
 		exec_word(leaf, ms);
-	leaf->executed = true;
+	if (leaf->operator != OP_PIPE)
+		leaf->executed = true;
 }
 
 void	exec_tree(t_leaf *leaf, t_minishell *ms)

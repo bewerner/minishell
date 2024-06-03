@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 04:00:57 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 16:03:01 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,6 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 {
 	int	fd;
 
-	if (leaf->left)
-	{
-		leaf->left->read_pipe[0] = leaf->read_pipe[0];
-		leaf->left->read_pipe[1] = leaf->read_pipe[1];
-	}
 	fd = open(leaf->head_token->next->content, options, 0644);
 	if (fd == -1)
 	{
@@ -42,11 +37,6 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 {
 	int	fd;
 
-	if (leaf->left)
-	{
-		leaf->left->write_pipe[0] = leaf->write_pipe[0];
-		leaf->left->write_pipe[1] = leaf->write_pipe[1];
-	}
 	fd = open(leaf->head_token->next->content, O_RDONLY);
 	if (fd == -1)
 	{
@@ -71,24 +61,21 @@ void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 
 	(void)ms;
 	heredoc = leaf->head_token->head_heredoc;
-	if (leaf->left)
-	{
-		leaf->left->write_pipe[0] = leaf->write_pipe[0];
-		leaf->left->write_pipe[1] = leaf->write_pipe[1];
-	}
 	pipe(p);
+	dup2(p[0], STDIN_FILENO);
+	ms->close_in_child = p[1];
+	ms->close_in_parent = p[0];
 	while (heredoc)
 	{
 		if (heredoc->content)
+		{
+
 			write(p[1], heredoc->content, ft_strlen(heredoc->content));
-		write(p[1], "\n", 1);
+			write(p[1], "\n", 1);
+		}
 		heredoc = heredoc->next;
 	}
-	if (leaf->left)
-	{
-		leaf->left->read_pipe[0] = p[0];
-		leaf->left->read_pipe[1] = p[1];
-	}
+	close(p[1]);
 	if (g_signal && leaf->left)
 		leaf->left->executed = true;
 }

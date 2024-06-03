@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 07:14:57 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 16:01:11 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,20 +161,9 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 	{
 		set_signal(SIGQUIT, SIG_DFL);
 		set_signal(SIGINT, SIG_DFL);
-		if (leaf->write_pipe[0])
-		{
-			dup2(leaf->write_pipe[1], STDOUT_FILENO);
-			close(leaf->write_pipe[0]);
-		}
-		if (leaf->read_pipe[0])
-		{
-			dup2(leaf->read_pipe[0], STDIN_FILENO);
-			close(leaf->read_pipe[1]);
-		}
+		if (ms->close_in_child != -1)
+			close(ms->close_in_child);
 		path = get_path(leaf->head_token->content, ms);
-		// if (!path)
-		// 	ms_error(leaf->head_token->content, "command not found", 127, ms);
-		// printf("path is: %s\n", path);
 		init_leaf_content(leaf);
 		if (path && execve(path, leaf->content, ms->envp) == -1)
 		{
@@ -182,23 +171,14 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 				ms_error(path, "is a directory", 126, ms);
 			else
 				ms_error(path, NULL, 126, ms);
-				// errno = EISDIR;
 		}
 		if (errno == EACCES)
 			ms->exit_code = 126;
 		free(path);
-		if (leaf->write_pipe[0])
-			close(leaf->write_pipe[1]);
-		if (leaf->read_pipe[0])
-			close(leaf->read_pipe[0]);
 		terminate(ms->exit_code, ms);	// find out exit code. also print error.
 	}
-	if (leaf->read_pipe[0])
-	{
-		// printf("closing %d and %d\n", leaf->read_pipe[0], leaf->read_pipe[1]);
-		close(leaf->read_pipe[0]);
-		close(leaf->read_pipe[1]);
-	}
+	if (ms->close_in_parent != -1)
+		close(ms->close_in_parent);
 	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 	dup2(ms->fd_stdin_dup, STDIN_FILENO);
 }
