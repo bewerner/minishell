@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 12:28:56 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 13:02:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,47 +26,77 @@ char *get_heredoc_input(t_minishell *ms)
 	return (user_input);
 }
 
-void	read_heredoc(t_token *token, char *delimiter, t_minishell *ms)
+void	read_heredoc(t_token *token, char *delimiter, bool literal, t_minishell *ms)
 {
-	char	*content;
 	t_input	*input;
 	size_t	delimiter_len;
 
 	delimiter_len = ft_strlen(delimiter);
 	while (1)
 	{
-		content = get_heredoc_input(ms);
-		if (!content || !ft_strncmp(delimiter, content, delimiter_len + 1))
-		{
-			free(content);
-			token->heredoc_initiated = true;
-			return ;
-		}
-		input = input_new(content);
+		input = input_new(NULL);
 		if (!input)
 		{
-			free(content);
 			ms_error("read_heredoc", NULL, 1, ms);
 			return ;
 		}
 		input_add_back(&token->head_heredoc, input);
+		input->literal = literal;
+		input->content = get_heredoc_input(ms);
+		if (!input->content
+			|| !ft_strncmp(delimiter, input->content, delimiter_len + 1))
+		{
+			free(input->content);
+			input->content = NULL;
+			return ;
+		}
 	}
 }
 
+// void	read_heredoc(t_token *token, char *delimiter, t_minishell *ms)
+// {
+// 	char	*content;
+// 	t_input	*input;
+// 	size_t	delimiter_len;
+
+// 	delimiter_len = ft_strlen(delimiter);
+// 	while (1)
+// 	{
+// 		content = get_heredoc_input(ms);
+// 		if (!content || !ft_strncmp(delimiter, content, delimiter_len + 1))
+// 		{
+// 			free(content);
+// 			token->heredoc_initiated = true;
+// 			return ;
+// 		}
+// 		input = input_new(content);
+// 		if (!input)
+// 		{
+// 			free(content);
+// 			ms_error("read_heredoc", NULL, 1, ms);
+// 			return ;
+// 		}
+// 		input_add_back(&token->head_heredoc, input);
+// 	}
+// }
+
 void	init_heredocs(t_token *token, t_minishell *ms)
 {
+	bool	literal;
+
 	while (token && !ms->error)
 	{
-		if (token->type == TKN_HEREDOC && !token->heredoc_initiated
+		if (token->type == TKN_HEREDOC && !token->head_heredoc
 			&& token->next)
 		{
+			literal = false;
 			if (strchr(token->next->content, '\'')
 				|| strchr(token->next->content, '\"'))
 			{
-				token->is_literal_heredoc = true;
+				literal = true;
 			}
 			remove_quotes(token->next, ms);
-			read_heredoc(token, token->next->content, ms);
+			read_heredoc(token, token->next->content, literal, ms);
 		}
 		token = token->next;
 	}

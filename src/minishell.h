@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 12:25:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 13:01:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,6 @@ struct s_token
 	enum e_operator		operator;
 	bool				split;
 	t_input				*head_heredoc;
-	bool				heredoc_initiated;
-	bool				is_literal_heredoc;
 	t_token				*next;
 };
 
@@ -129,6 +127,7 @@ struct s_input
 {
 	char				*content;
 	bool				complete;
+	bool				literal;
 	t_input				*next;
 };
 
