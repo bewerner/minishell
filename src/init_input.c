@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 11:40:17 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 12:38:13 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ void	init_input(t_minishell *ms)
 	t_input	*input;
 	char	*content;
 
-	while (!g_signal && !ms->error
+	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
 		&& !input_is_complete(ms->head_input, ms->head_token))
 	{
 		content = get_user_input(ms);
