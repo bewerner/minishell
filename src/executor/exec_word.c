@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 16:01:11 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 21:32:34 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,7 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		set_signal(SIGINT, SIG_DFL);
 		if (ms->close_in_child != -1)
 			close(ms->close_in_child);
+		close(ms->close_in_parent);
 		path = get_path(leaf->head_token->content, ms);
 		init_leaf_content(leaf);
 		if (path && execve(path, leaf->content, ms->envp) == -1)
@@ -179,6 +180,6 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 	}
 	if (ms->close_in_parent != -1)
 		close(ms->close_in_parent);
-	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 	dup2(ms->fd_stdin_dup, STDIN_FILENO);
+	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 }

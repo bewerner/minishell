@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 15:50:30 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 21:32:40 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,22 +67,22 @@ void	exec_logical(t_leaf *leaf, t_minishell *ms)
 void	exec_pipe(t_leaf *leaf, t_minishell *ms)
 {
 	static size_t	i;
-	static int		fd[2];
+	static int		p[2];
 
 	i++;
 	if (i == 1)
 	{
-		pipe(fd);
-		dup2(fd[1], STDOUT_FILENO);
-		ms->close_in_child = fd[0];
-		ms->close_in_parent = fd[1];
+		pipe(p);
+		dup2(p[1], STDOUT_FILENO);
+		ms->close_in_child = p[0];
+		ms->close_in_parent = p[1];
 	}
 	if (i == 2)
 	{
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-		dup2(fd[0], STDIN_FILENO);
-		ms->close_in_child = fd[1];
-		ms->close_in_parent = fd[0];
+		dup2(p[0], STDIN_FILENO);
+		ms->close_in_child = p[1];
+		ms->close_in_parent = p[0];
 		leaf->executed = true;
 		i = 0;
 	}
