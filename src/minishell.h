@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 04:19:04 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 12:25:41 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ struct s_token
 	enum e_operator		operator;
 	bool				split;
 	t_input				*head_heredoc;
-	bool				heredoc;
+	bool				heredoc_initiated;
+	bool				is_literal_heredoc;
 	t_token				*next;
 };
 
@@ -147,6 +148,10 @@ typedef struct s_minishell
 	bool				error;
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
+	int					fd_read;
+	int					fd_write;
+	int					fd_close_after_read;
+	int					fd_close_after_write;
 }	t_minishell;
 
 // debug/print.c
@@ -219,6 +224,5 @@ void		sigint_handler_exec(int signum);
 void		sigint_handler(int signum);
 void		set_signal(int signum, void (*handler_function)(int));
 void		init_signals(t_minishell *ms);
-
 
 #endif

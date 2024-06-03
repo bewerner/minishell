@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 04:19:54 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 12:28:56 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	read_heredoc(t_token *token, char *delimiter, t_minishell *ms)
 		if (!content || !ft_strncmp(delimiter, content, delimiter_len + 1))
 		{
 			free(content);
-			token->heredoc = true;
+			token->heredoc_initiated = true;
 			return ;
 		}
 		input = input_new(content);
@@ -57,8 +57,14 @@ void	init_heredocs(t_token *token, t_minishell *ms)
 {
 	while (token && !ms->error)
 	{
-		if (token->type == TKN_HEREDOC && !token->heredoc && token->next)
+		if (token->type == TKN_HEREDOC && !token->heredoc_initiated
+			&& token->next)
 		{
+			if (strchr(token->next->content, '\'')
+				|| strchr(token->next->content, '\"'))
+			{
+				token->is_literal_heredoc = true;
+			}
 			remove_quotes(token->next, ms);
 			read_heredoc(token, token->next->content, ms);
 		}

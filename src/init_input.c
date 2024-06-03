@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 03:54:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 11:40:17 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ void	init_input(t_minishell *ms)
 		input_add_back(&ms->head_input, input);
 		free_unclosed_token(&ms->head_token);
 		init_tokens(ms);
-		if (syntax_is_valid(ms->head_token, ms))
+		if (syntax_is_valid(ms->head_token, ms) && !is_unclosed(token_last(ms->head_token)->content))
 			init_heredocs(ms->head_token, ms);
 		// debug_print_tokens(&ms->head_token, 1);
 	}
