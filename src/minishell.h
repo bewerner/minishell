@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 23:10:16 by sgeiger          ###   ########.fr       */
+/*   Updated: 2024/06/04 21:29:01 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ struct s_leaf
 	int					read_pipe[2];
 	int					write_pipe[2];
 	bool				executed;
+	bool				fork;
 	pid_t				child_pid;
 };
 
@@ -149,10 +150,14 @@ typedef struct s_minishell
 	int					fd_stdout_dup;
 	int					close_in_child;
 	int					close_in_parent;
+	bool				in_pipeline;
 }	t_minishell;
 
-//builtins/exec_echo.c
-void		exec_echo(t_leaf *leaf);
+// builtins/exec_echo.c
+void		exec_echo(t_leaf *leaf, t_minishell *ms);
+
+// builtins/exec_export.c
+void		exec_export(t_leaf *leaf, t_minishell *ms);
 
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
@@ -168,7 +173,6 @@ void		exec_redirect(t_leaf *leaf, t_minishell *ms);
 void		exec_tree(t_leaf *leaf, t_minishell *ms);
 
 // executor/exec_path.c
-void		exec_path(t_leaf *leaf, t_minishell *ms);
 void		exec_word(t_leaf *leaf, t_minishell *ms);
 
 // executor/expander.c

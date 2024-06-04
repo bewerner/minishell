@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 21:31:50 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:34:53 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void	cleanup(t_minishell *ms)
 {
 	// close(3);
 	// close(4);
+	ms->in_pipeline = false;
 	ms->close_in_child = -1;
 	ms->close_in_parent = -1;
 	dup2(ms->fd_stdin_dup, STDIN_FILENO);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_echo.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/04 00:26:29 by sgeiger          ###   ########.fr       */
+/*   Updated: 2024/06/04 21:27:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool	is_valid_flag(t_token *token)
 	return (true);
 }
 
-void	exec_echo(t_leaf *leaf)
+void	exec_echo(t_leaf *leaf, t_minishell *ms)
 {
 	bool	has_minus_n;
 	t_token	*token;
@@ -52,15 +52,15 @@ void	exec_echo(t_leaf *leaf)
 	while (i < leaf->size)
 	{
 		if (token->content)
-		{
 			ft_putstr_fd(token->content, STDOUT_FILENO);
+		if (i + 1 < leaf->size && token->next->content)
 			ft_putchar_fd(' ', STDOUT_FILENO);
-		}
 		token = token->next;
 		i++;
 	}
 	if (!has_minus_n)
 		ft_putchar_fd('\n', STDOUT_FILENO);
+	ms->exit_code = 0;
 }
 
 // while (token)
