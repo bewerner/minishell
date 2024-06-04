@@ -4,7 +4,8 @@ SRC					=	minishell.c cleanup.c error.c init_input.c init_env.c quote_check.c si
 						lexer/init_heredocs.c lexer/init_tokens.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
 						debug/print.c debug/print_tree.c \
-						executor/exec_redirect.c executor/exec_tree.c executor/exec_word.c executor/expander.c
+						executor/exec_redirect.c executor/exec_tree.c executor/exec_path.c executor/expander.c \
+						builtins/exec_echo.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address
@@ -37,6 +38,7 @@ obj/%.o: src/%.c
 	mkdir -p obj/parser
 	mkdir -p obj/debug
 	mkdir -p obj/executor
+	mkdir -p obj/builtins
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

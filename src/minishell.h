@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 15:50:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/03 23:10:16 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,9 @@ typedef struct s_minishell
 	int					close_in_parent;
 }	t_minishell;
 
+//builtins/exec_echo.c
+void		exec_echo(t_leaf *leaf);
+
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
 void		debug_print_leafs(t_leaf **head);
@@ -164,7 +167,8 @@ void		exec_redirect(t_leaf *leaf, t_minishell *ms);
 // executor/exec_tree.c
 void		exec_tree(t_leaf *leaf, t_minishell *ms);
 
-// executor/exec_word.c
+// executor/exec_path.c
+void		exec_path(t_leaf *leaf, t_minishell *ms);
 void		exec_word(t_leaf *leaf, t_minishell *ms);
 
 // executor/expander.c

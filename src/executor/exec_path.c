@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_word.c                                        :+:      :+:    :+:   */
+/*   exec_path.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 21:32:34 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/04 01:31:53 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,47 @@ bool	is_directory(char *path)
 	return (false);
 }
 
+int	ft_strncasecmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	if (n == 0)
+		return (0);
+	while (ft_tolower(s1[i]) == ft_tolower(s2[i]) && i < n)
+	{
+		if (s1[i] == '\0' || i == n - 1)
+			return (0);
+		i++;
+	}
+	return ((unsigned char)ft_tolower(s1[i])
+		- (unsigned char)ft_tolower(s2[i]));
+}
+
 void	exec_word(t_leaf *leaf, t_minishell *ms)
+{
+	char	*content;
+
+	content = leaf->head_token->content;
+	if (ft_strncasecmp(content, "echo", 5) == 0)
+		exec_echo(leaf);
+	// else if (ft_strncasecmp(content, "cd", 3) == 0)
+	// 	exec_cd(leaf);
+	// else if (ft_strncasecmp(content, "pwd", 4) == 0)
+	// 	exec_pwd(leaf);
+	// else if (ft_strncasecmp(content, "export", 7) == 0)
+	// 	exec_export(leaf);
+	// else if (ft_strncasecmp(content, "unset", 6) == 0)
+	// 	exec_unset(leaf);
+	// else if (ft_strncasecmp(content, "env", 4) == 0)
+	// 	exec_env(leaf);
+	// else if (ft_strncasecmp(content, "exit", 5) == 0)
+	// 	exec_exit(leaf);
+	else
+		exec_path(leaf, ms);
+}
+
+void	exec_path(t_leaf *leaf, t_minishell *ms)
 {
 	char	*path;
 
