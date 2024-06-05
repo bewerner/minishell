@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 00:25:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 01:53:15 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <sys/param.h>
 # include <sys/stat.h>
 # include <sys/ioctl.h>
+# include <sys/param.h>
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <signal.h>
@@ -164,6 +165,12 @@ void		exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_export.c
 void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
+
+// builtins/exec_pwd.c
+void		exec_pwd(t_minishell *ms);
+
+// builtins/exec_unset.c
+void		exec_unset(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
