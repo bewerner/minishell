@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 22:15:11 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:16:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 01:34:42 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ void	remove_env(t_env **head, t_env *env)
 		*head = env->next;
 		(*head)->prev = NULL;
 	}
+	else if (!env->next)
+		env->prev->next = NULL;
 	else
 	{
 		env->prev->next = env->next;

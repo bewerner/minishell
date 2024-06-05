@@ -1,6 +1,6 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	builtins/exec_echo.c builtins/exec_env.c builtins/exec_export.c \
+SRC					=	builtins/exec_echo.c builtins/exec_env.c builtins/exec_export.c builtins/exec_pwd.c builtins/exec_unset.c \
 						debug/print.c debug/print_tree.c \
 						executor/exec_redirect.c executor/exec_tree.c executor/exec_path.c executor/expander.c \
 						lexer/init_heredocs.c lexer/init_tokens.c \

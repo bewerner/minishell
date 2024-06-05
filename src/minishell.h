@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:30:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 00:37:25 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/ioctl.h>
+# include <sys/param.h>
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <signal.h>
@@ -160,6 +161,12 @@ void		exec_env(t_minishell *ms);
 
 // builtins/exec_export.c
 void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
+
+// builtins/exec_pwd.c
+void		exec_pwd(t_minishell *ms);
+
+// builtins/exec_unset.c
+void		exec_unset(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
