@@ -1,11 +1,12 @@
 NAME				=	minishell
 LIBFT				=	libft/libft.a
-SRC					=	minishell.c cleanup.c error.c init_input.c init_env.c quote_check.c signals.c \
-						lexer/init_heredocs.c lexer/init_tokens.c \
-						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
+SRC					=	builtins/exec_echo.c builtins/exec_env.c builtins/exec_export.c \
 						debug/print.c debug/print_tree.c \
 						executor/exec_redirect.c executor/exec_tree.c executor/exec_path.c executor/expander.c \
-						builtins/exec_echo.c builtins/exec_env.c builtins/exec_export.c
+						lexer/init_heredocs.c lexer/init_tokens.c \
+						list_utils/env_utils.c list_utils/input_utils.c list_utils/leaf_utils.c list_utils/token_utils.c \
+						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
+						minishell.c cleanup.c error.c init_input.c init_env.c quote_check.c signals.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address
@@ -39,6 +40,7 @@ obj/%.o: src/%.c
 	mkdir -p obj/debug
 	mkdir -p obj/executor
 	mkdir -p obj/builtins
+	mkdir -p obj/list_utils
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

@@ -6,23 +6,11 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 01:05:15 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/08 22:34:42 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 22:24:01 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-t_token	*get_previous_token(t_token **head, t_token *current)
-{
-	t_token	*prev;
-
-	if (current == *head)
-		return (NULL);
-	prev = *head;
-	while (prev->next != current)
-		prev = prev->next;
-	return (prev);
-}
 
 void	move_back_by_two(t_token **head_token, t_token *token)
 {

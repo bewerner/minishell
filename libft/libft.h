@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 18:30:56 by bwerner           #+#    #+#             */
-/*   Updated: 2024/03/14 20:07:16 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 19:55:49 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,6 @@ char	**ft_split_ws(char *str);
 int		ft_imin(int a, int b);
 int		ft_imax(int a, int b);
 void	*ft_memset_int(void *b, int c, size_t len);
+int		ft_strncasecmp(const char *s1, const char *s2, size_t n);
 
 #endif

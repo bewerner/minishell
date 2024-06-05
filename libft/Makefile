@@ -9,7 +9,7 @@ CFILES					=	ft_atoi.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalpha.c ft_isasc
 BONUS_CFILES			=	ft_lstnew.c ft_lstadd_front.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c \
 							ft_lstclear.c ft_lstiter.c ft_lstmap.c
 
-ADDED_CFILES			=	ft_isspace.c ft_split_ws.c ft_imin.c ft_imax.c ft_memset_int.c
+ADDED_CFILES			=	ft_isspace.c ft_split_ws.c ft_imin.c ft_imax.c ft_memset_int.c ft_strncasecmp.c
 
 OFILES					=	$(CFILES:.c=.o)
 

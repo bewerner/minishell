@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 02:45:49 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 22:35:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,16 +64,49 @@ void	export_key_value(char *content, t_minishell *ms)
 
 void	export_append_value(char *content, t_minishell *ms)
 {
-	// if key already exists -> append
-	// else remove '+' and then add_env
+	char	*key;
+	char	*value;
+	t_env	*env;
+	char	*new_content;
+
+	key = content;
+	*ft_strchr(key, '+') = '\0';
+	value = content + ft_strlen(key) + 2;
+	env = get_env(key, ms->head_env);
+	if (env)
+	{
+		new_content = ft_strjoin(env->content, value);
+		if (!new_content)
+		{
+			ms_error("export_append_value", NULL, 1, ms);
+			return ;
+		}
+		add_env(new_content, ms);
+		free (new_content);
+		remove_env(&ms->head_env, env);
+		return ;
+	}
+	ft_memmove(content + ft_strlen(key), value - 1, ft_strlen(value) + 2);
 	add_env(content, ms);
 }
 
-void	export_key(char *content, t_minishell *ms)
+void	export_key(char *key, t_minishell *ms)
 {
-	(void)content;
-	(void)ms;
-	// if key already exists -> return without adding anything
+	t_env	*env;
+
+	if (get_env(key, ms->head_env))
+		return ;
+	env = env_new(NULL);
+	if (env)
+	{
+		env_add_back(&ms->head_env, env);
+		env->key = ft_strdup(key);
+	}
+	if (!env || !env->key)
+	{
+		free(env);
+		ms_error("export_key", NULL, 1, ms);
+	}
 }
 
 void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)
@@ -97,5 +130,10 @@ void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)
 		}
 		token = token->next;
 		i++;
+	}
+	if (leaf->size > 1 && !ms->error)
+	{
+		sort_env(ms->head_env);
+		update_envp(ms->head_env, ms);
 	}
 }

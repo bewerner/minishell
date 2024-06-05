@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 02:27:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 22:30:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ typedef struct s_minishell
 	bool				in_pipeline;
 }	t_minishell;
 
+
 // builtins/exec_echo.c
 void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
 
@@ -184,10 +185,31 @@ void		expand_leaf(t_leaf *leaf, t_minishell *ms);
 void		init_heredocs(t_token *token, t_minishell *ms);
 
 // lexer/init_tokens.c
-t_token		*token_last(t_token *lst);
-t_token		*token_new(char *content);
 t_char_type	get_char_type(char *str, size_t pos);
 void		init_tokens(t_minishell *ms);
+
+// list_utils/env_utils.c
+t_env		*get_env(char *key, t_env *env);
+void		remove_env(t_env **head, t_env *env);
+t_env		*env_last(t_env *lst);
+void		env_add_back(t_env **lst, t_env *new);
+t_env		*env_new(char *content);
+
+// list_utils/input_utils.c
+t_input		*input_last(t_input *lst);
+void		input_add_back(t_input **lst, t_input *new);
+t_input		*input_new(char *content);
+
+// list_utils/leaf_utils.c
+t_leaf		*leaf_last(t_leaf *lst);
+void		leaf_add_back(t_leaf **lst, t_leaf *new);
+t_leaf		*leaf_new(t_token *head);
+
+// list_utils/token_utils.c
+t_token		*get_previous_token(t_token **head, t_token *current);
+t_token		*token_last(t_token *lst);
+void		token_add_back(t_token **lst, t_token *new);
+t_token		*token_new(char *content);
 
 // parser/init_leafs.c
 void		init_leafs(t_minishell *ms);
@@ -196,7 +218,6 @@ void		init_leafs(t_minishell *ms);
 void		init_tree(t_minishell *ms);
 
 // parser/rearrange_tokens.c
-t_token		*get_previous_token(t_token **head, t_token *current);
 void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c
@@ -208,14 +229,12 @@ void		terminate(uint8_t exit_code, t_minishell *ms);
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
 
 // init_env.c
-void		remove_env(t_env **head, t_env *env);
-t_env		*env_last(t_env *lst);
+void		update_envp(t_env *env, t_minishell *ms);
+void		sort_env(t_env	*head);
 bool		add_env(char *str, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c
-void		input_add_back(t_input **lst, t_input *new);
-t_input		*input_new(char *content);
 void		free_inputs(t_input **head);
 void		init_input(t_minishell *ms);
 

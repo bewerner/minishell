@@ -6,44 +6,11 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/31 00:32:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 22:21:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-t_token	*token_last(t_token *lst)
-{
-	if (lst == NULL)
-		return (NULL);
-	while (lst->next != NULL)
-	{
-		lst = lst->next;
-	}
-	return (lst);
-}
-
-void	token_add_back(t_token **lst, t_token *new)
-{
-	t_token	*ptr;
-
-	ptr = token_last(*lst);
-	if (*lst == NULL)
-		*lst = new;
-	else
-		ptr->next = new;
-}
-
-t_token	*token_new(char *content)
-{
-	t_token	*newtoken;
-
-	newtoken = (t_token *)ft_calloc(1, sizeof(t_token));
-	if (newtoken == NULL)
-		return (NULL);
-	newtoken->content = content;
-	return (newtoken);
-}
 
 t_char_type	get_char_type(char *str, size_t pos)
 {
@@ -182,20 +149,6 @@ bool	mark_for_removal(t_token *token)
 	return (true);
 }
 
-// void	join_unclosed_tokens(t_minishell *ms)
-// {
-// 	t_token *token;
-
-// 	while (token)
-// 	{
-// 		if (token->remove && token->next && is_unclosed(token->content))
-// 		{
-// 			token_join(token, token->next)
-// 		}
-// 		token = token->next;
-// 	}
-// }
-
 char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 {
 	char	*content;
@@ -272,29 +225,3 @@ void	init_tokens(t_minishell *ms)
 	if (ms->debug)
 		debug_print_tokens(&ms->head_token, 1);
 }
-
-// void	init_tokens(char *line, t_minishell *ms)
-// {
-// 	t_token	*token;
-// 	char	*content;
-
-// 	while (1)
-// 	{
-// 		content = get_next_token_content(line, ms);
-// 		if (!content)
-// 			break ;
-// 		token = token_new(content);
-// 		if (!token || !mark_for_removal(token))
-// 		{
-// 			free(content);
-// 			ms_error("lexer", NULL, 1, ms);
-// 			break ;
-// 		}
-// 		token_add_back(&ms->head_token, token);
-// 		set_token_type(token);
-// 		token->operator = get_operator_type(token);
-// 	}
-// 	// join_unclosed_tokens(ms);
-// 	if (ms->debug)
-// 		debug_print_tokens(&ms->head_token, 1);
-// }

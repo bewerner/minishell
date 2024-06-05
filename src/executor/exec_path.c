@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 00:25:29 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 20:21:25 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,18 +95,6 @@ char	*join_path(char **env_path, const char *slash, char *cmd)
 	return (path);
 }
 
-t_env	*get_env(t_env *env, char *key)
-{
-	while (env)
-	{
-		if (!ft_strncmp(env->content, key, ft_strlen(key)))
-			if (env->content[ft_strlen(key)] == '=')
-				return (env);
-		env = env->next;
-	}
-	return (env);
-}
-
 char	*get_path(char *cmd, t_minishell *ms)
 {
 	char	*env_path;
@@ -127,7 +115,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 		}
 		return (path);
 	}
-	env_path = get_env(ms->head_env, "PATH")->content + 5;
+	env_path = get_env("PATH", ms->head_env)->value;
 	while (env_path[0])
 	{
 		path = join_path(&env_path, "/", cmd);
@@ -148,23 +136,6 @@ bool	is_directory(char *path)
 	if (S_ISDIR(tmp.st_mode))
 		return (true);
 	return (false);
-}
-
-int	ft_strncasecmp(const char *s1, const char *s2, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	if (n == 0)
-		return (0);
-	while (ft_tolower(s1[i]) == ft_tolower(s2[i]) && i < n)
-	{
-		if (s1[i] == '\0' || i == n - 1)
-			return (0);
-		i++;
-	}
-	return ((unsigned char)ft_tolower(s1[i])
-		- (unsigned char)ft_tolower(s2[i]));
 }
 
 void	exec_path(t_leaf *leaf, t_minishell *ms)

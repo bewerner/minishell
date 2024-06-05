@@ -6,44 +6,11 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 18:49:15 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 22:26:36 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-t_input	*input_last(t_input *lst)
-{
-	if (lst == NULL)
-		return (NULL);
-	while (lst->next != NULL)
-	{
-		lst = lst->next;
-	}
-	return (lst);
-}
-
-void	input_add_back(t_input **lst, t_input *new)
-{
-	t_input	*ptr;
-
-	ptr = input_last(*lst);
-	if (*lst == NULL)
-		*lst = new;
-	else
-		ptr->next = new;
-}
-
-t_input	*input_new(char *content)
-{
-	t_input	*newinput;
-
-	newinput = (t_input *)ft_calloc(1, sizeof(t_input));
-	if (newinput == NULL)
-		return (NULL);
-	newinput->content = content;
-	return (newinput);
-}
 
 void	free_inputs(t_input **head)
 {

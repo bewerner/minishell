@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/04 20:34:13 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 19:11:11 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,11 +106,34 @@ void	exec_pipe(t_leaf *leaf, t_minishell *ms)
 // 	leaf->right->read_pipe[1] = fd[1];
 // }
 
+bool	is_builtin(char *cmd)
+{
+		if (!cmd)
+			return (false);
+		if (ft_strncasecmp(cmd, "echo", 5) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "cd", 3) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "pwd", 4) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "export", 7) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "unset", 6) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "env", 4) == 0)
+			return (true);
+		if (ft_strncasecmp(cmd, "exit", 5) == 0)
+			return (true);
+		return (false);
+}
+
 void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 {
 	if (ms->error)
 		return ;
 	leaf->fork = ms->in_pipeline;
+	if (!leaf->fork && leaf->operator == OP_NONE)
+		leaf->fork = !is_builtin(leaf->head_token->content);
 	if (leaf->operator == OP_LOGICAL)
 		exec_logical(leaf, ms);
 	else if (leaf->operator == OP_PIPE)
