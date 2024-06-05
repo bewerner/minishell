@@ -6,11 +6,29 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 00:54:17 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/14 00:24:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 02:37:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	remove_env(t_env **head, t_env *env)
+{
+	if (env == *head)
+	{
+		*head = env->next;
+		(*head)->prev = NULL;
+	}
+	else
+	{
+		env->prev->next = env->next;
+		env->next->prev = env->prev;
+	}
+	free(env->content);
+	free(env->key);
+	free(env->value);
+	free(env);
+}
 
 t_env	*env_last(t_env *lst)
 {

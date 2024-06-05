@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/04 21:29:01 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 02:27:26 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,6 @@ struct s_leaf
 	t_leaf				*parent;
 	t_leaf				*left;
 	t_leaf				*right;
-	int					read_pipe[2];
-	int					write_pipe[2];
 	bool				executed;
 	bool				fork;
 	pid_t				child_pid;
@@ -154,10 +152,13 @@ typedef struct s_minishell
 }	t_minishell;
 
 // builtins/exec_echo.c
-void		exec_echo(t_leaf *leaf, t_minishell *ms);
+void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
+
+// builtins/exec_env.c
+void		exec_env(t_minishell *ms);
 
 // builtins/exec_export.c
-void		exec_export(t_leaf *leaf, t_minishell *ms);
+void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // debug/print.c
 void		debug_print_tokens(t_token **head, size_t option);
@@ -207,6 +208,9 @@ void		terminate(uint8_t exit_code, t_minishell *ms);
 void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
 
 // init_env.c
+void		remove_env(t_env **head, t_env *env);
+t_env		*env_last(t_env *lst);
+bool		add_env(char *str, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c

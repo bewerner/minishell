@@ -5,7 +5,7 @@ SRC					=	minishell.c cleanup.c error.c init_input.c init_env.c quote_check.c si
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \
 						debug/print.c debug/print_tree.c \
 						executor/exec_redirect.c executor/exec_tree.c executor/exec_path.c executor/expander.c \
-						builtins/exec_echo.c
+						builtins/exec_echo.c builtins/exec_env.c builtins/exec_export.c
 OBJ					=	$(patsubst %.c, obj/%.o, $(SRC))
 CFLAGS				=	-Wall -Wextra -Werror
 FSANITIZE			=	-g -fsanitize=address

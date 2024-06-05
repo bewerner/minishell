@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 00:31:02 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 02:00:16 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	char	*value;
 
 	i = key_pos;
-	if(ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
+	if (ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
 		i++;
 	else
 		return (NULL);

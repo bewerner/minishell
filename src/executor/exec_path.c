@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/04 21:25:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/05 00:25:29 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,23 +186,24 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 	free(path);
 }
 
-void (*get_exec_function(char *cmd))(t_leaf *, t_minishell *)
+void	exec_cmd(char *cmd, t_leaf *leaf, t_minishell *ms)
 {
 		if (ft_strncasecmp(cmd, "echo", 5) == 0)
-			return (exec_echo);
-		// if (ft_strncasecmp(cmd, "cd", 3) == 0)
-		// 	return (exec_cd);
-		// if (ft_strncasecmp(cmd, "pwd", 4) == 0)
-		// 	return (exec_pwd);
-		if (ft_strncasecmp(cmd, "export", 7) == 0)
-			return (exec_export);
-		// if (ft_strncasecmp(cmd, "unset", 6) == 0)
-		// 	return (exec_unset);
-		// if (ft_strncasecmp(cmd, "env", 4) == 0)
-		// 	return (exec_env);
-		// if (ft_strncasecmp(cmd, "exit", 5) == 0)
-		// 	return (exec_exit);
-		return (exec_path);
+			exec_echo(leaf, leaf->head_token->next, ms);
+		// else if (ft_strncasecmp(cmd, "cd", 3) == 0)
+		// 	exec_cd(leaf, ms);
+		// else if (ft_strncasecmp(cmd, "pwd", 4) == 0)
+		// 	exec_pwd(leaf, ms);
+		else if (ft_strncasecmp(cmd, "export", 7) == 0)
+			exec_export(leaf, leaf->head_token->next, ms);
+		// else if (ft_strncasecmp(cmd, "unset", 6) == 0)
+		// 	exec_unset(leaf, ms);
+		else if (ft_strncasecmp(cmd, "env", 4) == 0)
+			exec_env(ms);
+		// else if (ft_strncasecmp(cmd, "exit", 5) == 0)
+		// 	exec_exit(leaf, ms);
+		else
+			exec_path(leaf, ms);
 }
 
 void	exec_word(t_leaf *leaf, t_minishell *ms)
@@ -217,7 +218,7 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		set_signal(SIGINT, SIG_DFL);
 		if (ms->close_in_child != -1)
 			close(ms->close_in_child);
-		(get_exec_function(leaf->head_token->content))(leaf, ms);
+		exec_cmd(leaf->head_token->content, leaf, ms);
 		if (leaf->fork)
 			terminate(ms->exit_code, ms);
 	}

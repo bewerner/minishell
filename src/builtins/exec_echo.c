@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/04 21:27:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/04 23:45:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,12 @@ bool	is_valid_flag(t_token *token)
 	return (true);
 }
 
-void	exec_echo(t_leaf *leaf, t_minishell *ms)
+void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	bool	has_minus_n;
-	t_token	*token;
 	size_t	i;
 
 	has_minus_n = false;
-	token = leaf->head_token->next;
 	i = 1;
 	while (i < leaf->size && is_valid_flag(token))
 	{
