@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:30:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 00:25:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
+# include <sys/param.h>
 # include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <fcntl.h>
@@ -157,6 +158,9 @@ void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_env.c
 void		exec_env(t_minishell *ms);
+
+// builtins/exec_exit.c
+void		exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_export.c
 void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
