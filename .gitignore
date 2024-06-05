@@ -5,7 +5,13 @@
 # whitelist
 
 !libft
+!libft/**
 !src
 !src/**
 !Makefile
 !.gitignore
+
+#blacklist
+
+*.o
+*.a
