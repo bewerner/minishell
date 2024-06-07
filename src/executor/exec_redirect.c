@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 21:38:32 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 02:52:32 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 	{
 		if (heredoc->content)
 		{
+			// if (!heredoc->literal)
+			// 	expand_heredoc(heredoc, ms);
 			ft_putstr_fd(heredoc->content, STDOUT_FILENO);
 			ft_putchar_fd('\n', STDOUT_FILENO);
 		}

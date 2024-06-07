@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:00:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 01:26:15 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 20:16:13 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ void	exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
 		ms->exit_code = 1;
+		if (!leaf->fork)
+			return ;
 	}
 	terminate(ms->exit_code, ms);
 }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:35:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/06 23:48:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,11 @@ void	print_export(t_env *env)
 
 void	remove_duplicate_env(t_env *env, t_env *tail, t_minishell *ms)
 {
+	if (ms->error)
+		return ;
 	while (env != tail)
 	{
-		if (!ft_strncmp(env->key, tail->key, ft_strlen(tail->key) +1))
+		if (!ft_strncmp(env->key, tail->key, ft_strlen(tail->key) + 1))
 		{
 			remove_env(&ms->head_env, env);
 			return ;

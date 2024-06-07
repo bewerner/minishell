@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 01:54:25 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 02:22:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@
 // 	}
 // }
 
-void	init_leaf_content(t_leaf *leaf)
+void	init_leaf_content(t_leaf *leaf, t_minishell *ms)
 {
 	size_t	i;
 	t_token	*token;
@@ -58,7 +58,9 @@ void	init_leaf_content(t_leaf *leaf)
 	i = 0;
 	token = leaf->head_token;
 	leaf->content = (char **)ft_calloc(leaf->size + 1, sizeof(char *));
-	while (i < leaf->size)
+	if (!leaf->content)
+		ms_error("init_leaf_content", NULL, 1, ms);
+	while (!ms->error && i < leaf->size)
 	{
 		leaf->content[i] = token->content;
 		token = token->next;
@@ -110,12 +112,16 @@ char	*get_path(char *cmd, t_minishell *ms)
 		path = strdup(cmd);
 		if (!path)
 		{
-			ms_error("executor", NULL, 1, ms);
+			ms_error("get_path", NULL, 1, ms);
 			terminate(1, ms);
 		}
 		return (path);
 	}
+	if (!get_env("PATH", ms->head_env))
+		return (NULL);
 	env_path = get_env("PATH", ms->head_env)->value;
+	if (!env_path || env_path[0] == '\0')
+		return (NULL);
 	while (env_path[0])
 	{
 		path = join_path(&env_path, "/", cmd);
@@ -125,7 +131,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 		free(path);
 	}
 	ms_error(cmd, "command not found", 127, ms);
-	return(NULL);
+	return (NULL);
 }
 
 bool	is_directory(char *path)
@@ -144,7 +150,11 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 
 	// close(ms->close_in_parent);
 	path = get_path(leaf->head_token->content, ms);
-	init_leaf_content(leaf);
+	if (!path && !ms->error)
+		ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
+	if (ms->error)
+		return ;
+	init_leaf_content(leaf, ms);
 	if (path && execve(path, leaf->content, ms->envp) == -1)
 	{
 		if (is_directory(path))
@@ -161,8 +171,8 @@ void	exec_cmd(char *cmd, t_leaf *leaf, t_minishell *ms)
 {
 		if (ft_strncasecmp(cmd, "echo", 5) == 0)
 			exec_echo(leaf, leaf->head_token->next, ms);
-		// else if (ft_strncasecmp(cmd, "cd", 3) == 0)
-		// 	exec_cd(leaf, ms);
+		else if (ft_strncasecmp(cmd, "cd", 3) == 0)
+			exec_cd(leaf, leaf->head_token->next, ms);
 		else if (ft_strncasecmp(cmd, "pwd", 4) == 0)
 			exec_pwd(ms);
 		else if (ft_strncasecmp(cmd, "export", 7) == 0)

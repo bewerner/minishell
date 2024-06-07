@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 01:53:15 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 01:20:57 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,8 @@ typedef struct s_minishell
 	bool				in_pipeline;
 }	t_minishell;
 
+// builtins/exec_cd.c
+void		exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_echo.c
 void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
@@ -164,6 +166,8 @@ void		exec_env(t_minishell *ms);
 void		exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_export.c
+void		export_key(char *key, t_minishell *ms);
+void		remove_duplicate_env(t_env *env, t_env *tail, t_minishell *ms);
 void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_pwd.c
@@ -242,7 +246,7 @@ void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
 // init_env.c
 void		update_envp(t_env *env, t_minishell *ms);
 void		sort_env(t_env	*head);
-bool		add_env(char *str, t_minishell *ms);
+void		add_env(char *str, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c

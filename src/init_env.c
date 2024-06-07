@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 00:54:17 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:35:00 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 01:38:53 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,11 @@ void	update_envp(t_env *env, t_minishell *ms)
 		env = env->next;
 	}
 	ms->envp = (char **)ft_calloc(var_count + 1, sizeof(char *));
-	// failcheck
+	if (!ms->envp)
+		ms_error("update_envp", NULL, 1, ms);
 	env = ms->head_env;
 	i = 0;
-	while (env)
+	while (env && !ms->error)
 	{
 		if (env->content)
 		{
@@ -106,11 +107,13 @@ bool	init_key_and_value(t_env *env)
 	return (true);
 }
 
-bool	add_env(char *str, t_minishell *ms)
+void	add_env(char *str, t_minishell *ms)
 {
 	char *content;
 	t_env *env;
 
+	if (ms->error)
+		return;
 	content = ft_strdup(str);
 	env = env_new(content);
 	if (env && content)
@@ -124,9 +127,33 @@ bool	add_env(char *str, t_minishell *ms)
 		}
 		free(content);
 		free(env);
-		return (false);
+		ms_error("add_env", NULL, 1, ms);
+		return ;
 	}
-	return(true);
+}
+
+void	init_pwd(t_minishell *ms)
+{
+	t_env	*oldpwd;
+	char	*content;
+	char	cwd[PATH_MAX];
+
+	oldpwd = get_env("OLDPWD", ms->head_env);
+	if (oldpwd)
+		remove_env(&ms->head_env, oldpwd);
+	export_key("OLDPWD", ms);
+	if (!ms->error && getcwd(cwd, sizeof(cwd)) == NULL)
+		ms_error("exec_pwd", NULL, 1, ms);
+	if (ms->error)
+		terminate(1, ms);
+	content = ft_strjoin("PWD=", cwd);
+	if (!content)
+		ms_error("update_pwd", NULL, 1, ms);
+	add_env(content, ms);
+	free(content);
+	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
+	if (ms->error)
+		terminate(1, ms);
 }
 
 void	init_env(char **envp, t_minishell *ms)
@@ -136,13 +163,14 @@ void	init_env(char **envp, t_minishell *ms)
 	i = 0;
 	while (envp[i])
 	{
-		if (!add_env(envp[i], ms))
-		{
-			ms_error("init_env", NULL, 1, ms);
+		add_env(envp[i], ms);
+		if (ms->error)
 			terminate(1, ms);
-		}
 		i++;
 	}
+	init_pwd(ms);
 	sort_env(ms->head_env);
 	update_envp(ms->head_env, ms);
+	if (ms->error)
+		terminate(1, ms);
 }
