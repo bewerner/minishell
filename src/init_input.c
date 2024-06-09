@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:26:36 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 09:20:22 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	free_inputs(t_input **head)
 bool	syntax_is_valid(t_token *token, t_minishell *ms)
 {
 	if (token && token->operator >= OP_PIPE)
-		ms_error(token->next->content, NULL, 234, ms);
+		ms_error(token->content, NULL, 234, ms);
 	if (ms->head_input && ms->head_input->complete
 		&& is_unclosed(token_last(ms->head_token)->content))
 	{

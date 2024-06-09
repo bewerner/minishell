@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 02:52:32 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/07 06:41:15 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,54 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	}
 }
 
-void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
+t_env	*get_next_env(char *key, t_minishell *ms)
 {
-	t_input	*heredoc;
+	t_env	*env;
+	size_t	i;
+	char	tmp;
+
+	i = 1;
+	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
+		i++;
+	tmp = key[i];
+	key[i] = '\0';
+	env = get_env(key, ms->head_env);
+	key[i] = tmp;
+	return (env);
+}
+
+void	put_expanded_content(char *content, int fd, t_minishell *ms)
+{
+	t_env	*env;
+	size_t	i;
+
+	i = 0;
+	while (content[i])
+	{
+		if (content[i] == '$' && content[i + 1] == '?')
+		{
+			ft_putnbr_fd(ms->exit_code, fd);
+			i++;
+		}
+		else if (content[i] == '$' && (ft_isalpha(content[i + 1])
+				|| content[i + 1] == '_' || content[i + 1] == '?'))
+		{
+			env = get_next_env(content + i + 1, ms);
+			if (env && env->value)
+				ft_putstr_fd(env->value, fd);
+			if (env)
+				i += ft_strlen(env->key);
+		}
+		else
+			ft_putchar_fd(content[i], fd);
+		i++;
+	}
+}
+
+void	exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms)
+{
 	int		p[2];
 
-	(void)ms;
-	heredoc = leaf->head_token->head_heredoc;
 	pipe(p);
 	dup2(p[0], STDIN_FILENO);
 	if (ms->close_in_parent != -1)
@@ -75,10 +116,11 @@ void	exec_heredoc(t_leaf *leaf, t_minishell *ms)
 	{
 		if (heredoc->content)
 		{
-			// if (!heredoc->literal)
-			// 	expand_heredoc(heredoc, ms);
-			ft_putstr_fd(heredoc->content, STDOUT_FILENO);
-			ft_putchar_fd('\n', STDOUT_FILENO);
+			if (!heredoc->literal)
+				put_expanded_content(heredoc->content, p[1], ms);
+			else
+				ft_putstr_fd(heredoc->content, p[1]);
+			ft_putchar_fd('\n', p[1]);
 		}
 		heredoc = heredoc->next;
 	}
@@ -96,5 +138,5 @@ void	exec_redirect(t_leaf *leaf, t_minishell *ms)
 	else if (leaf->head_token->type == TKN_IN)
 		exec_redirect_in(leaf, ms);
 	else if (leaf->head_token->type == TKN_HEREDOC)
-		exec_heredoc(leaf, ms);
+		exec_heredoc(leaf->head_token->head_heredoc, leaf, ms);
 }

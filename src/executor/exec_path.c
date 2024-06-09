@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 02:22:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 00:14:58 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,16 @@ char	*join_path(char **env_path, const char *slash, char *cmd)
 	return (path);
 }
 
+bool	is_directory(char *path)
+{
+	struct stat	tmp;
+
+	stat(path, &tmp);
+	if (S_ISDIR(tmp.st_mode))
+		return (true);
+	return (false);
+}
+
 char	*get_path(char *cmd, t_minishell *ms)
 {
 	char	*env_path;
@@ -126,7 +136,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 	{
 		path = join_path(&env_path, "/", cmd);
 		// printf("path is: %s\n", path);
-		if (!access(path, F_OK))
+		if (!access(path, F_OK) && !is_directory(path))
 			return (path);
 		free(path);
 	}
@@ -134,21 +144,17 @@ char	*get_path(char *cmd, t_minishell *ms)
 	return (NULL);
 }
 
-bool	is_directory(char *path)
-{
-	struct stat	tmp;
-
-	stat(path, &tmp);
-	if (S_ISDIR(tmp.st_mode))
-		return (true);
-	return (false);
-}
-
 void	exec_path(t_leaf *leaf, t_minishell *ms)
 {
 	char	*path;
 
 	// close(ms->close_in_parent);
+	if (!ft_strncmp(leaf->head_token->content, ".", 2))
+	{
+		ms_error(".", "filename argument required", 2, ms);
+		ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
+		return ;
+	}
 	path = get_path(leaf->head_token->content, ms);
 	if (!path && !ms->error)
 		ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
