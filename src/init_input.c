@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 09:20:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 04:40:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ bool	syntax_is_valid(t_token *token, t_minishell *ms)
 	if (ms->head_input && ms->head_input->complete
 		&& is_unclosed(token_last(ms->head_token)->content))
 	{
+		// printf("xxxxx %s\n", token_last(ms->head_token)->content);
 		ms_error("unexpected EOF while looking for matching `\"'", NULL, 1, ms);
-		ms->exit_code = 234;
+		ms_error("syntax error", "unexpected end of file", 234, ms);
 	}
 	while (!ms->error && token)
 	{
@@ -123,7 +124,7 @@ void	free_unclosed_token(t_token **head)
 	}
 }
 
-void	init_input(t_minishell *ms)
+void	init_user_input(t_minishell *ms)
 {
 	t_input	*input;
 	char	*content;
@@ -138,7 +139,7 @@ void	init_input(t_minishell *ms)
 		if (!input)
 		{
 			free(content);
-			ms_error("init_input", NULL, 1, ms);
+			ms_error("init_user_input", NULL, 1, ms);
 			return ;
 		}
 		input_add_back(&ms->head_input, input);
@@ -150,4 +151,64 @@ void	init_input(t_minishell *ms)
 	}
 	if (ms->line)
 		add_history(ms->line);
+}
+
+char	*non_interactive_readline(t_minishell *ms)
+{
+	char	*line;
+	int		tmp;
+
+	tmp = errno;
+	line = get_next_line(STDIN_FILENO);
+	ms->line_count++;
+	if (line && ft_strrchr(line, '\n'))
+		*ft_strrchr(line, '\n') = '\0';
+	errno = tmp;
+	return (line);
+}
+
+void	init_noninteractive_input(t_minishell *ms)
+{
+	t_input	*input;
+	char	*content;
+
+	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
+		&& !input_is_complete(ms->head_input, ms->head_token))
+	{
+		content = non_interactive_readline(ms);
+		// printf("errno = %d\n", errno);
+		// printf("content:>>>%s<<<\n", content);
+		if (!content)
+		{
+			if (!ms->head_input)
+				terminate(ms->exit_code, ms);
+			ms->head_input->complete = true;
+			continue ;
+		}
+		// if (!content && ms->head_input->complete)
+		// 	terminate(ms->exit_code, ms);
+		input = input_new(content);
+		if (!input)
+		{
+			free(content);
+			ms_error("init_noninteractive_input", NULL, 1, ms);
+			return ;
+		}
+		input_add_back(&ms->head_input, input);
+		free_unclosed_token(&ms->head_token);
+		init_tokens(ms);
+		if (ms->head_token && syntax_is_valid(ms->head_token, ms) && !is_unclosed(token_last(ms->head_token)->content))
+			init_heredocs(ms->head_token, ms);
+		// debug_print_tokens(&ms->head_token, 1);
+	}
+	if (ms->line)
+		add_history(ms->line);
+}
+
+void	init_input(t_minishell *ms)
+{
+	if (ms->interactive)
+		init_user_input(ms);
+	else
+		init_noninteractive_input(ms);
 }

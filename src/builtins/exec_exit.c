@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:00:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 20:16:13 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 04:42:48 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ static uint8_t	get_exit_code(char *str, t_minishell *ms)
 void	exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	ms->exit_code = 0;
-	if (!leaf->fork)
+	if (!leaf->fork && ms->interactive)
 		printf("exit\n");
 	if (leaf->size > 1)
 		ms->exit_code = get_exit_code(token->content, ms);

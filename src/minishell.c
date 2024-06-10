@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 21:59:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 03:49:42 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int	main(int argc, char **argv, char **envp)
 	ms.close_in_parent = -1;
 	ms.fd_stdin_dup = dup(STDIN_FILENO);
 	ms.fd_stdout_dup = dup(STDOUT_FILENO);
+	ms.interactive = isatty(STDIN_FILENO);
 	init_signals(&ms);
 	init_env(envp, &ms);
 	ms.debug = 0;

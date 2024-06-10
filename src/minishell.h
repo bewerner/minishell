@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 01:20:57 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 04:35:44 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ struct s_token
 	char				*content;
 	char				*remove;
 	char				*original_content;
+	size_t				original_length;
 	enum e_token_type	type;
 	enum e_operator		operator;
 	bool				split;
@@ -151,6 +152,8 @@ typedef struct s_minishell
 	int					close_in_child;
 	int					close_in_parent;
 	bool				in_pipeline;
+	bool				interactive;
+	size_t				line_count;
 }	t_minishell;
 
 // builtins/exec_cd.c
@@ -250,6 +253,7 @@ void		add_env(char *str, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c
+char		*non_interactive_readline(t_minishell *ms);
 void		free_inputs(t_input **head);
 void		init_input(t_minishell *ms);
 

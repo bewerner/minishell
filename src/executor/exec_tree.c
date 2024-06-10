@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 19:11:11 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 02:21:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,8 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 {
 	while (leaf && !ms->error)
 	{
-		expand_leaf(leaf, ms);
+		if (!leaf->executed)
+			expand_leaf(leaf, ms);
 		if (!leaf->executed)
 			exec_leaf(leaf, ms);
 		if (leaf->left && !leaf->left->executed)

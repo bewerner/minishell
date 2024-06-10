@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/03 13:02:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 04:36:26 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,19 @@
 
 char *get_heredoc_input(t_minishell *ms)
 {
-	char	*user_input;
+	char	*line;
 
 	set_signal(SIGINT, sigint_handler_heredoc);
-	user_input = readline("> ");
-	if (!user_input && errno) // malloc error
+	if (ms->interactive)
+		line = readline("> ");
+	else
+		line = non_interactive_readline(ms);
+	if (!line && errno) // malloc error
 		ms_error("readline", NULL, 1, ms);
-	else if (!user_input) // ctrl + D (EOT)
+	else if (!line) // ctrl + D (EOT)
 		return (NULL);
 	set_signal(SIGINT, sigint_handler);
-	return (user_input);
+	return (line);
 }
 
 void	read_heredoc(t_token *token, char *delimiter, bool literal, t_minishell *ms)
@@ -90,12 +93,13 @@ void	init_heredocs(t_token *token, t_minishell *ms)
 			&& token->next)
 		{
 			literal = false;
-			if (strchr(token->next->content, '\'')
-				|| strchr(token->next->content, '\"'))
+			if (ft_strchr(token->next->content, '\'')
+				|| ft_strchr(token->next->content, '\"'))
 			{
 				literal = true;
+				token->next->original_length = ft_strlen(token->next->content);
+				remove_quotes(token->next, ms);
 			}
-			remove_quotes(token->next, ms);
 			read_heredoc(token, token->next->content, literal, ms);
 		}
 		token = token->next;

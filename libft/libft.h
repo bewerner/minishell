@@ -6,12 +6,13 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 18:30:56 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 19:55:49 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 00:50:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
+# include "get_next_line/get_next_line.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
