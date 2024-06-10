@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 02:21:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 05:09:55 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,11 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	if (ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
 		i++;
 	else
+	{
+		if ((str[i] == '\'' || str[i] == '\"') && !in_quotes(str, i - 1))
+			token->remove[i - 1] = '1';
 		return (NULL);
+	}
 	while (str[i - 1] != '?' && str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
 	key_len = i - key_pos;
@@ -122,7 +126,7 @@ void	expand_variables(t_token *token, t_minishell *ms)
 				i = new_pos;
 				continue ;
 			}
-			if (errno)
+			if (errno && errno != ENOTTY)
 			{
 				ms_error("expander", NULL, 1, ms);
 				return ;

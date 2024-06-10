@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/04 23:45:02 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 05:29:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
 		has_minus_n = true;
 		token = token->next;
 		i++;
+		if (!ms->interactive)
+			break ;
 	}
 	while (i < leaf->size)
 	{

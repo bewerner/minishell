@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 04:40:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 05:06:33 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,14 +156,11 @@ void	init_user_input(t_minishell *ms)
 char	*non_interactive_readline(t_minishell *ms)
 {
 	char	*line;
-	int		tmp;
 
-	tmp = errno;
 	line = get_next_line(STDIN_FILENO);
 	ms->line_count++;
 	if (line && ft_strrchr(line, '\n'))
 		*ft_strrchr(line, '\n') = '\0';
-	errno = tmp;
 	return (line);
 }
 

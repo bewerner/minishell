@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 04:36:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 05:05:43 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char *get_heredoc_input(t_minishell *ms)
 		line = readline("> ");
 	else
 		line = non_interactive_readline(ms);
-	if (!line && errno) // malloc error
+	if (!line && errno && errno != ENOTTY) // malloc error
 		ms_error("readline", NULL, 1, ms);
 	else if (!line) // ctrl + D (EOT)
 		return (NULL);

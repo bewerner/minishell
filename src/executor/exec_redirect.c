@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 06:41:15 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/10 05:32:28 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,11 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(ms->fd_stdin_dup, STDIN_FILENO);
-		leaf->left->executed = true;
-		leaf->left->child_pid = -1;
+		if (leaf->left)
+		{
+			leaf->left->executed = true;
+			leaf->left->child_pid = -1;
+		}
 	}
 	else
 	{
