@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:47:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 21:06:26 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms)
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (!ms->interactive)
 	{
-		ft_putstr_fd("line", STDERR_FILENO);
+		ft_putstr_fd("line ", STDERR_FILENO);
 		ft_putnbr_fd(ms->line_count, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 	}

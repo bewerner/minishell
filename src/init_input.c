@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:47:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:52:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ char	*get_user_input(t_minishell *ms)
 		ms_error("readline", NULL, 1, ms);
 	else if (!ms->head_input && !user_input) // ctrl + D (EOT)
 	{
-		printf("\033[Aminishell $ exit\n");
+		printf("\033[Aminishell$ exit\n");
 		terminate(ms->exit_code, ms);
 	}
 	else if (!user_input) // ctrl + D (EOT)

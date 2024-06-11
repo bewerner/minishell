@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 19:24:13 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 20:15:52 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static char	*get_target(char *key, t_minishell *ms)
 	t_env	*env;
 
 	env = get_env(key, ms->head_env);
-	if (!env || env->value[0] == '\0')
+	if (!env || !env->value || env->value[0] == '\0')
 	{
 		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
 		ft_putstr_fd(key, STDERR_FILENO);
@@ -77,7 +77,7 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 	}
 	else if (target)
 	{
-		if (!ft_strncmp(token->content, "-", 2))
+		if (leaf->size > 1 && !ft_strncmp(token->content, "-", 2))
 			ft_putendl_fd(target, STDOUT_FILENO);
 		update_pwd(ms);
 	}

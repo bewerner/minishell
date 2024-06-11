@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 03:15:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 20:03:23 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	sigint_handler_heredoc(int signum)
 void	sigquit_handler_exec(int signum)
 {
 	g_signal = signum;
-	write(2, "Quit: 3\n", 8);
+	write(STDOUT_FILENO, "Quit: 3\n", 8);
 }
 
 void	sigint_handler_exec(int signum)

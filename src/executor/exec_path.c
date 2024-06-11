@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:37:33 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 21:31:23 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 {
 	char	*env_path;
 	char	*path;
+	char	cwd[PATH_MAX + 1];
 
 	if (is_path(cmd))
 	{
@@ -119,20 +120,38 @@ char	*get_path(char *cmd, t_minishell *ms)
 			ms_error(cmd, "No such file or directory", 127, ms);
 			return (NULL);
 		}
-		path = strdup(cmd);
+		path = ft_strdup(cmd);
 		if (!path)
 		{
-			ms_error("get_path", NULL, 1, ms);
+			ms_error("get_path: ft_strdup", NULL, 1, ms);
 			terminate(1, ms);
 		}
 		return (path);
 	}
-	if (!get_env("PATH", ms->head_env))
-		return (NULL);
-	env_path = get_env("PATH", ms->head_env)->value;
+	env_path = NULL;
+	if (get_env("PATH", ms->head_env))
+		env_path = get_env("PATH", ms->head_env)->value;
 	if (!env_path || env_path[0] == '\0')
-		return (NULL);
-	while (env_path[0])
+	{
+		if (getcwd(cwd, sizeof(cwd)) == NULL)
+		{
+			ms_error("get_path: getcwd", NULL, 1, ms);
+			return (NULL);
+		}
+		else
+		{
+			ft_strlcat(cwd, "/", PATH_MAX + 1);
+			path = ft_strjoin(cwd, cmd);
+			if (!path)
+			{
+				ms_error("get_path: ft_strjoin", NULL, 1, ms);
+				terminate(1, ms);
+			}
+			if (!access(path, F_OK) && !is_directory(path))
+				return (path);
+		}
+	}
+	while (env_path && env_path[0])
 	{
 		path = join_path(&env_path, "/", cmd);
 		// printf("path is: %s\n", path);
@@ -166,7 +185,7 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 		if (is_directory(path))
 			ms_error(path, "is a directory", 126, ms);
 		else
-			ms_error(path, NULL, 126, ms);
+			ms_error(leaf->head_token->content, NULL, 126, ms);
 	}
 	if (errno == EACCES)
 		ms->exit_code = 126;
