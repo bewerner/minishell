@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 00:14:58 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 15:26:52 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,19 +175,21 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 
 void	exec_cmd(char *cmd, t_leaf *leaf, t_minishell *ms)
 {
-		if (ft_strncasecmp(cmd, "echo", 5) == 0)
-			exec_echo(leaf, leaf->head_token->next, ms);
-		else if (ft_strncasecmp(cmd, "cd", 3) == 0)
+		if (ft_strncmp(cmd, "echo", 5) == 0)
+			exec_echo(leaf, leaf->head_token->next, ms, false);
+		else if (ft_strncasecmp(cmd, "echo", 5) == 0)
+			exec_echo(leaf, leaf->head_token->next, ms, true);
+		else if (ft_strncmp(cmd, "cd", 3) == 0)
 			exec_cd(leaf, leaf->head_token->next, ms);
 		else if (ft_strncasecmp(cmd, "pwd", 4) == 0)
 			exec_pwd(ms);
-		else if (ft_strncasecmp(cmd, "export", 7) == 0)
+		else if (ft_strncmp(cmd, "export", 7) == 0)
 			exec_export(leaf, leaf->head_token->next, ms);
-		else if (ft_strncasecmp(cmd, "unset", 6) == 0)
+		else if (ft_strncmp(cmd, "unset", 6) == 0)
 			exec_unset(leaf, leaf->head_token->next, ms);
 		else if (ft_strncasecmp(cmd, "env", 4) == 0)
 			exec_env(ms);
-		else if (ft_strncasecmp(cmd, "exit", 5) == 0)
+		else if (ft_strncmp(cmd, "exit", 5) == 0)
 			exec_exit(leaf, leaf->head_token->next, ms);
 		else
 			exec_path(leaf, ms);
