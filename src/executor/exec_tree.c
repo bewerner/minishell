@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 14:40:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:36:53 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,19 +110,19 @@ bool	is_builtin(char *cmd)
 {
 		if (!cmd)
 			return (false);
-		if (ft_strncasecmp(cmd, "echo", 5) == 0)
+		if (ft_strncmp(cmd, "echo", 5) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "cd", 3) == 0)
+		if (ft_strncmp(cmd, "cd", 3) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "pwd", 4) == 0)
+		if (ft_strncmp(cmd, "pwd", 4) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "export", 7) == 0)
+		if (ft_strncmp(cmd, "export", 7) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "unset", 6) == 0)
+		if (ft_strncmp(cmd, "unset", 6) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "env", 4) == 0)
+		if (ft_strncmp(cmd, "env", 4) == 0)
 			return (true);
-		if (ft_strncasecmp(cmd, "exit", 5) == 0)
+		if (ft_strncmp(cmd, "exit", 5) == 0)
 			return (true);
 		return (false);
 }

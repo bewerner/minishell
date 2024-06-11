@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 15:19:42 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:38:18 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ typedef struct s_minishell
 void		exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_echo.c
-void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms, bool uppercase);
+void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_env.c
 void		exec_env(t_minishell *ms);

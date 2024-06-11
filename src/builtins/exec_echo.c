@@ -6,13 +6,13 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/11 15:38:29 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:38:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	is_valid_flag(char *str, bool uppercase)
+bool	is_valid_flag(char *str)
 {
 	size_t	i;
 	size_t	len;
@@ -24,10 +24,6 @@ bool	is_valid_flag(char *str, bool uppercase)
 		return (false);
 	if (str[0] != '-' || str[1] != 'n')
 		return (false);
-	if (uppercase && (str[2] == '\0' || ft_isspace(str[2])))
-		return (true);
-	else if (uppercase)
-		return (false);
 	i = 1;
 	while (str[i])
 	{
@@ -38,20 +34,18 @@ bool	is_valid_flag(char *str, bool uppercase)
 	return (true);
 }
 
-void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms, bool uppercase)
+void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	bool	has_minus_n;
 	size_t	i;
 
 	has_minus_n = false;
 	i = 1;
-	while (i < leaf->size && is_valid_flag(token->content, uppercase))
+	while (i < leaf->size && is_valid_flag(token->content))
 	{
 		has_minus_n = true;
 		token = token->next;
 		i++;
-		if (uppercase)
-			break ;
 	}
 	while (i < leaf->size)
 	{
