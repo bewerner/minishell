@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:36:53 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:47:21 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	exec_logical(t_leaf *leaf, t_minishell *ms)
 {
 	wait_for_child_processes(ms);
 	ms->in_pipeline = false;
-	printf("ec: %d\n", ms->exit_code);
+	// printf("ec: %ld\n", ms->exit_code);
 	if (ms->exit_code == 0 && leaf->type == LEAF_OR)
 		leaf->right->executed = true;
 	else if (ms->exit_code > 0 && leaf->type == LEAF_AND)

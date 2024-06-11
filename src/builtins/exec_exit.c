@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:00:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 04:42:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:25:13 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static bool	is_numeric(char *str)
 	return (true);
 }
 
-static uint8_t	get_exit_code(char *str, t_minishell *ms)
+static int64_t	get_exit_code(char *str, t_minishell *ms)
 {
 	if (!is_numeric(str)
 		|| !is_in_range(str, "-9223372036854775808", "9223372036854775807"))
@@ -97,14 +97,14 @@ static uint8_t	get_exit_code(char *str, t_minishell *ms)
 		ms->error = true;
 		return (255);
 	}
-	return ((uint8_t)ft_atoi64(str));
+	return (ft_atoi64(str));
 }
 
 void	exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	ms->exit_code = 0;
 	if (!leaf->fork && ms->interactive)
-		printf("exit\n");
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (leaf->size > 1)
 		ms->exit_code = get_exit_code(token->content, ms);
 	if (!ms->error && leaf->size > 2)

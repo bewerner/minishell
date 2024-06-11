@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/07 00:02:04 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:24:13 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,11 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 		ms->exit_code = 1;
 	}
 	else if (target)
+	{
+		if (!ft_strncmp(token->content, "-", 2))
+			ft_putendl_fd(target, STDOUT_FILENO);
 		update_pwd(ms);
+	}
 	if (leaf->fork)
 		terminate(ms->exit_code, ms);
 	return ;

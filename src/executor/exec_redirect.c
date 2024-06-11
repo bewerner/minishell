@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 05:32:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:15:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,16 @@ t_env	*get_next_env(char *key, t_minishell *ms)
 	return (env);
 }
 
+size_t	get_next_key_len(char *key)
+{
+	size_t	i;
+
+	i = 1;
+	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
+		i++;
+	return (i);
+}
+
 void	put_expanded_content(char *content, int fd, t_minishell *ms)
 {
 	t_env	*env;
@@ -99,6 +109,8 @@ void	put_expanded_content(char *content, int fd, t_minishell *ms)
 				ft_putstr_fd(env->value, fd);
 			if (env)
 				i += ft_strlen(env->key);
+			else
+				i += get_next_key_len(content + i + 1);
 		}
 		else
 			ft_putchar_fd(content[i], fd);

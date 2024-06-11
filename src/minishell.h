@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:38:18 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:46:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ typedef struct s_minishell
 	char				**envp;
 	char				*line;
 	bool				line_is_complete;
-	uint8_t				exit_code;
+	int64_t				exit_code;
 	bool				error;
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
@@ -241,10 +241,10 @@ void		rearrange_tokens(t_minishell *ms);
 // cleanup.c
 void		free_tokens(t_token **head);
 void		cleanup(t_minishell *ms);
-void		terminate(uint8_t exit_code, t_minishell *ms);
+void		terminate(int64_t exit_code, t_minishell *ms);
 
 // error.c
-void		ms_error(char *s1, char *s2, uint8_t exit_code, t_minishell *ms);
+void		ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms);
 
 // init_env.c
 void		update_envp(t_env *env, t_minishell *ms);

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 05:06:33 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:47:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,24 +31,24 @@ void	free_inputs(t_input **head)
 bool	syntax_is_valid(t_token *token, t_minishell *ms)
 {
 	if (token && token->operator >= OP_PIPE)
-		ms_error(token->content, NULL, 234, ms);
+		ms_error(token->content, NULL, 258, ms);
 	if (ms->head_input && ms->head_input->complete
 		&& is_unclosed(token_last(ms->head_token)->content))
 	{
 		// printf("xxxxx %s\n", token_last(ms->head_token)->content);
 		ms_error("unexpected EOF while looking for matching `\"'", NULL, 1, ms);
-		ms_error("syntax error", "unexpected end of file", 234, ms);
+		ms_error("syntax error", "unexpected end of file", 258, ms);
 	}
 	while (!ms->error && token)
 	{
 		if (token->operator)
 		{
 			if (token->next && token->next->operator >= token->operator)
-				ms_error(token->next->content, NULL, 234, ms);
+				ms_error(token->next->content, NULL, 258, ms);
 			else if (!token->next && ms->head_input->complete)
-				ms_error("syntax error", "unexpected end of file", 234, ms);
+				ms_error("syntax error", "unexpected end of file", 258, ms);
 			else if (!token->next && token->operator == OP_REDIRECT)
-				ms_error("newline", NULL, 234, ms);
+				ms_error("newline", NULL, 258, ms);
 		}
 		token = token->next;
 	}

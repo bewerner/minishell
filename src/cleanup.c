@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/04 20:34:53 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:46:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	cleanup(t_minishell *ms)
 	ms->error = false;
 }
 
-void	terminate(uint8_t exit_code, t_minishell *ms)
+void	terminate(int64_t exit_code, t_minishell *ms)
 {
 	ms->exit_code = exit_code;
 	cleanup(ms);

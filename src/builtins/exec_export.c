@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/06 23:48:39 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/11 18:28:22 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,31 @@ static bool	is_valid(char *str, t_minishell *ms)
 	return (false);
 }
 
+// void	print_export(t_env *env)
+// {
+// 	while (env)
+// 	{
+// 		if (env->value)
+// 			printf("declare -x %s=\"%s\"\n", env->key, env->value);
+// 		else
+// 			printf("declare -x %s\n", env->key);
+// 		env = env->next;
+// 	}
+// }
+
 void	print_export(t_env *env)
 {
 	while (env)
 	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd(env->key, STDOUT_FILENO);
 		if (env->value)
-			printf("declare -x %s=\"%s\"\n", env->key, env->value);
-		else
-			printf("declare -x %s\n", env->key);
+		{
+			ft_putstr_fd("=\"", STDOUT_FILENO);
+			ft_putstr_fd(env->value, STDOUT_FILENO);
+			ft_putchar_fd('\"', STDOUT_FILENO);
+		}
+		ft_putchar_fd('\n', STDOUT_FILENO);
 		env = env->next;
 	}
 }
