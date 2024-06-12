@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 21:51:15 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,11 @@ t_token	*remove_token_from_leaf(t_token *token, t_leaf *leaf, t_minishell *ms)
 	if (token == ms->head_token)
 		ms->head_token = token->next;
 	else
+	{
+		get_previous_token(&ms->head_token, token)->original_next_content = token->original_content;
 		get_previous_token(&ms->head_token, token)->next = rt;
+		token->original_content = NULL;
+	}
 	free(token->content);
 	free(token->remove);
 	free(token->original_content);

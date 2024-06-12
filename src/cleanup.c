@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 18:07:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 21:49:56 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	free_tokens(t_token **head)
 		free(ptr->content);
 		free(ptr->remove);
 		free(ptr->original_content);
+		free(ptr->original_next_content);
 		free(ptr);
 		ptr = next;
 	}
