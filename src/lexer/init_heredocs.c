@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 05:05:43 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char *get_heredoc_input(t_minishell *ms)
 	else
 		line = non_interactive_readline(ms);
 	if (!line && errno && errno != ENOTTY) // malloc error
-		ms_error("readline", NULL, 1, ms);
+		ms_error("readline", NULL, EXIT_FAILURE, ms);
 	else if (!line) // ctrl + D (EOT)
 		return (NULL);
 	set_signal(SIGINT, sigint_handler);
@@ -40,7 +40,7 @@ void	read_heredoc(t_token *token, char *delimiter, bool literal, t_minishell *ms
 		input = input_new(NULL);
 		if (!input)
 		{
-			ms_error("read_heredoc", NULL, 1, ms);
+			ms_error("read_heredoc", NULL, EXIT_FAILURE, ms);
 			return ;
 		}
 		input_add_back(&token->head_heredoc, input);
@@ -76,7 +76,7 @@ void	read_heredoc(t_token *token, char *delimiter, bool literal, t_minishell *ms
 // 		if (!input)
 // 		{
 // 			free(content);
-// 			ms_error("read_heredoc", NULL, 1, ms);
+// 			ms_error("read_heredoc", NULL, EXIT_FAILURE, ms);
 // 			return ;
 // 		}
 // 		input_add_back(&token->head_heredoc, input);

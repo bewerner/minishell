@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 18:11:20 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:32:55 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,10 @@ int	main(int argc, char **argv, char **envp)
 	t_minishell	ms;
 
 	ft_bzero(&ms, sizeof(ms));
-	ms.close_in_child = -1;
-	ms.close_in_parent = -1;
 	ms.fd_stdin_dup = dup(STDIN_FILENO);
 	ms.fd_stdout_dup = dup(STDOUT_FILENO);
 	ms.interactive = isatty(STDIN_FILENO);
+	// ms.interactive = true;
 	init_signals(&ms);
 	init_env(envp, &ms);
 	ms.debug = 0;
@@ -52,6 +51,6 @@ int	main(int argc, char **argv, char **envp)
 		// if (g_signal)
 		// {
 		// 	if (!ms.exit_code)
-		// 		ms.exit_code = 1;
+		// 		ms.exit_code = EXIT_FAILURE;
 		// 	g_signal = 0;
 		// }

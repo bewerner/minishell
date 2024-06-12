@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:47:21 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:36:13 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	wait_for_child_processes(t_minishell *ms)
 	while (leaf)
 	{
 		if (leaf->child_pid < 0)
-			ms->exit_code = 1;
+			ms->exit_code = EXIT_FAILURE;
 		else if (leaf->child_pid)
 		{
 			// signal(SIGQUIT, temp);

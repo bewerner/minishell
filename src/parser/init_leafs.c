@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:29:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:19 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	init_leafs(t_minishell *ms)
 		leaf = leaf_new(token);
 		if (!leaf)
 		{
-			ms_error("parser", NULL, 1, ms);
+			ms_error("parser", NULL, EXIT_FAILURE, ms);
 			break ;
 		}
 		leaf->type = get_leaf_type(leaf->head_token);

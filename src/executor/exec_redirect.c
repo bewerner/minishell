@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 20:21:17 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	// 	close (ms->close_in_parent);
 	if (fd == -1)
 	{
-		ms_error(leaf->head_token->next->content, NULL, 1, ms);
+		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(ms->fd_stdin_dup, STDIN_FILENO);
@@ -44,11 +44,11 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	int	fd;
 
 	fd = open(leaf->head_token->next->content, O_RDONLY);
-	if (ms->close_in_parent != -1)
-		close (ms->close_in_parent);
 	if (fd == -1)
 	{
-		ms_error(leaf->head_token->next->content, NULL, 1, ms);
+		if (ms->close_in_parent != -1)
+			close (ms->close_in_parent);
+		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(ms->fd_stdin_dup, STDIN_FILENO);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_unset.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:28:25 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/06 01:37:57 by sgeiger          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static bool	is_valid(char *str, t_minishell *ms)
 	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
 	ft_putstr_fd(str, STDERR_FILENO);
 	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-	ms->exit_code = 1;
+	ms->exit_code = EXIT_FAILURE;
 	return (false);
 }
 
@@ -36,7 +36,7 @@ void	exec_unset(t_leaf *leaf, t_token *token, t_minishell *ms)
 	size_t	i;
 	t_env	*env;
 
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 	i = 1;
 	while (i < leaf->size && !ms->error)
 	{

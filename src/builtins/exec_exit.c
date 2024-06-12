@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:00:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 19:25:13 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ static int64_t	get_exit_code(char *str, t_minishell *ms)
 
 void	exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 	if (!leaf->fork && ms->interactive)
 		ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (leaf->size > 1)
@@ -110,7 +110,7 @@ void	exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms)
 	if (!ms->error && leaf->size > 2)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
-		ms->exit_code = 1;
+		ms->exit_code = EXIT_FAILURE;
 		if (!leaf->fork)
 			return ;
 	}

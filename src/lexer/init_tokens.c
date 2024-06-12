@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 03:52:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ char	*get_next_token_content(char *line, t_minishell *ms)
 	type = get_char_type(line, i);
 	content = read_token(line, start, &i, type);
 	if (!content)
-		ms_error("lexer", NULL, 1, ms);
+		ms_error("lexer", NULL, EXIT_FAILURE, ms);
 	return (content);
 }
 
@@ -162,7 +162,7 @@ char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 	}
 	content = (char *)ft_calloc(len + 1, sizeof(char));
 	if (!content)
-		ms_error("get_joined_input_content", NULL, 1, ms);
+		ms_error("get_joined_input_content", NULL, EXIT_FAILURE, ms);
 	if (!content)
 		return (NULL);
 	input = head;
@@ -216,7 +216,7 @@ void	init_tokens(t_minishell *ms)
 		if (!token || !mark_for_removal(token))
 		{
 			free(content);
-			ms_error("lexer", NULL, 1, ms);
+			ms_error("lexer", NULL, EXIT_FAILURE, ms);
 			break ;
 		}
 		token_add_back(&ms->head_token, token);

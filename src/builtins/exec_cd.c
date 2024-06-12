@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 20:15:52 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static char	*get_target(char *key, t_minishell *ms)
 		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
 		ft_putstr_fd(key, STDERR_FILENO);
 		ft_putstr_fd(" not set\n", STDERR_FILENO);
-		ms->exit_code = 1;
+		ms->exit_code = EXIT_FAILURE;
 	}
 	else
 		return (env->value);
@@ -41,16 +41,16 @@ void	update_pwd(t_minishell *ms)
 	else
 		content = ft_strjoin("OLDPWD=", pwd->value);
 	if (!content)
-		ms_error("update_pwd", NULL, 1, ms);
+		ms_error("update_pwd", NULL, EXIT_FAILURE, ms);
 	add_env(content, ms);
 	free(content);
 	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
 	if (!ms->error && getcwd(cwd, sizeof(cwd)) == NULL)
-		ms_error("exec_pwd", NULL, 1, ms);
+		ms_error("exec_pwd", NULL, EXIT_FAILURE, ms);
 	if (!ms->error)
 		content = ft_strjoin("PWD=", cwd);
 	if (!ms->error && !content)
-		ms_error("update_pwd", NULL, 1, ms);
+		ms_error("update_pwd", NULL, EXIT_FAILURE, ms);
 	add_env(content, ms);
 	free(content);
 	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
@@ -61,7 +61,7 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	char	*target;
 
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 	if (leaf->size == 1 || !ft_strncmp(token->content, "--", 3))
 		target = get_target("HOME", ms);
 	else if (!ft_strncmp(token->content, "-", 2))
@@ -73,7 +73,7 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
 		perror(target);
 		errno = 0;
-		ms->exit_code = 1;
+		ms->exit_code = EXIT_FAILURE;
 	}
 	else if (target)
 	{

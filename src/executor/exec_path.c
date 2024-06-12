@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 21:31:23 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:36:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	init_leaf_content(t_leaf *leaf, t_minishell *ms)
 	token = leaf->head_token;
 	leaf->content = (char **)ft_calloc(leaf->size + 1, sizeof(char *));
 	if (!leaf->content)
-		ms_error("init_leaf_content", NULL, 1, ms);
+		ms_error("init_leaf_content", NULL, EXIT_FAILURE, ms);
 	while (!ms->error && i < leaf->size)
 	{
 		leaf->content[i] = token->content;
@@ -123,7 +123,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 		path = ft_strdup(cmd);
 		if (!path)
 		{
-			ms_error("get_path: ft_strdup", NULL, 1, ms);
+			ms_error("get_path: ft_strdup", NULL, EXIT_FAILURE, ms);
 			terminate(1, ms);
 		}
 		return (path);
@@ -135,7 +135,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 	{
 		if (getcwd(cwd, sizeof(cwd)) == NULL)
 		{
-			ms_error("get_path: getcwd", NULL, 1, ms);
+			ms_error("get_path: getcwd", NULL, EXIT_FAILURE, ms);
 			return (NULL);
 		}
 		else
@@ -144,7 +144,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 			path = ft_strjoin(cwd, cmd);
 			if (!path)
 			{
-				ms_error("get_path: ft_strjoin", NULL, 1, ms);
+				ms_error("get_path: ft_strjoin", NULL, EXIT_FAILURE, ms);
 				terminate(1, ms);
 			}
 			if (!access(path, F_OK) && !is_directory(path))
@@ -180,6 +180,8 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 	if (ms->error)
 		return ;
 	init_leaf_content(leaf, ms);
+	// if (ms->close_in_parent != -1)
+	// close (ms->close_in_parent);
 	if (path && execve(path, leaf->content, ms->envp) == -1)
 	{
 		if (is_directory(path))

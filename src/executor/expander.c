@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/10 05:09:55 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	expand_variables(t_token *token, t_minishell *ms)
 			}
 			if (errno && errno != ENOTTY)
 			{
-				ms_error("expander", NULL, 1, ms);
+				ms_error("expander", NULL, EXIT_FAILURE, ms);
 				return ;
 			}
 		}

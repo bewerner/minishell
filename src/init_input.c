@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 19:52:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ bool	syntax_is_valid(t_token *token, t_minishell *ms)
 		&& is_unclosed(token_last(ms->head_token)->content))
 	{
 		// printf("xxxxx %s\n", token_last(ms->head_token)->content);
-		ms_error("unexpected EOF while looking for matching `\"'", NULL, 1, ms);
+		ms_error("unexpected EOF while looking for matching `\"'", NULL, EXIT_FAILURE, ms);
 		ms_error("syntax error", "unexpected end of file", 258, ms);
 	}
 	while (!ms->error && token)
@@ -85,7 +85,7 @@ char	*get_user_input(t_minishell *ms)
 		user_input = readline("> ");
 	}
 	if (!user_input && errno) // malloc error
-		ms_error("readline", NULL, 1, ms);
+		ms_error("readline", NULL, EXIT_FAILURE, ms);
 	else if (!ms->head_input && !user_input) // ctrl + D (EOT)
 	{
 		printf("\033[Aminishell$ exit\n");
@@ -139,7 +139,7 @@ void	init_user_input(t_minishell *ms)
 		if (!input)
 		{
 			free(content);
-			ms_error("init_user_input", NULL, 1, ms);
+			ms_error("init_user_input", NULL, EXIT_FAILURE, ms);
 			return ;
 		}
 		input_add_back(&ms->head_input, input);
@@ -188,7 +188,7 @@ void	init_noninteractive_input(t_minishell *ms)
 		if (!input)
 		{
 			free(content);
-			ms_error("init_noninteractive_input", NULL, 1, ms);
+			ms_error("init_noninteractive_input", NULL, EXIT_FAILURE, ms);
 			return ;
 		}
 		input_add_back(&ms->head_input, input);

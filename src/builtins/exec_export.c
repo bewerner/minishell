@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 18:28:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static bool	is_valid(char *str, t_minishell *ms)
 	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
 	ft_putstr_fd(str, STDERR_FILENO);
 	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-	ms->exit_code = 1;
+	ms->exit_code = EXIT_FAILURE;
 	return (false);
 }
 
@@ -97,7 +97,7 @@ void	export_append_value(char *content, t_minishell *ms)
 		new_content = ft_strjoin(env->content, value);
 		if (!new_content)
 		{
-			ms_error("export_append_value", NULL, 1, ms);
+			ms_error("export_append_value", NULL, EXIT_FAILURE, ms);
 			return ;
 		}
 		add_env(new_content, ms);
@@ -124,7 +124,7 @@ void	export_key(char *key, t_minishell *ms)
 	if (!env || !env->key)
 	{
 		free(env);
-		ms_error("export_key", NULL, 1, ms);
+		ms_error("export_key", NULL, EXIT_FAILURE, ms);
 	}
 }
 
@@ -132,7 +132,7 @@ void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	size_t	i;
 
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 	if (leaf->size == 1)
 		print_export(ms->head_env);
 	i = 1;

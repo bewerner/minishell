@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/11 17:57:33 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
 	}
 	if (!has_minus_n)
 		ft_putchar_fd('\n', STDOUT_FILENO);
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 }
 
 // while (token)

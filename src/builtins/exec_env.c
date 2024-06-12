@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 00:06:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 19:42:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ void	exec_env(t_minishell *ms)
 		ft_putendl_fd(ms->envp[i], STDOUT_FILENO);
 		i++;
 	}
-	ms->exit_code = 0;
+	ms->exit_code = EXIT_SUCCESS;
 }
