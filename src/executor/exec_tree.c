@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:36:13 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 21:42:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	wait_for_child_processes(t_minishell *ms)
 
 void	exec_logical(t_leaf *leaf, t_minishell *ms)
 {
+	dup2(ms->fd_stdin_dup, STDIN_FILENO);
+	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 	wait_for_child_processes(ms);
 	ms->in_pipeline = false;
 	// printf("ec: %ld\n", ms->exit_code);

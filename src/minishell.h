@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 16:46:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 20:34:46 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ struct s_token
 	enum e_token_type	type;
 	enum e_operator		operator;
 	bool				split;
+	bool				syntax_error;
 	t_input				*head_heredoc;
 	t_token				*next;
 };
@@ -147,6 +148,8 @@ typedef struct s_minishell
 	bool				line_is_complete;
 	int64_t				exit_code;
 	bool				error;
+	bool				syntax_error;
+	t_input				*input_syntax_error;
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
 	int					close_in_child;
@@ -244,6 +247,8 @@ void		cleanup(t_minishell *ms);
 void		terminate(int64_t exit_code, t_minishell *ms);
 
 // error.c
+void		put_syntax_error_line(t_input *input_syntax_error, t_minishell *ms);
+void		syntax_error(t_token *token, char *str, t_minishell *ms);
 void		ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms);
 
 // init_env.c

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:32:55 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 18:07:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	cleanup(t_minishell *ms)
 	if (g_signal && !ms->exit_code)
 		ms->exit_code = EXIT_FAILURE;
 	g_signal = 0;
+	ms->syntax_error = false;
 	ms->error = false;
 }
 

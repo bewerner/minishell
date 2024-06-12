@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 20:03:34 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	init_heredocs(t_token *token, t_minishell *ms)
 {
 	bool	literal;
 
-	while (token && !ms->error)
+	while (token && !ms->error && !token->syntax_error)
 	{
 		if (token->type == TKN_HEREDOC && !token->head_heredoc
 			&& token->next)

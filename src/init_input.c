@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/12 20:34:14 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,31 +28,44 @@ void	free_inputs(t_input **head)
 	*head = NULL;
 }
 
-bool	syntax_is_valid(t_token *token, t_minishell *ms)
+bool	check_syntax(t_token *token, t_minishell *ms)
 {
+	// printf("ms error: %d, head complete: %d\n", ms->error, ms->head_input->complete);
+	// printf("check_syntax\n");
 	if (token && token->operator >= OP_PIPE)
-		ms_error(token->content, NULL, 258, ms);
+	{
+		syntax_error(token, NULL, ms);
+		return (false);
+	}
 	if (ms->head_input && ms->head_input->complete
 		&& is_unclosed(token_last(ms->head_token)->content))
 	{
-		// printf("xxxxx %s\n", token_last(ms->head_token)->content);
-		ms_error("unexpected EOF while looking for matching `\"'", NULL, EXIT_FAILURE, ms);
-		ms_error("syntax error", "unexpected end of file", 258, ms);
+		syntax_error(token_last(ms->head_token), NULL, ms);
+		return (false);
 	}
-	while (!ms->error && token)
+	while (token)
 	{
 		if (token->operator)
 		{
 			if (token->next && token->next->operator >= token->operator)
-				ms_error(token->next->content, NULL, 258, ms);
+			{
+				syntax_error(token->next, NULL, ms);
+				return (false);
+			}
 			else if (!token->next && ms->head_input->complete)
-				ms_error("syntax error", "unexpected end of file", 258, ms);
+			{
+				syntax_error(NULL, NULL, ms);
+				return (false);
+			}
 			else if (!token->next && token->operator == OP_REDIRECT)
-				ms_error("newline", NULL, 258, ms);
+			{
+				syntax_error(NULL, "newline", ms);
+				return (false);
+			}
 		}
 		token = token->next;
 	}
-	if (ms->error)
+	if (ms->syntax_error)
 		return (false);
 	return (true);
 }
@@ -129,12 +142,16 @@ void	init_user_input(t_minishell *ms)
 	t_input	*input;
 	char	*content;
 
-	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
+	while (!g_signal && !ms->error && !ms->syntax_error
 		&& !input_is_complete(ms->head_input, ms->head_token))
 	{
 		content = get_user_input(ms);
 		if (!content)
+		{
+			if (ms->head_token)
+				check_syntax(ms->head_token, ms);
 			continue ;
+		}
 		input = input_new(content);
 		if (!input)
 		{
@@ -145,12 +162,16 @@ void	init_user_input(t_minishell *ms)
 		input_add_back(&ms->head_input, input);
 		free_unclosed_token(&ms->head_token);
 		init_tokens(ms);
-		if (syntax_is_valid(ms->head_token, ms) && !is_unclosed(token_last(ms->head_token)->content))
+		check_syntax(ms->head_token, ms);
+		if (ms->head_token && (ms->syntax_error || !is_unclosed(token_last(ms->head_token)->content)))
 			init_heredocs(ms->head_token, ms);
-		// debug_print_tokens(&ms->head_token, 1);
 	}
+	init_heredocs(ms->head_token, ms);
+	check_syntax(ms->head_token, ms);
 	if (ms->line)
 		add_history(ms->line);
+	if (ms->syntax_error)
+		ms->error = true;
 }
 
 char	*non_interactive_readline(t_minishell *ms)
@@ -169,21 +190,19 @@ void	init_noninteractive_input(t_minishell *ms)
 	t_input	*input;
 	char	*content;
 
-	while (!g_signal && !ms->error && syntax_is_valid(ms->head_token, ms)
+	while (!g_signal && !ms->error && !ms->syntax_error
 		&& !input_is_complete(ms->head_input, ms->head_token))
 	{
 		content = non_interactive_readline(ms);
-		// printf("errno = %d\n", errno);
-		// printf("content:>>>%s<<<\n", content);
 		if (!content)
 		{
 			if (!ms->head_input)
 				terminate(ms->exit_code, ms);
+			if (ms->head_token)
+				check_syntax(ms->head_token, ms);
 			ms->head_input->complete = true;
 			continue ;
 		}
-		// if (!content && ms->head_input->complete)
-		// 	terminate(ms->exit_code, ms);
 		input = input_new(content);
 		if (!input)
 		{
@@ -194,12 +213,19 @@ void	init_noninteractive_input(t_minishell *ms)
 		input_add_back(&ms->head_input, input);
 		free_unclosed_token(&ms->head_token);
 		init_tokens(ms);
-		if (ms->head_token && syntax_is_valid(ms->head_token, ms) && !is_unclosed(token_last(ms->head_token)->content))
+		check_syntax(ms->head_token, ms);
+		if (ms->head_token && (ms->syntax_error || !is_unclosed(token_last(ms->head_token)->content)))
 			init_heredocs(ms->head_token, ms);
-		// debug_print_tokens(&ms->head_token, 1);
 	}
+	init_heredocs(ms->head_token, ms);
+	check_syntax(ms->head_token, ms);
 	if (ms->line)
 		add_history(ms->line);
+	if (ms->syntax_error)
+	{
+		put_syntax_error_line(ms->input_syntax_error, ms);
+		terminate(ms->exit_code, ms);
+	}
 }
 
 void	init_input(t_minishell *ms)
