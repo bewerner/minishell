@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 21:51:15 by sgeiger          ###   ########.fr       */
+/*   Updated: 2024/06/13 21:10:21 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,12 @@ void	split_words(t_token *token, t_leaf *leaf)
 	size_t	i;
 	t_token	*new_token;
 
+	while (token->content[0] && ft_isspace(token->content[0]))
+	{
+		ft_memmove(token->content, token->content + 1, ft_strlen(token->content));
+		if (token->remove)
+			ft_memmove(token->remove, token->remove + 1, ft_strlen(token->remove));
+	}
 	i = 0;
 	while (token->content[i])
 	{
