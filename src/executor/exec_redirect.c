@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 17:24:58 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 16:31:22 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	// 	close (ms->close_in_parent);
 	if (fd == -1)
 	{
-		if (ms->close_in_parent != -1)
-			close (ms->close_in_parent);
+		if (ms->close_in_parent[0] != -1)
+			close (ms->close_in_parent[0]);
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
@@ -48,8 +48,8 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	fd = open(leaf->head_token->next->content, O_RDONLY);
 	if (fd == -1)
 	{
-		if (ms->close_in_parent != -1)
-			close (ms->close_in_parent);
+		if (ms->close_in_parent[0] != -1)
+			close (ms->close_in_parent[0]);
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
@@ -129,9 +129,9 @@ void	exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms)
 
 	pipe(p);
 	dup2(p[0], STDIN_FILENO);
-	if (ms->close_in_parent != -1)
-		close (ms->close_in_parent);
-	ms->close_in_parent = p[0];
+	if (ms->close_in_parent[0] != -1)
+		close (ms->close_in_parent[0]);
+	ms->close_in_parent[0] = p[0];
 	while (heredoc)
 	{
 		if (heredoc->content)

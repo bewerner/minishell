@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 21:42:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 16:50:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	wait_for_child_processes(t_minishell *ms)
 			if (WIFSIGNALED(status))
 			{
 				ms->exit_code = 128 + g_signal; // ????????? double check this. temp
+				// ms->exit_code = 128 + WTERMSIG(status); // ????????? double check this. temp
 				// printf("WIFSIGNALED exit code: %d", ms->exit_code);
 			}
 			else if (WIFEXITED(status))
@@ -79,14 +80,16 @@ void	exec_pipe(t_leaf *leaf, t_minishell *ms)
 		pipe(p);
 		dup2(p[1], STDOUT_FILENO);
 		ms->close_in_child = p[0];
-		ms->close_in_parent = p[1];
+		ms->close_in_parent[0] = p[1];
 	}
 	if (i == 2)
 	{
+		ms->close_in_parent[1] = p[0];
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
 		dup2(p[0], STDIN_FILENO);
-		ms->close_in_child = p[1];
-		ms->close_in_parent = p[0];
+		// ms->close_in_child = p[1]; // already closed
+		ms->close_in_child = -1;
+		ms->close_in_parent[0] = p[0];
 		leaf->executed = true;
 		i = 0;
 	}

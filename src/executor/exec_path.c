@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 21:41:41 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 16:29:28 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,6 +182,7 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 	init_leaf_content(leaf, ms);
 	// if (ms->close_in_parent != -1)
 	// close (ms->close_in_parent);
+	// maybe close ms->fd_stdout_dup and ms->fd_stdin_dup
 	if (path && execve(path, leaf->content, ms->envp) == -1)
 	{
 		if (is_directory(path))
@@ -224,16 +225,13 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 	{
 		set_signal(SIGQUIT, SIG_DFL);
 		set_signal(SIGINT, SIG_DFL);
-		if (ms->close_in_child != -1)
-			close(ms->close_in_child);
+		close_fd_parent_child(false, true, ms);
 		exec_cmd(leaf->head_token->content, leaf, ms);
 		if (leaf->fork)
 			terminate(ms->exit_code, ms);
 	}
-	if (ms->close_in_parent != -1)
-		close(ms->close_in_parent);
-	dup2(ms->fd_stdin_dup, STDIN_FILENO);
-	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
+	close_fd_parent_child(true, false, ms);
+	restore_std_fd(ms);
 }
 
 // void	exec_path(t_leaf *leaf, t_minishell *ms)

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 20:34:46 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 16:29:00 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ typedef struct s_minishell
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
 	int					close_in_child;
-	int					close_in_parent;
+	int					close_in_parent[2];
 	bool				in_pipeline;
 	bool				interactive;
 	size_t				line_count;
@@ -242,6 +242,8 @@ void		init_tree(t_minishell *ms);
 void		rearrange_tokens(t_minishell *ms);
 
 // cleanup.c
+void		restore_std_fd(t_minishell *ms);
+void		close_fd_parent_child(bool parent, bool child, t_minishell *ms);
 void		free_tokens(t_token **head);
 void		cleanup(t_minishell *ms);
 void		terminate(int64_t exit_code, t_minishell *ms);
