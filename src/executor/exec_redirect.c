@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 16:31:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 17:11:59 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,8 +149,28 @@ void	exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms)
 		leaf->left->executed = true;
 }
 
+bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
+{
+	if (leaf->size == 2)
+		return (false);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	if (leaf->size == 1)
+		ft_putstr_fd(leaf->head_token->original_next_content, STDERR_FILENO);
+	else
+		ft_putstr_fd(leaf->head_token->next->original_content, STDERR_FILENO);
+	ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+	ms->exit_code = EXIT_FAILURE;
+	if (leaf->left)
+		leaf->left->executed = true;
+	if (ms->close_in_parent != -1)
+		close (ms->close_in_parent);
+	return (true);
+}
+
 void	exec_redirect(t_leaf *leaf, t_minishell *ms)
 {
+	if (is_ambiguous(leaf, ms))
+		return ;
 	if (leaf->head_token->type == TKN_OUT)
 		exec_redirect_out(leaf, O_WRONLY | O_CREAT | O_TRUNC, ms);
 	else if (leaf->head_token->type == TKN_APPEND)
