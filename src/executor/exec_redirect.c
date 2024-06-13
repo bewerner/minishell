@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 17:11:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/13 17:16:52 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,8 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 	ms->exit_code = EXIT_FAILURE;
 	if (leaf->left)
 		leaf->left->executed = true;
-	if (ms->close_in_parent != -1)
-		close (ms->close_in_parent);
+	if (ms->close_in_parent[0] != -1)
+		close (ms->close_in_parent[0]);
 	return (true);
 }
 
