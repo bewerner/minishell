@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/14 20:47:58 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/14 20:56:14 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,6 @@ bool	is_path(char *str)
 	// if (str[0] == '.' || str[0] == '/')
 	// 	return (true);
 	if (ft_strchr(str, '/'))
-		return (true);
-	if (str[0] == '.' && str[1] == '.' && str[2] == '\0')
 		return (true);
 	return (false);
 }
@@ -189,7 +187,12 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 	path = get_path(leaf->head_token->content, ms);
 	// printf("path is %s\n", path);
 	if (!path && !ms->error)
-		ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
+	{
+		if (is_directory(leaf->head_token->content))
+			ms_error(leaf->head_token->content, "is a directory", 126, ms);
+		else
+			ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
+	}
 	if (ms->error)
 		return ;
 	init_leaf_content(leaf, ms);
