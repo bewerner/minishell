@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 21:10:21 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/14 17:35:59 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,7 +299,7 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 			expand_variables(token, ms);
 			split_words(token, leaf);
 		}
-		if (token_content_is_empty(token->content))
+		if (leaf->type != LEAF_HEREDOC && token_content_is_empty(token->content))
 		{
 			token = remove_token_from_leaf(token, leaf, ms);
 			continue ;

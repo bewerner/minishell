@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 20:41:21 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/14 17:36:35 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 
 void	exec_redirect(t_leaf *leaf, t_minishell *ms)
 {
+	ms->exit_code = EXIT_SUCCESS;
 	if (is_ambiguous(leaf, ms))
 		return ;
 	if (leaf->head_token->type == TKN_OUT)
