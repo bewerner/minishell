@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/14 19:42:53 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,18 @@ void	update_pwd(t_minishell *ms)
 		ms_error("update_pwd", NULL, EXIT_FAILURE, ms);
 	add_env(content, ms);
 	free(content);
+	content = NULL;
 	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
 	if (!ms->error && getcwd(cwd, sizeof(cwd)) == NULL)
-		ms_error("exec_pwd", NULL, EXIT_FAILURE, ms);
+	{
+		if (errno == ENOENT)
+		{
+			ft_putendl_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory", STDERR_FILENO);
+			errno = 0;
+		}
+		else
+			ms_error("exec_pwd", NULL, EXIT_FAILURE, ms);
+	}
 	if (!ms->error)
 		content = ft_strjoin("PWD=", cwd);
 	if (!ms->error && !content)
