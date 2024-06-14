@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 16:29:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/14 20:47:58 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ bool	is_path(char *str)
 	// 	return (true);
 	if (ft_strchr(str, '/'))
 		return (true);
+	if (str[0] == '.' && str[1] == '.' && str[2] == '\0')
+		return (true);
 	return (false);
 }
 
@@ -131,6 +133,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 	env_path = NULL;
 	if (get_env("PATH", ms->head_env))
 		env_path = get_env("PATH", ms->head_env)->value;
+	// fprintf(stderr, "env_path: %s\n", env_path);
 	if (!env_path || env_path[0] == '\0')
 	{
 		if (getcwd(cwd, sizeof(cwd)) == NULL)
@@ -148,7 +151,9 @@ char	*get_path(char *cmd, t_minishell *ms)
 				terminate(1, ms);
 			}
 			if (!access(path, F_OK) && !is_directory(path))
+			{
 				return (path);
+			}
 		}
 	}
 	while (env_path && env_path[0])
@@ -156,10 +161,17 @@ char	*get_path(char *cmd, t_minishell *ms)
 		path = join_path(&env_path, "/", cmd);
 		// printf("path is: %s\n", path);
 		if (!access(path, F_OK) && !is_directory(path))
+		{
+			// fprintf(stderr, "a\n");
 			return (path);
+		}
 		free(path);
 	}
-	ms_error(cmd, "command not found", 127, ms);
+	env_path = NULL;
+	if (get_env("PATH", ms->head_env))
+		env_path = get_env("PATH", ms->head_env)->value;
+	if (env_path && env_path[0])
+		ms_error(cmd, "command not found", 127, ms);
 	return (NULL);
 }
 
@@ -175,6 +187,7 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 		return ;
 	}
 	path = get_path(leaf->head_token->content, ms);
+	// printf("path is %s\n", path);
 	if (!path && !ms->error)
 		ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
 	if (ms->error)
