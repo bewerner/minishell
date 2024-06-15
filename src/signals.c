@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/11 20:03:23 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 17:39:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	set_signal(int signum, void (*handler_function)(int))
 	struct sigaction	sa;
 
 	sa.sa_handler = handler_function;
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_RESTART;
 	sigemptyset(&sa.sa_mask);
 	sigaction(signum, &sa, NULL);
 }

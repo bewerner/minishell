@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 16:50:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 17:40:38 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ void	wait_for_child_processes(t_minishell *ms)
 				// ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
 			if (WIFSIGNALED(status))
 			{
+				// fprintf(stderr, "wtermsig: %d\n", WTERMSIG(status));
+				// fprintf(stderr, "g_signal: %d\n", g_signal);
 				ms->exit_code = 128 + g_signal; // ????????? double check this. temp
 				// ms->exit_code = 128 + WTERMSIG(status); // ????????? double check this. temp
 				// printf("WIFSIGNALED exit code: %d", ms->exit_code);
