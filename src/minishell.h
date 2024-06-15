@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/13 17:13:23 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 21:39:10 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,13 +158,14 @@ typedef struct s_minishell
 	bool				in_pipeline;
 	bool				interactive;
 	size_t				line_count;
+	char				*cwd;
 }	t_minishell;
 
 // builtins/exec_cd.c
 void		exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_echo.c
-void		exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms);
+void		exec_echo(t_leaf *leaf, t_token *token);
 
 // builtins/exec_env.c
 void		exec_env(t_minishell *ms);

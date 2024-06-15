@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/14 20:56:14 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 21:39:18 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 {
 	char	*env_path;
 	char	*path;
-	char	cwd[PATH_MAX + 1];
+	char	*cwd;
 
 	if (is_path(cmd))
 	{
@@ -124,7 +124,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 		if (!path)
 		{
 			ms_error("get_path: ft_strdup", NULL, EXIT_FAILURE, ms);
-			terminate(1, ms);
+			terminate(EXIT_FAILURE, ms);
 		}
 		return (path);
 	}
@@ -134,11 +134,9 @@ char	*get_path(char *cmd, t_minishell *ms)
 	// fprintf(stderr, "env_path: %s\n", env_path);
 	if (!env_path || env_path[0] == '\0')
 	{
-		if (getcwd(cwd, sizeof(cwd)) == NULL)
-		{
-			ms_error("get_path: getcwd", NULL, EXIT_FAILURE, ms);
-			return (NULL);
-		}
+		cwd = ft_strdup(ms->cwd);
+		if (!cwd)
+			ms_error("get_path: ft_strdup", NULL, EXIT_FAILURE, ms);
 		else
 		{
 			ft_strlcat(cwd, "/", PATH_MAX + 1);
@@ -146,7 +144,7 @@ char	*get_path(char *cmd, t_minishell *ms)
 			if (!path)
 			{
 				ms_error("get_path: ft_strjoin", NULL, EXIT_FAILURE, ms);
-				terminate(1, ms);
+				terminate(EXIT_FAILURE, ms);
 			}
 			if (!access(path, F_OK) && !is_directory(path))
 			{
@@ -213,22 +211,23 @@ void	exec_path(t_leaf *leaf, t_minishell *ms)
 
 void	exec_cmd(char *cmd, t_leaf *leaf, t_minishell *ms)
 {
-		if (ft_strncmp(cmd, "echo", 5) == 0)
-			exec_echo(leaf, leaf->head_token->next, ms);
-		else if (ft_strncmp(cmd, "cd", 3) == 0)
-			exec_cd(leaf, leaf->head_token->next, ms);
-		else if (ft_strncmp(cmd, "pwd", 4) == 0)
-			exec_pwd(ms);
-		else if (ft_strncmp(cmd, "export", 7) == 0)
-			exec_export(leaf, leaf->head_token->next, ms);
-		else if (ft_strncmp(cmd, "unset", 6) == 0)
-			exec_unset(leaf, leaf->head_token->next, ms);
-		else if (ft_strncmp(cmd, "env", 4) == 0)
-			exec_env(ms);
-		else if (ft_strncmp(cmd, "exit", 5) == 0)
-			exec_exit(leaf, leaf->head_token->next, ms);
-		else
-			exec_path(leaf, ms);
+	ms->exit_code = EXIT_SUCCESS;
+	if (ft_strncmp(cmd, "echo", 5) == 0)
+		exec_echo(leaf, leaf->head_token->next);
+	else if (ft_strncmp(cmd, "cd", 3) == 0)
+		exec_cd(leaf, leaf->head_token->next, ms);
+	else if (ft_strncmp(cmd, "pwd", 4) == 0)
+		exec_pwd(ms);
+	else if (ft_strncmp(cmd, "export", 7) == 0)
+		exec_export(leaf, leaf->head_token->next, ms);
+	else if (ft_strncmp(cmd, "unset", 6) == 0)
+		exec_unset(leaf, leaf->head_token->next, ms);
+	else if (ft_strncmp(cmd, "env", 4) == 0)
+		exec_env(ms);
+	else if (ft_strncmp(cmd, "exit", 5) == 0)
+		exec_exit(leaf, leaf->head_token->next, ms);
+	else
+		exec_path(leaf, ms);
 }
 
 void	exec_word(t_leaf *leaf, t_minishell *ms)

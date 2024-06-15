@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:36:45 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 21:38:57 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool	is_valid_flag(char *str)
 	return (true);
 }
 
-void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
+void	exec_echo(t_leaf *leaf, t_token *token)
 {
 	bool	has_minus_n;
 	size_t	i;
@@ -58,7 +58,6 @@ void	exec_echo(t_leaf *leaf, t_token *token, t_minishell *ms)
 	}
 	if (!has_minus_n)
 		ft_putchar_fd('\n', STDOUT_FILENO);
-	ms->exit_code = EXIT_SUCCESS;
 }
 
 // while (token)

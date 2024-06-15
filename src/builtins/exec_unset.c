@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:28:25 by sgeiger           #+#    #+#             */
-/*   Updated: 2024/06/12 14:33:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 21:37:04 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void	exec_unset(t_leaf *leaf, t_token *token, t_minishell *ms)
 	size_t	i;
 	t_env	*env;
 
-	ms->exit_code = EXIT_SUCCESS;
 	i = 1;
 	while (i < leaf->size && !ms->error)
 	{

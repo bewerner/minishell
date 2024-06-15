@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:12 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 21:36:32 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)
 {
 	size_t	i;
 
-	ms->exit_code = EXIT_SUCCESS;
 	if (leaf->size == 1)
 		print_export(ms->head_env);
 	i = 1;
