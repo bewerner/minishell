@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 17:39:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 00:13:34 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	sigint_handler_heredoc(int signum)
 void	sigquit_handler_exec(int signum)
 {
 	g_signal = signum;
-	write(STDOUT_FILENO, "Quit: 3\n", 8);
 }
 
 void	sigint_handler_exec(int signum)
@@ -62,6 +61,7 @@ void	init_signals(t_minishell *ms)
 {
 	(void)ms;
 	rl_catch_signals = 0;
+	rl_terminal_name = "xterm-256color";
 	set_signal(SIGQUIT, SIG_IGN);
 	set_signal(SIGINT, sigint_handler);
 }

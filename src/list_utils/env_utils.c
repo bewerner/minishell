@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 22:15:11 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 21:50:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 22:42:40 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void	remove_env(t_env **head, t_env *env)
 	if (env == *head)
 	{
 		*head = env->next;
-		(*head)->prev = NULL;
+		if (*head)
+			(*head)->prev = NULL;
 	}
 	else if (!env->next)
 		env->prev->next = NULL;

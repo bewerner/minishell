@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 20:54:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 00:31:28 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,20 @@ void	put_error_prefix(t_minishell *ms)
 	}
 }
 
+void	syntax_error_unexpected_eof(char *content, t_minishell *ms)
+{
+	put_error_prefix(ms);
+	ft_putstr_fd("unexpected EOF while looking for matching `", STDERR_FILENO);
+	if (in_double_quotes(content, ft_strlen(content) - 1))
+		ft_putendl_fd("\"'", STDERR_FILENO);
+	else
+		ft_putendl_fd("\''", STDERR_FILENO);
+}
+
 void	syntax_error(t_token *token, char *str, t_minishell *ms)
 {
 	if (!ms->syntax_error && token && is_unclosed(token->content))
-	{
-		put_error_prefix(ms);
-		ft_putendl_fd("unexpected EOF while looking for matching `\"'", STDERR_FILENO);
-	}
+		syntax_error_unexpected_eof(token->content, ms);
 	else if (!ms->syntax_error && token)
 	{
 		put_error_prefix(ms);

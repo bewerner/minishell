@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 18:51:11 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/15 23:58:22 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	wait_for_child_processes(t_minishell *ms)
 		{
 			// signal(SIGQUIT, temp);
 			waitpid(leaf->child_pid, &status, 0);
+			// set_signal(SIGQUIT, SIG_IGN);
 				// ms->exit_code = 127 + WTERMSIG(status); // ????????? double check this. temp
 			if (WIFSIGNALED(status))
 			{
@@ -51,6 +52,8 @@ void	wait_for_child_processes(t_minishell *ms)
 		}
 		leaf = leaf->next;
 	}
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGQUIT)
+		write(STDOUT_FILENO, "Quit: 3\n", 8);
 	set_signal(SIGQUIT, SIG_IGN);
 	set_signal(SIGINT, sigint_handler);
 	if (ms->debug)
