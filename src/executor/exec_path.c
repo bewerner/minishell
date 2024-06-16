@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 23:14:57 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 23:58:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 01:17:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,41 +171,36 @@ char	*get_path(char *cmd, t_minishell *ms)
 	return (NULL);
 }
 
-void	exec_path(t_leaf *leaf, t_minishell *ms)
+void	exec_path(t_leaf *leaf, char *cmd, t_minishell *ms)
 {
 	char	*path;
 
-	// close(ms->close_in_parent);
-	if (!ft_strncmp(leaf->head_token->content, ".", 2))
+	if (!ft_strncmp(cmd, ".", 2))
 	{
 		ms_error(".", "filename argument required", 2, ms);
 		ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
 		return ;
 	}
-	path = get_path(leaf->head_token->content, ms);
+	path = get_path(cmd, ms);
 	// printf("path is %s\n", path);
 	if (!path && !ms->error)
 	{
-		if (is_directory(leaf->head_token->content))
-			ms_error(leaf->head_token->content, "is a directory", 126, ms);
+		if (is_directory(cmd))
+			ms_error(cmd, "is a directory", 126, ms);
 		else
-			ms_error(leaf->head_token->content, "No such file or directory", 127, ms);
+			ms_error(cmd, "No such file or directory", 127, ms);
 	}
 	if (ms->error)
 		return ;
 	init_leaf_content(leaf, ms);
-	// if (ms->close_in_parent != -1)
-	// close (ms->close_in_parent);
 	// maybe close ms->fd_stdout_dup and ms->fd_stdin_dup
 	if (path && execve(path, leaf->content, ms->envp) == -1)
 	{
 		if (is_directory(path))
 			ms_error(path, "is a directory", 126, ms);
 		else
-			ms_error(leaf->head_token->content, NULL, 126, ms);
+			ms_error(cmd, NULL, 126, ms);
 	}
-	if (errno == EACCES)
-		ms->exit_code = 126;
 	free(path);
 }
 
@@ -227,7 +222,7 @@ void	exec_cmd(char *cmd, t_leaf *leaf, t_minishell *ms)
 	else if (ft_strncmp(cmd, "exit", 5) == 0)
 		exec_exit(leaf, leaf->head_token->next, ms);
 	else
-		exec_path(leaf, ms);
+		exec_path(leaf, cmd, ms);
 }
 
 void	exec_word(t_leaf *leaf, t_minishell *ms)

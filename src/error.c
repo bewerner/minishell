@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 02:14:02 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 01:37:04 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	put_error_prefix(t_minishell *ms)
 	}
 }
 
-void	syntax_error_unexpected_eof(char *content, t_minishell *ms)
+void	syntax_error_unclosed_quotes(char *content, t_minishell *ms)
 {
 	put_error_prefix(ms);
 	ft_putstr_fd("unexpected EOF while looking for matching `", STDERR_FILENO);
@@ -55,7 +55,7 @@ void	syntax_error_unexpected_eof(char *content, t_minishell *ms)
 void	syntax_error(t_token *token, char *str, t_minishell *ms)
 {
 	if (!ms->syntax_error && token && is_unclosed(token->content))
-		syntax_error_unexpected_eof(token->content, ms);
+		syntax_error_unclosed_quotes(token->content, ms);
 	else if (!ms->syntax_error && token)
 	{
 		put_error_prefix(ms);
