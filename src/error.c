@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 00:31:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 01:39:04 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	syntax_error(t_token *token, char *str, t_minishell *ms)
 		ft_putstr_fd(str, STDERR_FILENO);
 		ft_putendl_fd("'", STDERR_FILENO);
 	}
-	else if (ms->syntax_error && token && is_unclosed(token->content))
+	else if (ms->syntax_error)
 	{
 		put_error_prefix(ms);
 		ft_putendl_fd("syntax error: unexpected end of file", STDERR_FILENO);

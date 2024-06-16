@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 23:00:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 21:36:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 01:56:30 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,16 +73,18 @@ static bool	is_numeric(char *str)
 	int	i;
 
 	i = 0;
-	if (str[0] == '-' || str[0] == '+')
-		i = 1;
+	while (ft_isspace(str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
 	if (!ft_isdigit(str[i]))
 		return (false);
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (false);
+	while (ft_isdigit(str[i]))
 		i++;
-	}
+	while (ft_isspace(str[i]))
+		i++;
+	if (str[i])
+		return (false);
 	return (true);
 }
 
