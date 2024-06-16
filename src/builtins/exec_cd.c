@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 21:58:08 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 21:46:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	update_pwd(char *cwd, t_minishell *ms)
 {
 	char	*content;
 
+	content = NULL;
 	if (ms->error)
 		return ;
 	ms->cwd = getcwd(NULL, 0);
@@ -74,6 +75,7 @@ No such file or directory", STDERR_FILENO);
 		ms_error("update_pwd: ft_strjoin", NULL, EXIT_FAILURE, ms);
 	if (!ms->error)
 		add_env(content, ms);
+	free(content);
 	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
 }
 

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 23:58:22 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 21:21:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	wait_for_child_processes(t_minishell *ms)
 	t_leaf	*leaf;
 	int		status;
 
+	status = 0; // this is needed so we don't read uninitialized status after teh while loop
 	leaf = ms->head_leaf;
 	while (leaf)
 	{

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 00:13:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 21:41:03 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 # include <stdbool.h>
 
 extern int				g_signal;
+extern char **args;                  ////////////////////////////TEMP
 
 typedef struct s_input	t_input;
 typedef struct s_token	t_token;

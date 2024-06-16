@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 01:28:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 22:05:55 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,9 +220,9 @@ void	init_noninteractive_input(t_minishell *ms)
 	init_heredocs(ms->head_token, ms);
 	check_syntax(ms->head_token, ms);
 	check_syntax(ms->head_token, ms);
-	if (ms->line)
+	if (ms->interactive && ms->line)
 		add_history(ms->line);
-	if (ms->syntax_error && token_last(ms->head_token) && !is_unclosed(token_last(ms->head_token)->content))
+	if (ms->syntax_error && token_last(ms->head_token) && !is_unclosed(token_last(ms->head_token)->content)) // if unexpected end of file
 		put_syntax_error_line(ms->input_syntax_error, ms);
 	if (ms->syntax_error)
 		terminate(ms->exit_code, ms);

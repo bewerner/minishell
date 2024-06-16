@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/14 17:35:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 20:50:10 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	size_t	i;
 	size_t	key_len;
 	char	*value;
+	char	*rt;
+	char	*tmp;
 
 	i = key_pos;
 	if (ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
@@ -68,17 +70,27 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 		i++;
 	key_len = i - key_pos;
 	if (str[i - 1] != '?')
+	{
 		value = get_env_value(ms->head_env, str + key_pos, key_len);
+		if (value)
+			value = ft_strdup(value);
+	}
 	else
 		value = ft_itoa(ms->exit_code);
 	if (!value)
-		value = "";
+		value = ft_strdup("");
 	// if (!value)
 	// 	return (NULL);
 	*new_pos = key_pos - 1 + ft_strlen(value);
 	if (token->remove)
-		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
-	return (ft_replace_substr(str, key_pos - 1, key_len + 1, value));
+	{
+		tmp = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
+		free(token->remove);
+		token->remove = tmp;
+	}
+	rt = ft_replace_substr(str, key_pos - 1, key_len + 1, value);
+	free(value);
+	return (rt);
 }
 
 // char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
@@ -204,6 +216,7 @@ t_token	*remove_token_from_leaf(t_token *token, t_leaf *leaf, t_minishell *ms)
 	free(token->content);
 	free(token->remove);
 	free(token->original_content);
+	free(token->original_next_content);
 	free(token);
 	leaf->size--;
 	if (!leaf->size)

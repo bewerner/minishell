@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 20:39:08 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/16 22:10:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	free_tokens(t_token **head)
 		free(ptr->remove);
 		free(ptr->original_content);
 		free(ptr->original_next_content);
+		free_inputs(&ptr->head_heredoc);
 		free(ptr);
 		ptr = next;
 	}
@@ -119,5 +120,14 @@ void	terminate(int64_t exit_code, t_minishell *ms)
 	close(ms->fd_stdin_dup);
 	close(ms->fd_stdout_dup);
 	rl_clear_history();
+
+	size_t i = 0;
+    while(args && args[i])
+    {
+        free(args[i]);
+        i++;
+    }
+    free(args);
+
 	exit(ms->exit_code);
 }
