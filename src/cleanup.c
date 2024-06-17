@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 23:08:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 23:05:37 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,20 @@ void	free_leafs(t_leaf **head)
 {
 	t_leaf	*ptr;
 	t_leaf	*next;
+	size_t	i;
 
 	ptr = *head;
 	while (ptr)
 	{
 		next = ptr->next;
+		i = 0;
+		while (ptr->content && ptr->content[i])
+		{
+			free(ptr->content[i]);
+			i++;
+		}
 		free(ptr->content);
+		free(ptr->path);
 		free(ptr);
 		ptr = next;
 	}
