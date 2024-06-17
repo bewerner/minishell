@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 00:13:34 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 23:19:00 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 void	sigint_handler_heredoc(int signum)
 {
 	g_signal = signum;
-	ioctl(0, TIOCSTI, "\n");
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 	printf("\033[A");
-	ioctl(0, TIOCSTI, "\4");
+	ioctl(STDIN_FILENO, TIOCSTI, "\4");
 }
 
 void	sigquit_handler_exec(int signum)
@@ -28,14 +28,14 @@ void	sigquit_handler_exec(int signum)
 void	sigint_handler_exec(int signum)
 {
 	g_signal = signum;
-	write(1, "\n", 1);
+	write(STDOUT_FILENO, "\n", 1);
 }
 
 void	sigint_handler(int signum)
 {
 	g_signal = signum;
 	rl_replace_line("", 0);
-	ioctl(0, TIOCSTI, "\n");
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 }
 
 // void	sigint_handler(int signum)
