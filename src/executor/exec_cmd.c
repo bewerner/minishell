@@ -150,10 +150,13 @@ void	exec_cmd(t_leaf *leaf, char *cmd, t_minishell *ms)
 	init_leaf_content(leaf, ms);
 	if (!ms->error && leaf->path)
 	{
-		execve(leaf->path, leaf->content, ms->envp);
 		if (is_directory(leaf->path))
 			ms_error(leaf->path, "is a directory", 126, ms);
-		else
+		if (!ms->error && access(leaf->path, X_OK))
+			ms_error(cmd, NULL, 126, ms);
+		if (!ms->error)
+			execve(leaf->path, leaf->content, ms->envp);
+		if (!ms->error)
 			ms_error(cmd, NULL, 126, ms);
 	}
 }

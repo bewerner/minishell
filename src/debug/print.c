@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 22:17:10 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/30 03:37:09 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 23:46:44 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	debug_print_tokens(t_token **head, size_t option)
 		}
 		else
 		{
-			for (size_t i = 0; i < strlen(token->content) + 8; i++)
+			for (size_t i = 0; i < ft_strlen(token->content) + 8; i++)
 				printf(" ");
 		}
 		// else
