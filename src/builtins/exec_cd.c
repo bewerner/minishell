@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 21:46:51 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 22:19:36 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,9 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 	if (target && chdir(target) == -1)
 	{
 		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-		ms_error(target, NULL, EXIT_FAILURE, ms);
-		ms->error = false;
+		perror(target);
+		errno = 0;
+		ms->exit_code = EXIT_FAILURE;
 	}
 	else if (target)
 	{
@@ -104,8 +105,6 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 		sort_env(ms->head_env);
 		update_envp(ms->head_env, ms);
 	}
-	if (leaf->fork)
-		terminate(ms->exit_code, ms);
 }
 
 // void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)

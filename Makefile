@@ -2,7 +2,7 @@ NAME				=	minishell
 LIBFT				=	libft/libft.a
 SRC					=	builtins/exec_cd.c builtins/exec_echo.c builtins/exec_env.c builtins/exec_pwd.c builtins/exec_unset.c builtins/exec_exit.c builtins/exec_export.c \
 						debug/print.c debug/print_tree.c \
-						executor/exec_redirect.c executor/exec_tree.c executor/exec_path.c executor/expander.c \
+						executor/exec_redirect.c executor/exec_tree.c executor/exec_cmd.c executor/expander.c \
 						lexer/init_heredocs.c lexer/init_tokens.c \
 						list_utils/env_utils.c list_utils/input_utils.c list_utils/leaf_utils.c list_utils/token_utils.c \
 						parser/rearrange_tokens.c parser/init_leafs.c parser/init_tree.c \

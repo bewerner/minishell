@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 21:41:03 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/17 22:22:59 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ struct s_leaf
 	t_token				*head_token;
 	size_t				size;
 	char				**content;
+	char				*path;
 	enum e_leaf_type	type;
 	enum e_operator		operator;
 	t_leaf				*next;
@@ -198,7 +199,7 @@ void		exec_redirect(t_leaf *leaf, t_minishell *ms);
 // executor/exec_tree.c
 void		exec_tree(t_leaf *leaf, t_minishell *ms);
 
-// executor/exec_path.c
+// executor/exec_cmd.c
 void		exec_word(t_leaf *leaf, t_minishell *ms);
 
 // executor/expander.c
