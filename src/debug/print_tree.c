@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 20:11:30 by bwerner           #+#    #+#             */
-/*   Updated: 2024/05/09 02:03:59 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:04:34 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 size_t	get_level(t_leaf *leaf)
 {
-	size_t level;
+	size_t	level;
 
 	level = 0;
 	while (leaf->parent)
@@ -85,9 +85,9 @@ void	print_leaf(t_leaf *leaf, size_t level)
 
 void	print_level(size_t level, t_leaf *root, t_leaf *leaf)
 {
-	(void)root;
 	size_t	offset;
 
+	(void)root;
 	offset = 120;
 	offset -= level * 10;
 	if (offset > 120)

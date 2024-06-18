@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/17 01:44:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:18:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ void	free_inputs(t_input **head)
 
 bool	check_syntax(t_token *token, t_minishell *ms)
 {
-	// printf("ms error: %d, head complete: %d\n", ms->error, ms->head_input->complete);
-	// printf("check_syntax\n");
 	if (token && token->operator >= OP_PIPE)
 	{
 		syntax_error(token, NULL, ms);

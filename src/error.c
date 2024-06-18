@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/17 01:37:04 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:17:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,6 @@ void	ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms)
 	else if (errno && errno != ENOTTY)
 	{
 		perror(s1);
-		// if (errno == EACCES)
-		// 	exit_code = EXIT_FAILURE26;
 	}
 	else
 	{

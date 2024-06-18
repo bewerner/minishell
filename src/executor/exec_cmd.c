@@ -34,8 +34,6 @@ void	init_leaf_content(t_leaf *leaf, t_minishell *ms)
 
 bool	is_path(char *str)
 {
-	// if (str[0] == '.' || str[0] == '/')
-	// 	return (true);
 	if (ft_strchr(str, '/'))
 		return (true);
 	return (false);
@@ -46,7 +44,7 @@ char	*join_path(char *path, char *connector, char *cmd, t_minishell *ms)
 	char	*rt;
 	size_t	size;
 
-	size = ft_strlen(path) + ft_strlen(connector) +  ft_strlen(cmd) + 1;
+	size = ft_strlen(path) + ft_strlen(connector) + ft_strlen(cmd) + 1;
 	rt = (char *)ft_calloc(size, sizeof(char));
 	if (!rt)
 	{
@@ -188,7 +186,9 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 	set_signal(SIGQUIT, sigquit_handler_exec);
 	if (leaf->fork)
 		leaf->child_pid = fork();
-	if (!leaf->child_pid || !leaf->fork)
+	if (leaf->child_pid == -1)
+		ms_error("exec_word: fork", NULL, EXIT_FAILURE, ms);
+	else if (!leaf->child_pid || !leaf->fork)
 	{
 		set_signal(SIGQUIT, SIG_DFL);
 		set_signal(SIGINT, SIG_DFL);

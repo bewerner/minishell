@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 21:36:32 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:03:56 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static bool	is_valid(char *str, t_minishell *ms)
 	{
 		while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 			i++;
-		if (!str[i]|| str[i] == '=' || (str[i] == '+' && str[i + 1] == '='))
+		if (!str[i] || str[i] == '=' || (str[i] == '+' && str[i + 1] == '='))
 			return (true);
 	}
 	ft_putstr_fd("minishell: export: `", STDERR_FILENO);

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/17 01:49:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:21:32 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,49 +15,43 @@
 bool	check_syntax(t_token *token, t_minishell *ms);
 
 int	g_signal = 0;
-char **args;
-
-// void	sigint_handler(int signum)
-// {
-// 	(void)signum;
-// 	ioctl(0, TIOCSTI, "\4");
-// }
+char	**args;
 
 void    tmp(char *arg, t_minishell *ms)
 {
-    // char    **args;
-    size_t  i;
+	// char    **args;
+	size_t  i;
 
-    args = ft_split(arg, ';');
-    i = 0;
-    while (args[i])
-    {
-        input_add_back(&ms->head_input, input_new(ft_strdup(args[i])));
-        init_tokens(ms);
-        check_syntax(ms->head_token, ms);
-        check_syntax(ms->head_token, ms);
-        if (ms->syntax_error)
-        {
-            put_syntax_error_line(ms->input_syntax_error, ms);
-            terminate(ms->exit_code, ms);
-        }
-        if (ms->error)
-            terminate(ms->exit_code, ms);
-        rearrange_tokens(ms);
-        init_leafs(ms);
-        init_tree(ms);
-        exec_tree(ms->first_leaf, ms);
-        cleanup(ms);
-        i++;
-    }
-    i = 0;
-    // while(args[i])
-    // {
-    //     free(args[i]);
-    //     i++;
-    // }
-    // free(args);
-    terminate(ms->exit_code, ms);
+	args = ft_split(arg, ';');
+	i = 0;
+	while (args[i])
+	{
+		input_add_back(&ms->head_input, input_new(ft_strdup(args[i])));
+		init_tokens(ms);
+		check_syntax(ms->head_token, ms);
+		check_syntax(ms->head_token, ms);
+		if (ms->syntax_error)
+		{
+			put_syntax_error_line(ms->input_syntax_error, ms);
+			terminate(ms->exit_code, ms);
+		}
+		if (ms->error)
+			terminate(ms->exit_code, ms);
+		rearrange_tokens(ms);
+		init_leafs(ms);
+		init_tree(ms);
+		exec_tree(ms->first_leaf, ms);
+		cleanup(ms);
+		i++;
+	}
+	i = 0;
+	// while(args[i])
+	// {
+	//     free(args[i]);
+	//     i++;
+	// }
+	// free(args);
+	terminate(ms->exit_code, ms);
 }
 
 void	init_fd(t_minishell *ms)
@@ -101,10 +95,3 @@ int	main(int argc, char **argv, char **envp)
 		exec_tree(ms.first_leaf, &ms);
 	}
 }
-
-		// if (g_signal)
-		// {
-		// 	if (!ms.exit_code)
-		// 		ms.exit_code = EXIT_FAILURE;
-		// 	g_signal = 0;
-		// }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 00:54:17 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/15 21:51:38 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 01:18:16 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	update_envp(t_env *env, t_minishell *ms)
 
 void	swap_env(t_env *a, t_env *b)
 {
-	t_env tmp;
+	t_env	tmp;
 
 	tmp.content = a->content;
 	tmp.key = a->key;
@@ -110,11 +110,11 @@ bool	init_key_and_value(t_env *env)
 
 void	add_env(char *str, t_minishell *ms)
 {
-	char *content;
-	t_env *env;
+	char	*content;
+	t_env	*env;
 
 	if (ms->error)
-		return;
+		return ;
 	content = ft_strdup(str);
 	env = env_new(content);
 	if (env && content)
@@ -157,30 +157,6 @@ void	init_pwd(t_minishell *ms)
 	if (ms->error)
 		terminate(EXIT_FAILURE, ms);
 }
-
-// void	init_pwd(t_minishell *ms)
-// {
-// 	t_env	*oldpwd;
-// 	char	*content;
-// 	char	cwd[PATH_MAX];
-
-// 	oldpwd = get_env("OLDPWD", ms->head_env);
-// 	if (oldpwd)
-// 		remove_env(&ms->head_env, oldpwd);
-// 	export_key("OLDPWD", ms);
-// 	if (!ms->error && getcwd(cwd, sizeof(cwd)) == NULL)
-// 		ms_error("exec_pwd", NULL, EXIT_FAILURE, ms);
-// 	if (ms->error)
-// 		terminate(EXIT_FAILURE, ms);
-// 	content = ft_strjoin("PWD=", cwd);
-// 	if (!content)
-// 		ms_error("update_pwd", NULL, EXIT_FAILURE, ms);
-// 	add_env(content, ms);
-// 	free(content);
-// 	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
-// 	if (ms->error)
-// 		terminate(EXIT_FAILURE, ms);
-// }
 
 void	init_env(char **envp, t_minishell *ms)
 {

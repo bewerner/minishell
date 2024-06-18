@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/14 17:36:35 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 02:04:07 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,11 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	int	fd;
 
 	fd = open(leaf->head_token->next->content, options, 0644);
-	// if (ms->close_in_parent != -1)
-	// 	close (ms->close_in_parent);
 	if (fd == -1)
 	{
 		if (ms->close_in_parent[0] != -1)
 			close (ms->close_in_parent[0]);
+		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
@@ -35,7 +34,6 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	}
 	else
 	{
-		// fprintf(stderr, "(>) dup2(%d, %d)\n", fd, STDOUT_FILENO);
 		dup2(fd, STDOUT_FILENO);
 		close(fd);
 	}
@@ -50,6 +48,7 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	{
 		if (ms->close_in_parent[0] != -1)
 			close (ms->close_in_parent[0]);
+		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
 		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
@@ -159,7 +158,7 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 	else
 		ft_putstr_fd(leaf->head_token->next->original_content, STDERR_FILENO);
 	ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
-	ms->exit_code = EXIT_FAILURE;
+	leaf->exit_code = EXIT_FAILURE;
 	if (leaf->left)
 		leaf->left->executed = true;
 	if (ms->close_in_parent[0] != -1)
@@ -169,7 +168,7 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 
 void	exec_redirect(t_leaf *leaf, t_minishell *ms)
 {
-	ms->exit_code = EXIT_SUCCESS;
+	leaf->exit_code = EXIT_SUCCESS;
 	if (is_ambiguous(leaf, ms))
 		return ;
 	if (leaf->head_token->type == TKN_OUT)

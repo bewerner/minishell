@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/12 14:34:19 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 02:31:17 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	init_leafs(t_minishell *ms)
 		leaf->type = get_leaf_type(leaf->head_token);
 		leaf->operator = leaf->head_token->operator;
 		leaf->size = get_leaf_size(&token);
+		leaf->exit_code = -1;
 		leaf_add_back(&ms->head_leaf, leaf);
 		token = token->next;
 	}
