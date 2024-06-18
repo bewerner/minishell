@@ -190,6 +190,7 @@ void	exec_word(t_leaf *leaf, t_minishell *ms)
 		ms_error("exec_word: fork", NULL, EXIT_FAILURE, ms);
 	else if (!leaf->child_pid || !leaf->fork)
 	{
+		errno = 0;
 		set_signal(SIGQUIT, SIG_DFL);
 		set_signal(SIGINT, SIG_DFL);
 		close_fd_parent_child(false, true, ms);
