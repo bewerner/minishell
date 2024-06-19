@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 20:50:10 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/19 02:34:56 by sgeiger          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 	size_t	s_len;
 	size_t	rt_len;
 
-	// printf("replacement is: %s\n", replacement);
 	if (!replacement)
 		replacement = "";
 	rp_len = ft_strlen(replacement);
@@ -45,17 +44,58 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 	ft_strlcpy(rt, s, start + 1);
 	ft_strlcat(rt, replacement, start + rp_len + 1);
 	ft_strlcat(rt, s + start + len, rt_len + 1);
-	// printf("new string is: %s\n", rt);
 	return (rt);
 }
 
-char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
+void	update_remove(t_token *token, size_t i, size_t key_len, char *value)
+{
+	char	*tmp;
+
+	if (token->remove)
+	{
+		tmp = ft_replace_substr(token->remove, i, key_len + 1, value);
+		free(token->remove);
+		token->remove = tmp;
+	}
+}
+
+void	set_token_contents(t_token *token, char *new_content)
+{
+	if (!token->original_content)
+		token->original_content = token->content;
+	else
+		free(token->content);
+	token->content = new_content;
+}
+
+size_t	expand_question_mark(t_token *token, size_t i, t_minishell *ms)
+{
+	char	*value;
+	char	*new_content;
+	size_t	val_len;
+
+	value = ft_itoa(ms->exit_code);
+	if (!value)
+	{
+		ms_error("ft_itoa", NULL, EXIT_FAILURE, ms);
+		return (0);
+	}
+	val_len = ft_strlen(value);
+	update_remove(token, i, val_len, value);
+	new_content = ft_replace_substr(token->content, i, val_len + 1, value);
+	free(value);
+	if (!new_content)
+	{
+		ms_error("ft_replace_substr", NULL, EXIT_FAILURE, ms);
+		return (0);
+	}
+	set_token_contents(token, new_content);
+	return (val_len);
+}
+
+size_t	get_key_len(t_token *token, char *str, size_t key_pos)
 {
 	size_t	i;
-	size_t	key_len;
-	char	*value;
-	char	*rt;
-	char	*tmp;
 
 	i = key_pos;
 	if (ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
@@ -64,93 +104,68 @@ char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *ne
 	{
 		if ((str[i] == '\'' || str[i] == '\"') && !in_quotes(str, i - 1))
 			token->remove[i - 1] = '1';
-		return (NULL);
+		return (0);
 	}
 	while (str[i - 1] != '?' && str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
-	key_len = i - key_pos;
-	if (str[i - 1] != '?')
-	{
-		value = get_env_value(ms->head_env, str + key_pos, key_len);
-		if (value)
-			value = ft_strdup(value);
-	}
-	else
-		value = ft_itoa(ms->exit_code);
-	if (!value)
-		value = ft_strdup("");
-	// if (!value)
-	// 	return (NULL);
-	*new_pos = key_pos - 1 + ft_strlen(value);
-	if (token->remove)
-	{
-		tmp = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
-		free(token->remove);
-		token->remove = tmp;
-	}
-	rt = ft_replace_substr(str, key_pos - 1, key_len + 1, value);
-	free(value);
-	return (rt);
+	return (i - key_pos);
 }
 
-// char	*get_expanded_content(t_token *token, char *str, size_t key_pos, size_t *new_pos, t_minishell *ms)
-// {
-// 	size_t	i;
-// 	size_t	key_len;
-// 	char	*value;
+size_t	expand_var(t_token *token, size_t i, size_t key_len, t_minishell *ms)
+{
+	char	*new_content;
+	char	*value;
+	size_t	val_len;
 
-// 	i = key_pos;
-// 	if(ft_isalpha(str[i]) || str[i] == '_')
-// 		i++;
-// 	else
-// 		return (NULL);
-// 	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
-// 		i++;
-// 	key_len = i - key_pos;
-// 	value = get_env_value(ms->head_env, str + key_pos, key_len);
-// 	if (!value)
-// 		return (NULL);
-// 	*new_pos = key_pos - 1 + ft_strlen(value);
-// 	if (token->remove)
-// 		token->remove = ft_replace_substr(token->remove, key_pos - 1, key_len + 1, value);
-// 	return (ft_replace_substr(str, key_pos - 1, key_len + 1, value));
-// }
+	if (key_len == 0)
+		return (0);
+	val_len = 0;
+	value = get_env_value(ms->head_env, token->content + i + 1, key_len);
+	if (value)
+		val_len = ft_strlen(value);
+	update_remove(token, i, key_len, value);
+	new_content = ft_replace_substr(token->content, i, key_len + 1, value);
+	if (!new_content)
+	{
+		ms_error("ft_replace_substr", NULL, EXIT_FAILURE, ms);
+		return (0);
+	}
+	set_token_contents(token, new_content);
+	return (val_len);
+}
 
-void	expand_variables(t_token *token, t_minishell *ms)
+void	expand_token(t_token *token, t_minishell *ms)
 {
 	size_t	i;
-	char	*expanded_content;
-	size_t	new_pos;
+	size_t	key_len;
+	size_t	val_len;
 
 	i = 0;
-	while (token->content[i])
+	while (!ms->error && token->content[i])
 	{
+		val_len = 0;
+		key_len = 0;
 		if (token->content[i] == '$' && !in_single_quotes(token->content, i))
 		{
-			expanded_content = get_expanded_content(token, token->content, i + 1, &new_pos, ms);
-			if (expanded_content)
+			if (token->content[i + 1] && token->content[i + 1] == '?')
+				val_len = expand_question_mark(token, i, ms);
+			else
 			{
-				if (!token->original_content)
-					token->original_content = token->content;
-				else
-					free(token->content);
-				token->content = expanded_content;
-				i = new_pos;
-				continue ;
+				key_len = get_key_len(token, token->content, i + 1);
+				val_len = expand_var(token, i, key_len, ms);
 			}
-			if (errno && errno != ENOTTY)
-			{
-				ms_error("expander", NULL, EXIT_FAILURE, ms);
-				return ;
-			}
+			i += val_len;
 		}
-		i++;
+		if (val_len == 0 && key_len != 0)
+			continue ;
+		if (val_len == 0)
+			i++;
 	}
 }
 
 t_token	*split_token(t_token *token, size_t split_pos)
 {
-	char 	*content;
+	char	*content;
 	t_token	*new_token;
 	size_t	substr_start;
 	size_t	substr_len;
@@ -172,7 +187,7 @@ t_token	*split_token(t_token *token, size_t split_pos)
 
 void	token_insert(t_token *token, t_token *new_token)
 {
-	t_token *old_next;
+	t_token	*old_next;
 
 	old_next = token->next;
 	token->next = new_token;
@@ -197,6 +212,16 @@ bool	token_content_is_empty(char *content)
 	return (true);
 }
 
+void	set_prev_token_values(t_token *token, t_token *rt, t_minishell *ms)
+{
+	t_token	*prev_token;
+
+	prev_token = get_previous_token(&ms->head_token, token);
+	prev_token->original_next_content = token->original_content;
+	prev_token->next = rt;
+	token->original_content = NULL;
+}
+
 // deletes a token and returns a pointer to the token now in it's place
 t_token	*remove_token_from_leaf(t_token *token, t_leaf *leaf, t_minishell *ms)
 {
@@ -208,11 +233,7 @@ t_token	*remove_token_from_leaf(t_token *token, t_leaf *leaf, t_minishell *ms)
 	if (token == ms->head_token)
 		ms->head_token = token->next;
 	else
-	{
-		get_previous_token(&ms->head_token, token)->original_next_content = token->original_content;
-		get_previous_token(&ms->head_token, token)->next = rt;
-		token->original_content = NULL;
-	}
+		set_prev_token_values(token, rt, ms);
 	free(token->content);
 	free(token->remove);
 	free(token->original_content);
@@ -257,9 +278,11 @@ void	split_words(t_token *token, t_leaf *leaf)
 
 	while (token->content[0] && ft_isspace(token->content[0]))
 	{
-		ft_memmove(token->content, token->content + 1, ft_strlen(token->content));
+		ft_memmove(token->content, token->content + 1, \
+			ft_strlen(token->content));
 		if (token->remove)
-			ft_memmove(token->remove, token->remove + 1, ft_strlen(token->remove));
+			ft_memmove(token->remove, token->remove + 1, \
+				ft_strlen(token->remove));
 	}
 	i = 0;
 	while (token->content[i])
@@ -288,7 +311,7 @@ void	remove_quotes(t_token *token, t_minishell *ms)
 	len = ft_strlen(token->content);
 	while (token->content[i])
 	{
-		if(token->remove[i] == '1')
+		if (token->remove[i] == '1')
 		{
 			ft_memmove(token->content + i, token->content + i + 1, len - i);
 			ft_memmove(token->remove + i, token->remove + i + 1, len - i);
@@ -300,7 +323,7 @@ void	remove_quotes(t_token *token, t_minishell *ms)
 
 void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 {
-	t_token *token;
+	t_token	*token;
 	size_t	i;
 
 	token = leaf->head_token;
@@ -309,10 +332,11 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 	{
 		if (!token->split && leaf->type != LEAF_HEREDOC)
 		{
-			expand_variables(token, ms);
+			expand_token(token, ms);
 			split_words(token, leaf);
 		}
-		if (leaf->type != LEAF_HEREDOC && token_content_is_empty(token->content))
+		if (leaf->type != LEAF_HEREDOC
+			&& token_content_is_empty(token->content))
 		{
 			token = remove_token_from_leaf(token, leaf, ms);
 			continue ;
@@ -321,39 +345,4 @@ void	expand_leaf(t_leaf *leaf, t_minishell *ms)
 		token = token->next;
 		i++;
 	}
-	// debug_print_leafs(&ms->head_leaf);
-	// debug_print_tokens(&ms->head_token, 1);
 }
-
-// void	expand_leaf(t_leaf *leaf, t_minishell *ms)
-// {
-// 	t_token *token;
-// 	size_t	i;
-
-// 	token = leaf->head_token;
-// 	i = 0;
-// 	while (i < leaf->size && !ms->error)
-// 	{
-// 		if (!token->split)
-// 		{
-// 			expand_variables(token, ms);
-// 			if (token_content_is_empty(token->content))
-// 			{
-// 				if (leaf->size > 1)
-// 				{
-
-// 					token = token_delete(&ms->head_token, &leaf->head_token, token); // leaf->head_token needs to be updated!
-// 					leaf->size--;
-// 					continue ;
-// 				}
-// 			}
-// 			else
-// 				split_words(token, leaf);
-// 		}
-// 		remove_quotes(token, ms);
-// 		token = token->next;
-// 		i++;
-// 	}
-// 	debug_print_leafs(&ms->head_leaf);
-// 	debug_print_tokens(&ms->head_token, 1);
-// }
