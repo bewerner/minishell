@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgeiger <sgeiger@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 21:16:48 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/19 02:34:56 by sgeiger          ###   ########.fr       */
+/*   Updated: 2024/06/20 22:45:46 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ char	*get_env_value(t_env *env, char *key, size_t key_len)
 	return (NULL);
 }
 
-char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
+char	*replace_substr(char *s, size_t start, size_t len, char *replacement)
 {
 	char	*rt;
 	size_t	rp_len;
@@ -50,12 +50,21 @@ char	*ft_replace_substr(char *s, size_t start, size_t len, char *replacement)
 void	update_remove(t_token *token, size_t i, size_t key_len, char *value)
 {
 	char	*tmp;
+	size_t	val_len;
 
-	if (token->remove)
+	if (!token->remove)
+		return ;
+	val_len = 0;
+	if (value)
+		val_len = ft_strlen(value);
+	tmp = replace_substr(token->remove, i, key_len + 1, value);
+	free(token->remove);
+	token->remove = tmp;
+	while(val_len)
 	{
-		tmp = ft_replace_substr(token->remove, i, key_len + 1, value);
-		free(token->remove);
-		token->remove = tmp;
+		token->remove[i] = '0';
+		i++;
+		val_len--;
 	}
 }
 
@@ -77,16 +86,16 @@ size_t	expand_question_mark(t_token *token, size_t i, t_minishell *ms)
 	value = ft_itoa(ms->exit_code);
 	if (!value)
 	{
-		ms_error("ft_itoa", NULL, EXIT_FAILURE, ms);
+		ms_error("expand_question_mark: ft_itoa", NULL, EXIT_FAILURE, ms);
 		return (0);
 	}
 	val_len = ft_strlen(value);
 	update_remove(token, i, val_len, value);
-	new_content = ft_replace_substr(token->content, i, val_len + 1, value);
+	new_content = replace_substr(token->content, i, val_len + 1, value);
 	free(value);
 	if (!new_content)
 	{
-		ms_error("ft_replace_substr", NULL, EXIT_FAILURE, ms);
+		ms_error("expand_question_mark: replace_substr", NULL, EXIT_FAILURE, ms);
 		return (0);
 	}
 	set_token_contents(token, new_content);
@@ -98,7 +107,7 @@ size_t	get_key_len(t_token *token, char *str, size_t key_pos)
 	size_t	i;
 
 	i = key_pos;
-	if (ft_isalpha(str[i]) || str[i] == '_' || str[i] == '?')
+	if (ft_isalpha(str[i]) || str[i] == '_')
 		i++;
 	else
 	{
@@ -106,7 +115,7 @@ size_t	get_key_len(t_token *token, char *str, size_t key_pos)
 			token->remove[i - 1] = '1';
 		return (0);
 	}
-	while (str[i - 1] != '?' && str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
 	return (i - key_pos);
 }
@@ -124,10 +133,10 @@ size_t	expand_var(t_token *token, size_t i, size_t key_len, t_minishell *ms)
 	if (value)
 		val_len = ft_strlen(value);
 	update_remove(token, i, key_len, value);
-	new_content = ft_replace_substr(token->content, i, key_len + 1, value);
+	new_content = replace_substr(token->content, i, key_len + 1, value);
 	if (!new_content)
 	{
-		ms_error("ft_replace_substr", NULL, EXIT_FAILURE, ms);
+		ms_error("expand_var: replace_substr", NULL, EXIT_FAILURE, ms);
 		return (0);
 	}
 	set_token_contents(token, new_content);
@@ -147,7 +156,7 @@ void	expand_token(t_token *token, t_minishell *ms)
 		key_len = 0;
 		if (token->content[i] == '$' && !in_single_quotes(token->content, i))
 		{
-			if (token->content[i + 1] && token->content[i + 1] == '?')
+			if (token->content[i + 1] == '?')
 				val_len = expand_question_mark(token, i, ms);
 			else
 			{
@@ -156,9 +165,7 @@ void	expand_token(t_token *token, t_minishell *ms)
 			}
 			i += val_len;
 		}
-		if (val_len == 0 && key_len != 0)
-			continue ;
-		if (val_len == 0)
+		if (val_len == 0 && key_len == 0)
 			i++;
 	}
 }

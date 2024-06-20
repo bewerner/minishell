@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/20 20:00:06 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/20 23:10:05 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	wait_for_child_processes(t_leaf *current, t_minishell *ms)
 			else if (WIFEXITED(child_status))
 				ms->exit_code = WEXITSTATUS(child_status);
 		}
-		leaf->child_pid = -1;
+		leaf->child_pid = 0;
 		leaf->exit_code = -1;
 		leaf = leaf->next;
 	}
