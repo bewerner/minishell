@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:45:48 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/19 02:50:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ struct s_token
 	enum e_operator		operator;
 	bool				split;
 	bool				syntax_error;
+	size_t				line;
 	t_input				*head_heredoc;
 	t_token				*next;
 };
@@ -138,6 +139,15 @@ struct s_input
 	t_input				*next;
 };
 
+typedef enum e_syntax_error_type
+{
+	SYN_NONE,
+	SYN_NEWLINE,
+	SYN_OPERATOR,
+	SYN_EOF,
+	SYN_UNCLOSED
+}	t_syntax_error_type;
+
 typedef struct s_minishell
 {
 	bool				debug;
@@ -152,12 +162,12 @@ typedef struct s_minishell
 	bool				line_is_complete;
 	int64_t				exit_code;
 	bool				error;
-	bool				syntax_error;
-	t_input				*input_syntax_error;
+	t_syntax_error_type	syntax_error;
+	t_input				*syntax_error_input;
 	int					fd_stdin_dup;
 	int					fd_stdout_dup;
 	int					close_in_child;
-	int					close_in_parent[2];
+	int					close_in_parent[3];
 	bool				in_pipeline;
 	bool				interactive;
 	size_t				line_count;
@@ -254,7 +264,7 @@ void		cleanup(t_minishell *ms);
 void		terminate(int64_t exit_code, t_minishell *ms);
 
 // error.c
-void		put_syntax_error_line(t_input *input_syntax_error, t_minishell *ms);
+void		put_syntax_error_line(t_input *syntax_error_input, t_minishell *ms);
 void		syntax_error(t_token *token, char *str, t_minishell *ms);
 void		ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms);
 
@@ -282,6 +292,6 @@ void		sigquit_handler_exec(int signum);
 void		sigint_handler_exec(int signum);
 void		sigint_handler(int signum);
 void		set_signal(int signum, void (*handler_function)(int));
-void		init_signals(t_minishell *ms);
+void		init_signals(void);
 
 #endif

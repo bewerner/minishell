@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 00:10:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/16 20:07:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 21:36:27 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,11 +149,37 @@ bool	mark_for_removal(t_token *token)
 	return (true);
 }
 
+void	free_unclosed_token(t_minishell *ms)
+{
+	t_token	*last;
+	t_token	*prev;
+
+	if (ms->error || !ms->head_token)
+		return ;
+	last = token_last(ms->head_token);
+	prev = get_previous_token(&ms->head_token, last);
+	if (last && is_unclosed(last->content))
+	{
+		if (!prev)
+			free_tokens(&ms->head_token);
+		else
+		{
+			prev->next = NULL;
+			free(last->content);
+			free(last->remove);
+			free(last->original_content);
+			free(last);
+		}
+	}
+}
+
 char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 {
 	char	*content;
 	size_t	len;
 
+	if (ms->error)
+		return (NULL);
 	len = 0;
 	while (input)
 	{
@@ -163,10 +189,8 @@ char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 	content = (char *)ft_calloc(len + 1, sizeof(char));
 	if (!content)
 		ms_error("get_joined_input_content", NULL, EXIT_FAILURE, ms);
-	if (!content)
-		return (NULL);
 	input = head;
-	while (input)
+	while (input && content)
 	{
 		if (input != head && is_unclosed(content))
 			ft_strlcat(content, "\n", len + 1);
@@ -178,11 +202,11 @@ char	*get_joined_input_content(t_input *head, t_input *input, t_minishell *ms)
 	return (content);
 }
 
-char	*skip_tokenized_content(char *content, t_token *token)
+char	*skip_tokenized_content(char *content, t_token *token, t_minishell *ms)
 {
 	char	*rt;
 
-	if (!content)
+	if (!content || ms->error)
 		return (NULL);
 	rt = content;
 	while (token)
@@ -204,10 +228,11 @@ void	init_tokens(t_minishell *ms)
 	char	*content;
 	char	*line;
 
+	free_unclosed_token(ms);
 	free(ms->line);
 	ms->line = get_joined_input_content(ms->head_input, ms->head_input, ms);
-	line = skip_tokenized_content(ms->line, ms->head_token);
-	while (line)
+	line = skip_tokenized_content(ms->line, ms->head_token, ms);
+	while (line && !ms->error)
 	{
 		content = get_next_token_content(line, ms);
 		if (!content)
@@ -221,8 +246,7 @@ void	init_tokens(t_minishell *ms)
 		}
 		token_add_back(&ms->head_token, token);
 		set_token_type(token);
+		token->line = ms->line_count;
 		token->operator = get_operator_type(token);
 	}
-	if (ms->debug)
-		debug_print_tokens(&ms->head_token, 1);
 }

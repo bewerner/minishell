@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 19:31:50 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:21:32 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/20 21:34:52 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void    tmp(char *arg, t_minishell *ms)
 		check_syntax(ms->head_token, ms);
 		if (ms->syntax_error)
 		{
-			put_syntax_error_line(ms->input_syntax_error, ms);
+			put_syntax_error_line(ms->syntax_error_input, ms);
 			terminate(ms->exit_code, ms);
 		}
 		if (ms->error)
@@ -61,33 +61,40 @@ void	init_fd(t_minishell *ms)
 	ms->close_in_child = -1;
 	ms->close_in_parent[0] = -1;
 	ms->close_in_parent[1] = -1;
+	ms->close_in_parent[2] = -1;
+}
+
+void	check_args(int argc, char **argv)
+{
+	(void)argv;
+	if (argc != 1)
+	{
+		ft_putendl_fd("No arguments allowed!", STDERR_FILENO);
+		exit(EXIT_FAILURE);
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	ms;
 
-	// (void)argv;
-	// if (argc != 1)
-	// {
-	// ft_putendl_fd("No arguments allowed!", STDERR_FILENO);
-	// 	exit(EXIT_FAILURE);
-	// }
+	check_args(argc, argv);
 	ft_bzero(&ms, sizeof(ms));
 	init_fd(&ms);
 	ms.interactive = isatty(STDIN_FILENO);
-	// ms.interactive = false;
-	init_signals(&ms);
+	errno = 0;
+	init_signals();
 	init_env(envp, &ms);
-	// ms.debug = 0;
-	if (argc > 2)
-		tmp(argv[2], &ms);
-	(void)argv;
+	// if (argc > 2)
+	// 	tmp(argv[2], &ms);
+	// (void)argv;
 	while (1)
 	{
 		cleanup(&ms);
 		init_input(&ms);
-		if (!ms.head_input || ms.error)
+		if (ms.syntax_error && !ms.interactive)
+			terminate(ms.exit_code, &ms);
+		if (!ms.head_token || ms.error || ms.syntax_error)
 			continue ;
 		rearrange_tokens(&ms);
 		init_leafs(&ms);

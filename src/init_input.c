@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 23:53:55 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:18:39 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/20 21:33:39 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,45 +28,104 @@ void	free_inputs(t_input **head)
 	*head = NULL;
 }
 
-bool	check_syntax(t_token *token, t_minishell *ms)
+void	check_syntax(t_token *token, t_minishell *ms)
 {
-	if (token && token->operator >= OP_PIPE)
+	while (token && !ms->syntax_error && !ms->error)
 	{
-		syntax_error(token, NULL, ms);
-		return (false);
-	}
-	if (ms->head_input && ms->head_input->complete
-		&& is_unclosed(token_last(ms->head_token)->content))
-	{
-		syntax_error(token_last(ms->head_token), NULL, ms);
-		return (false);
-	}
-	while (token)
-	{
-		if (token->operator)
+		if (token->operator && token == ms->head_token && token->operator >= OP_PIPE) // input starts with pipe/logical -> unexpected token
+			ms->syntax_error = SYN_OPERATOR;
+		else if (!token->next && ms->head_input
+			&& ms->head_input->complete && is_unclosed(token->content)) // input is unclosed -> unexpected EOF looking for matching "
+			ms->syntax_error = SYN_UNCLOSED;
+		else if (token->operator
+			&& token->next && token->next->operator >= token->operator) // input has an operator following an operator -> unexpected token
 		{
-			if (token->next && token->next->operator >= token->operator)
-			{
-				syntax_error(token->next, NULL, ms);
-				return (false);
-			}
-			else if (!token->next && ms->head_input->complete)
-			{
-				syntax_error(NULL, NULL, ms);
-				return (false);
-			}
-			else if (!token->next && token->operator == OP_REDIRECT)
-			{
-				syntax_error(NULL, "newline", ms);
-				return (false);
-			}
+			ms->syntax_error = SYN_OPERATOR;
+			token = token->next;
 		}
+		else if (token->operator && !token->next && ms->head_input->complete) // last token is operator -> unexpected EOF
+			ms->syntax_error = SYN_EOF;
+		else if (token->operator && !token->next && token->operator == OP_REDIRECT) // last token is empty redirect -> unexpected newline
+			ms->syntax_error = SYN_NEWLINE;
+		if (ms->syntax_error)
+			ms->syntax_error_input = input_last(ms->head_input);
+		if (ms->syntax_error == SYN_NEWLINE)
+			init_heredocs(ms->head_token, ms);
+		if (ms->syntax_error)
+			syntax_error(token, NULL, ms);
 		token = token->next;
 	}
-	if (ms->syntax_error)
-		return (false);
-	return (true);
 }
+
+// bool	check_syntax(t_token *token, t_minishell *ms)
+// {
+// 	if (token && token->operator >= OP_PIPE) // input starts with pipe/logical -> unexpected token
+// 	{
+// 		syntax_error(token, NULL, ms);
+// 		return (false);
+// 	}
+// 	if (ms->head_input && ms->head_input->complete
+// 		&& is_unclosed(token_last(ms->head_token)->content)) // input is unclosed -> unexpected EOF looking for matching "
+// 	{
+// 		syntax_error(token_last(ms->head_token), NULL, ms);
+// 		return (false);
+// 	}
+// 	while (token)
+// 	{
+// 		if (token->operator)
+// 		{
+// 			if (token->next && token->next->operator >= token->operator) // input has an operator following an operator -> unexpected token
+// 			{
+// 				syntax_error(token->next, NULL, ms);
+// 				return (false);
+// 			}
+// 			else if (!token->next && ms->head_input->complete) // last token is operator -> unexpected EOF
+// 			{
+// 				syntax_error(NULL, NULL, ms);
+// 				return (false);
+// 			}
+// 			else if (!token->next && token->operator == OP_REDIRECT) // last token is empty redirect -> unexpected newline
+// 			{
+// 				syntax_error(NULL, "newline", ms);
+// 				return (false);
+// 			}
+// 		}
+// 		token = token->next;
+// 	}
+// 	if (ms->syntax_error)
+// 		return (false);
+// 	return (true);
+// }
+
+// void	check_syntax(t_token *token, t_minishell *ms)
+// {
+// 	while (token)
+// 	{
+// 		if (token->operator)
+// 		{
+// 			if (token == ms->head_token && token->operator >= OP_PIPE) // input starts with pipe/logical -> unexpected token
+// 				syntax_error(token, NULL, ms);
+// 			else if (token == ms->head_token && ms->head_input && ms->head_input->complete
+// 				&& is_unclosed(token_last(ms->head_token)->content)) // input is unclosed -> unexpected EOF looking for matching "
+// 			{
+// 				syntax_error(token_last(ms->head_token), NULL, ms);
+// 			}
+// 			else if (token->next && token->next->operator >= token->operator) // input has an operator following an operator -> unexpected token
+// 				syntax_error(token->next, NULL, ms);
+// 			else if (!token->next && ms->head_input->complete) // last token is operator -> unexpected EOF
+// 				syntax_error(NULL, NULL, ms);
+// 			else if (!token->next && token->operator == OP_REDIRECT) // last token is empty redirect -> unexpected newline
+// 				syntax_error(NULL, "newline", ms);
+// 			else
+// 			{
+// 				token = token->next;
+// 				continue;
+// 			}
+// 			break;
+// 		}
+// 		token = token->next;
+// 	}
+// }
 
 bool	input_is_complete(t_input *input, t_token *token)
 {
@@ -113,31 +172,22 @@ char	*get_user_input(t_minishell *ms)
 	return (user_input);
 }
 
-void	free_unclosed_token(t_token **head)
+void	store_input(char *content, t_minishell *ms)
 {
-	t_token	*last;
-	t_token	*prev;
+	t_input *input;
 
-	last = token_last(*head);
-	prev = get_previous_token(head, last);
-	if (last && is_unclosed(last->content))
+	input = input_new(content);
+	if (!input)
 	{
-		if (!prev)
-			free_tokens(head);
-		else
-		{
-			prev->next = NULL;
-			free(last->content);
-			free(last->remove);
-			free(last->original_content);
-			free(last);
-		}
+		free(content);
+		ms_error("store_input: input_new", NULL, EXIT_FAILURE, ms);
+		return ;
 	}
+	input_add_back(&ms->head_input, input);
 }
 
 void	init_user_input(t_minishell *ms)
 {
-	t_input	*input;
 	char	*content;
 
 	while (!g_signal && !ms->error && !ms->syntax_error
@@ -145,31 +195,15 @@ void	init_user_input(t_minishell *ms)
 	{
 		content = get_user_input(ms);
 		if (!content)
-		{
-			if (ms->head_token)
-				check_syntax(ms->head_token, ms);
 			continue ;
-		}
-		input = input_new(content);
-		if (!input)
-		{
-			free(content);
-			ms_error("init_user_input", NULL, EXIT_FAILURE, ms);
-			return ;
-		}
-		input_add_back(&ms->head_input, input);
-		free_unclosed_token(&ms->head_token);
+		store_input(content, ms);
 		init_tokens(ms);
 		check_syntax(ms->head_token, ms);
-		if (ms->head_token && (ms->syntax_error || !is_unclosed(token_last(ms->head_token)->content)))
-			init_heredocs(ms->head_token, ms);
+		init_heredocs(ms->head_token, ms);
 	}
+	check_syntax(ms->head_token, ms);
 	init_heredocs(ms->head_token, ms);
 	check_syntax(ms->head_token, ms);
-	if (ms->line)
-		add_history(ms->line);
-	if (ms->syntax_error)
-		ms->error = true;
 }
 
 char	*non_interactive_readline(t_minishell *ms)
@@ -178,14 +212,25 @@ char	*non_interactive_readline(t_minishell *ms)
 
 	line = get_next_line(STDIN_FILENO);
 	ms->line_count++;
+	// fprintf(stderr, "errno is %d\nec is %llu\nline: %s\n", errno, ms->exit_code, line);
+	if (!line && errno) // malloc error
+		ms_error("readline", NULL, EXIT_FAILURE, ms);
 	if (line && ft_strrchr(line, '\n'))
 		*ft_strrchr(line, '\n') = '\0';
+	if (ms->error || (!line && !ms->head_input))
+		terminate(ms->exit_code, ms);
+	if (!line && ms->head_input)
+		ms->head_input->complete = true;
+	if (line && line[0] == '\0' && !ms->head_input)
+	{
+		free(line);
+		line = NULL;
+	}
 	return (line);
 }
 
 void	init_noninteractive_input(t_minishell *ms)
 {
-	t_input	*input;
 	char	*content;
 
 	while (!g_signal && !ms->error && !ms->syntax_error
@@ -193,43 +238,94 @@ void	init_noninteractive_input(t_minishell *ms)
 	{
 		content = non_interactive_readline(ms);
 		if (!content)
-		{
-			if (!ms->head_input)
-				terminate(ms->exit_code, ms);
-			if (ms->head_token)
-				check_syntax(ms->head_token, ms);
-			ms->head_input->complete = true;
 			continue ;
-		}
-		input = input_new(content);
-		if (!input)
-		{
-			free(content);
-			ms_error("init_noninteractive_input", NULL, EXIT_FAILURE, ms);
-			return ;
-		}
-		input_add_back(&ms->head_input, input);
-		free_unclosed_token(&ms->head_token);
+		store_input(content, ms);
 		init_tokens(ms);
 		check_syntax(ms->head_token, ms);
-		if (ms->head_token && (ms->syntax_error || !is_unclosed(token_last(ms->head_token)->content)))
-			init_heredocs(ms->head_token, ms);
+		init_heredocs(ms->head_token, ms);
 	}
+	check_syntax(ms->head_token, ms);
 	init_heredocs(ms->head_token, ms);
 	check_syntax(ms->head_token, ms);
 	check_syntax(ms->head_token, ms);
-	if (ms->interactive && ms->line)
-		add_history(ms->line);
-	if (ms->syntax_error && token_last(ms->head_token) && !is_unclosed(token_last(ms->head_token)->content)) // if unexpected end of file
-		put_syntax_error_line(ms->input_syntax_error, ms);
-	if (ms->syntax_error)
-		terminate(ms->exit_code, ms);
 }
+
+// void	init_noninteractive_input(t_minishell *ms)
+// {
+// 	char	*content;
+
+// 	while (!g_signal && !ms->error && !ms->syntax_error
+// 		&& !input_is_complete(ms->head_input, ms->head_token))
+// 	{
+// 		content = non_interactive_readline(ms);
+// 		if (!content)
+// 		{
+// 			if (!ms->head_input)
+// 				terminate(ms->exit_code, ms);
+// 			if (ms->head_token)
+// 				check_syntax(ms->head_token, ms);
+// 			ms->head_input->complete = true;
+// 			continue ;
+// 		}
+// 		store_input(content, ms);
+// 		init_tokens(ms);
+// 		check_syntax(ms->head_token, ms);
+// 		if (ms->head_token && (ms->syntax_error || !is_unclosed(token_last(ms->head_token)->content)))
+// 			init_heredocs(ms->head_token, ms);
+// 	}
+// 	init_heredocs(ms->head_token, ms);
+// 	check_syntax(ms->head_token, ms);
+// 	check_syntax(ms->head_token, ms);
+// 	if (ms->syntax_error && token_last(ms->head_token) && !is_unclosed(token_last(ms->head_token)->content)) // if unexpected end of file
+// 		put_syntax_error_line(ms->syntax_error_input, ms);
+// 	if (ms->syntax_error)
+// 		terminate(ms->exit_code, ms);
+// }
+
+// void	init_input(t_minishell *ms)
+// {
+// 	if (ms->interactive)
+// 	{
+// 		init_user_input(ms);
+// 		if (ms->line)
+// 			add_history(ms->line);
+// 	}
+// 	else
+// 	{
+// 		init_noninteractive_input(ms);
+// 		if (ms->syntax_error && token_last(ms->head_token) && !is_unclosed(token_last(ms->head_token)->content)) // if unexpected end of file
+// 			put_syntax_error_line(ms->syntax_error_input, ms);
+// 		// if (ms->syntax_error)
+// 		// 	terminate(ms->exit_code, ms);
+// 	}
+// 	if (ms->syntax_error)
+// 		ms->error = true;
+// }
 
 void	init_input(t_minishell *ms)
 {
-	if (ms->interactive)
-		init_user_input(ms);
-	else
-		init_noninteractive_input(ms);
+	char	*content;
+
+	while (!g_signal && !ms->error && !ms->syntax_error
+		&& !input_is_complete(ms->head_input, ms->head_token))
+	{
+		if (ms->interactive)
+			content = get_user_input(ms);
+		else
+			content = non_interactive_readline(ms);
+		if (!content)
+			continue ;
+		store_input(content, ms);
+		init_tokens(ms);
+		check_syntax(ms->head_token, ms);
+		init_heredocs(ms->head_token, ms);
+	}
+	check_syntax(ms->head_token, ms);
+	init_heredocs(ms->head_token, ms);
+	if (ms->syntax_error == SYN_UNCLOSED)
+		syntax_error(NULL, NULL, ms);
+	if (ms->interactive && ms->line)
+		add_history(ms->line);
+	else if (!ms->interactive && ms->syntax_error && ms->syntax_error < SYN_EOF) // if unexpected end of file
+		put_syntax_error_line(ms->syntax_error_input, ms);
 }

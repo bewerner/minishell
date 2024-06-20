@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 19:03:26 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/20 20:00:06 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,8 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 {
 	while (leaf && !ms->error)
 	{
+		// debug_print_leafs(&ms->head_leaf);
+		// debug_print_tokens(&ms->head_token, 1);
 		if (!leaf->executed)
 			expand_leaf(leaf, ms);
 		if (!leaf->executed)

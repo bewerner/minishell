@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 00:41:01 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:15:28 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/20 21:14:21 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ char	*get_heredoc_input(t_minishell *ms)
 		line = readline("> ");
 	else
 		line = non_interactive_readline(ms);
-	if (!line && errno && errno != ENOTTY) // malloc error
+	if (!line && errno) // malloc error
 		ms_error("readline", NULL, EXIT_FAILURE, ms);
-	else if (!line) // ctrl + D (EOT)
-		return (NULL);
+	// else if (!line) // ctrl + D (EOT)
+	// 	return (NULL);
 	set_signal(SIGINT, sigint_handler);
 	return (line);
 }
@@ -60,6 +60,10 @@ void	init_heredocs(t_token *token, t_minishell *ms)
 {
 	bool	literal;
 
+	if (ms->error || !token)
+		return ;
+	if (!ms->syntax_error && is_unclosed(token_last(token)->content)) //return if input is unclosed unless we have syntax error
+		return ;
 	while (token && !ms->error && !token->syntax_error)
 	{
 		if (token->type == TKN_HEREDOC && !token->head_heredoc

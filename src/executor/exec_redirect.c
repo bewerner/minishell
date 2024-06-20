@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 02:04:07 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/19 02:53:31 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,10 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	if (fd == -1)
 	{
 		if (ms->close_in_parent[0] != -1)
-			close (ms->close_in_parent[0]);
+		{
+			close(ms->close_in_parent[0]);
+			ms->close_in_parent[0] = -1;
+		}
 		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
@@ -47,7 +50,10 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	if (fd == -1)
 	{
 		if (ms->close_in_parent[0] != -1)
-			close (ms->close_in_parent[0]);
+		{
+			close(ms->close_in_parent[0]);
+			ms->close_in_parent[0] = -1;
+		}
 		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
@@ -128,9 +134,10 @@ void	exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms)
 
 	pipe(p);
 	dup2(p[0], STDIN_FILENO);
-	if (ms->close_in_parent[0] != -1)
-		close (ms->close_in_parent[0]);
-	ms->close_in_parent[0] = p[0];
+	// if (ms->close_in_parent[0] != -1)
+	// 	close(ms->close_in_parent[0]);
+	ms->close_in_parent[2] = p[0];
+	// fprintf(stderr, "\n%d\n", p[0]);
 	while (heredoc)
 	{
 		if (heredoc->content)
@@ -162,7 +169,10 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 	if (leaf->left)
 		leaf->left->executed = true;
 	if (ms->close_in_parent[0] != -1)
-		close (ms->close_in_parent[0]);
+	{
+		close(ms->close_in_parent[0]);
+		ms->close_in_parent[0] = -1;
+	}
 	return (true);
 }
 

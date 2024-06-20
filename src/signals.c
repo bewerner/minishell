@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/17 23:19:00 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/18 19:16:57 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,8 @@ void	set_signal(int signum, void (*handler_function)(int))
 	sigaction(signum, &sa, NULL);
 }
 
-void	init_signals(t_minishell *ms)
+void	init_signals(void)
 {
-	(void)ms;
 	rl_catch_signals = 0;
 	rl_terminal_name = "xterm-256color";
 	set_signal(SIGQUIT, SIG_IGN);
