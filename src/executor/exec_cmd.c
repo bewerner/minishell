@@ -92,7 +92,7 @@ void	exec_cmd(t_leaf *leaf, char *cmd, t_minishell *ms)
 	if (!ft_strncmp(cmd, ".", 2))
 	{
 		ms_error(".", "filename argument required", 2, ms);
-		ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
+		ft_putstr_fd(".: usage: . filename [arguments]\n", STDERR_FILENO);
 		return ;
 	}
 	set_path(leaf, cmd, ms);
