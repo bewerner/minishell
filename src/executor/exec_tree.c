@@ -6,19 +6,17 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/20 23:10:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 01:41:24 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	wait_for_child_processes(t_leaf *current, t_minishell *ms)
+void	wait_for_child_processes(t_leaf *leaf, t_leaf *current, t_minishell *ms)
 {
-	t_leaf	*leaf;
 	int		child_status;
 
-	child_status = 0; // this is needed so we don't read uninitialized child_status after teh while loop
-	leaf = ms->head_leaf;
+	child_status = 0;
 	while (leaf && leaf != current)
 	{
 		if (leaf->exit_code != -1 && leaf->operator == OP_REDIRECT)
@@ -47,7 +45,7 @@ void	exec_logical(t_leaf *leaf, t_minishell *ms)
 {
 	dup2(ms->fd_stdin_dup, STDIN_FILENO);
 	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-	wait_for_child_processes(leaf, ms);
+	wait_for_child_processes(ms->head_leaf, leaf, ms);
 	ms->in_pipeline = false;
 	if (ms->exit_code == 0 && leaf->type == LEAF_OR)
 		leaf->right->executed = true;
@@ -81,27 +79,6 @@ void	exec_pipe(t_leaf *leaf, t_minishell *ms)
 	}
 }
 
-bool	is_builtin(char *cmd)
-{
-	if (!cmd)
-		return (false);
-	if (ft_strncmp(cmd, "echo", 5) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "cd", 3) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "pwd", 4) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "export", 7) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "unset", 6) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "env", 4) == 0)
-		return (true);
-	if (ft_strncmp(cmd, "exit", 5) == 0)
-		return (true);
-	return (false);
-}
-
 void	exec_leaf(t_leaf *leaf, t_minishell *ms)
 {
 	if (ms->error)
@@ -125,8 +102,6 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 {
 	while (leaf && !ms->error)
 	{
-		// debug_print_leafs(&ms->head_leaf);
-		// debug_print_tokens(&ms->head_token, 1);
 		if (!leaf->executed)
 			expand_leaf(leaf, ms);
 		if (!leaf->executed)
@@ -138,5 +113,5 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 		else
 			leaf = leaf->parent;
 	}
-	wait_for_child_processes(NULL, ms);
+	wait_for_child_processes(ms->head_leaf, NULL, ms);
 }

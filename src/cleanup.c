@@ -6,46 +6,11 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 23:05:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/20 21:21:20 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 02:53:51 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	restore_std_fd(t_minishell *ms)
-{
-	dup2(ms->fd_stdin_dup, STDIN_FILENO);
-	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-}
-
-void	close_fd_parent_child(bool parent, bool child, t_minishell *ms)
-{
-	if (parent)
-	{
-		if (ms->close_in_parent[0] != -1)
-			close(ms->close_in_parent[0]);
-		if (ms->close_in_parent[1] != -1
-			&& ms->close_in_parent[1] != ms->close_in_parent[0])
-		{
-			close(ms->close_in_parent[1]);
-		}
-		if (ms->close_in_parent[2] != -1
-			&& ms->close_in_parent[2] != ms->close_in_parent[0]
-			&& ms->close_in_parent[2] != ms->close_in_parent[1])
-		{
-			close(ms->close_in_parent[2]);
-		}
-		ms->close_in_parent[0] = -1;
-		ms->close_in_parent[1] = -1;
-		ms->close_in_parent[2] = -1;
-	}
-	if (child)
-	{
-		if (ms->close_in_child != -1)
-			close(ms->close_in_child);
-		ms->close_in_child = -1;
-	}
-}
 
 void	free_tokens(t_token **head)
 {
@@ -115,8 +80,7 @@ void	cleanup(t_minishell *ms)
 	if (g_signal && !ms->exit_code)
 		ms->exit_code = EXIT_FAILURE;
 	g_signal = 0;
-	if (ms->interactive)
-		ms->syntax_error = SYN_NONE;
+	ms->syntax_error = SYN_NONE;
 	ms->syntax_error_input = NULL;
 	ms->error = false;
 }
@@ -131,14 +95,5 @@ void	terminate(int64_t exit_code, t_minishell *ms)
 	close(ms->fd_stdin_dup);
 	close(ms->fd_stdout_dup);
 	rl_clear_history();
-
-	size_t i = 0;
-    while(args && args[i])
-    {
-        free(args[i]);
-        i++;
-    }
-    free(args);
-
 	exit(ms->exit_code);
 }

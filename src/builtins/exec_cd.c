@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 20:16:52 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:03:36 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:13:14 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,35 +106,3 @@ void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
 		update_envp(ms->head_env, ms);
 	}
 }
-
-// void	exec_cd(t_leaf *leaf, t_token *token, t_minishell *ms)
-// {
-// 	char	*target;
-
-// 	ms->exit_code = EXIT_SUCCESS;
-// 	if (leaf->size == 1 || !ft_strncmp(token->content, "--", 3))
-// 		target = get_target("HOME", ms);
-// 	else if (!ft_strncmp(token->content, "-", 2))
-// 		target = get_target("OLDPWD", ms);
-// 	else
-// 		target = token->content;
-// 	if (target && chdir(target) == -1)
-// 	{
-// 		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-// 		perror(target);
-// 		errno = 0;
-// 		ms->exit_code = EXIT_FAILURE;
-// 	}
-// 	else if (target)
-// 	{
-// 		if (leaf->size > 1 && !ft_strncmp(token->content, "-", 2))
-// 			ft_putendl_fd(target, STDOUT_FILENO);
-// 		update_oldpwd(ms);
-// 		update_pwd(ms->cwd, ms);
-// 		sort_env(ms->head_env);
-// 		update_envp(ms->head_env, ms);
-// 	}
-// 	if (leaf->fork)
-// 		terminate(ms->exit_code, ms);
-// 	return ;
-// }

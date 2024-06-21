@@ -6,11 +6,27 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 22:26:41 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/05 22:32:44 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:07:12 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	free_inputs(t_input **head)
+{
+	t_input	*ptr;
+	t_input	*next;
+
+	ptr = *head;
+	while (ptr)
+	{
+		next = ptr->next;
+		free(ptr->content);
+		free(ptr);
+		ptr = next;
+	}
+	*head = NULL;
+}
 
 t_input	*input_last(t_input *lst)
 {

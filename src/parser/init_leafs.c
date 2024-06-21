@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 23:13:18 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 02:31:17 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:25:09 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,4 @@ void	init_leafs(t_minishell *ms)
 		leaf_add_back(&ms->head_leaf, leaf);
 		token = token->next;
 	}
-	if (ms->debug)
-		debug_print_leafs(&ms->head_leaf);
 }

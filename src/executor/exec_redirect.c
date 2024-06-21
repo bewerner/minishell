@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 22:16:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/19 02:53:31 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 01:19:09 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,13 @@ void	exec_redirect_out(t_leaf *leaf, int options, t_minishell *ms)
 	fd = open(leaf->head_token->next->content, options, 0644);
 	if (fd == -1)
 	{
-		if (ms->close_in_parent[0] != -1)
-		{
-			close(ms->close_in_parent[0]);
-			ms->close_in_parent[0] = -1;
-		}
+		close_fd_parent_child(true, false, ms);
+		restore_std_fd(ms);
 		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
-		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-		dup2(ms->fd_stdin_dup, STDIN_FILENO);
 		if (leaf->left)
-		{
 			leaf->left->executed = true;
-			leaf->left->child_pid = -1;
-		}
 	}
 	else
 	{
@@ -49,110 +41,19 @@ void	exec_redirect_in(t_leaf *leaf, t_minishell *ms)
 	fd = open(leaf->head_token->next->content, O_RDONLY);
 	if (fd == -1)
 	{
-		if (ms->close_in_parent[0] != -1)
-		{
-			close(ms->close_in_parent[0]);
-			ms->close_in_parent[0] = -1;
-		}
+		close_fd_parent_child(true, false, ms);
+		restore_std_fd(ms);
 		leaf->exit_code = EXIT_FAILURE;
 		ms_error(leaf->head_token->next->content, NULL, EXIT_FAILURE, ms);
 		ms->error = 0;
-		dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-		dup2(ms->fd_stdin_dup, STDIN_FILENO);
 		if (leaf->left)
-		{
 			leaf->left->executed = true;
-			leaf->left->child_pid = -1;
-		}
 	}
 	else
 	{
 		dup2(fd, STDIN_FILENO);
 		close(fd);
 	}
-}
-
-t_env	*get_next_env(char *key, t_minishell *ms)
-{
-	t_env	*env;
-	size_t	i;
-	char	tmp;
-
-	i = 1;
-	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
-		i++;
-	tmp = key[i];
-	key[i] = '\0';
-	env = get_env(key, ms->head_env);
-	key[i] = tmp;
-	return (env);
-}
-
-size_t	get_next_key_len(char *key)
-{
-	size_t	i;
-
-	i = 1;
-	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
-		i++;
-	return (i);
-}
-
-void	put_expanded_content(char *content, int fd, t_minishell *ms)
-{
-	t_env	*env;
-	size_t	i;
-
-	i = 0;
-	while (content[i])
-	{
-		if (content[i] == '$' && content[i + 1] == '?')
-		{
-			ft_putnbr_fd(ms->exit_code, fd);
-			i++;
-		}
-		else if (content[i] == '$' && (ft_isalpha(content[i + 1])
-				|| content[i + 1] == '_' || content[i + 1] == '?'))
-		{
-			env = get_next_env(content + i + 1, ms);
-			if (env && env->value)
-				ft_putstr_fd(env->value, fd);
-			if (env)
-				i += ft_strlen(env->key);
-			else
-				i += get_next_key_len(content + i + 1);
-		}
-		else
-			ft_putchar_fd(content[i], fd);
-		i++;
-	}
-}
-
-void	exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms)
-{
-	int		p[2];
-
-	pipe(p);
-	dup2(p[0], STDIN_FILENO);
-	// if (ms->close_in_parent[0] != -1)
-	// 	close(ms->close_in_parent[0]);
-	ms->close_in_parent[2] = p[0];
-	// fprintf(stderr, "\n%d\n", p[0]);
-	while (heredoc)
-	{
-		if (heredoc->content)
-		{
-			if (!heredoc->literal)
-				put_expanded_content(heredoc->content, p[1], ms);
-			else
-				ft_putstr_fd(heredoc->content, p[1]);
-			ft_putchar_fd('\n', p[1]);
-		}
-		heredoc = heredoc->next;
-	}
-	close(p[1]);
-	if (g_signal && leaf->left)
-		leaf->left->executed = true;
 }
 
 bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
@@ -168,11 +69,8 @@ bool	is_ambiguous(t_leaf *leaf, t_minishell *ms)
 	leaf->exit_code = EXIT_FAILURE;
 	if (leaf->left)
 		leaf->left->executed = true;
-	if (ms->close_in_parent[0] != -1)
-	{
-		close(ms->close_in_parent[0]);
-		ms->close_in_parent[0] = -1;
-	}
+	close_fd_parent_child(true, true, ms);
+	restore_std_fd(ms);
 	return (true);
 }
 

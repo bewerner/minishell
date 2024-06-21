@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/18 01:03:56 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:16:30 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,6 @@ static bool	is_valid(char *str, t_minishell *ms)
 	return (false);
 }
 
-// void	print_export(t_env *env)
-// {
-// 	while (env)
-// 	{
-// 		if (env->value)
-// 			printf("declare -x %s=\"%s\"\n", env->key, env->value);
-// 		else
-// 			printf("declare -x %s\n", env->key);
-// 		env = env->next;
-// 	}
-// }
-
 void	print_export(t_env *env)
 {
 	while (env)
@@ -56,21 +44,6 @@ void	print_export(t_env *env)
 			ft_putchar_fd('\"', STDOUT_FILENO);
 		}
 		ft_putchar_fd('\n', STDOUT_FILENO);
-		env = env->next;
-	}
-}
-
-void	remove_duplicate_env(t_env *env, t_env *tail, t_minishell *ms)
-{
-	if (ms->error)
-		return ;
-	while (env != tail)
-	{
-		if (!ft_strncmp(env->key, tail->key, ft_strlen(tail->key) + 1))
-		{
-			remove_env(&ms->head_env, env);
-			return ;
-		}
 		env = env->next;
 	}
 }
@@ -107,25 +80,6 @@ void	export_append_value(char *content, t_minishell *ms)
 	}
 	ft_memmove(content + ft_strlen(key), value - 1, ft_strlen(value) + 2);
 	add_env(content, ms);
-}
-
-void	export_key(char *key, t_minishell *ms)
-{
-	t_env	*env;
-
-	if (get_env(key, ms->head_env))
-		return ;
-	env = env_new(NULL);
-	if (env)
-	{
-		env_add_back(&ms->head_env, env);
-		env->key = ft_strdup(key);
-	}
-	if (!env || !env->key)
-	{
-		free(env);
-		ms_error("export_key", NULL, EXIT_FAILURE, ms);
-	}
 }
 
 void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)

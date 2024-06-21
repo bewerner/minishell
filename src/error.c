@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/05 19:50:28 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/20 21:20:05 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:06:02 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,46 +33,6 @@ void	put_syntax_error_line(t_input *syntax_error_input, t_minishell *ms)
 	ft_putendl_fd("'", STDERR_FILENO);
 }
 
-// void	syntax_error_unclosed_quotes(char *content, t_minishell *ms)
-// {
-// 	put_error_prefix(ms);
-// 	ft_putstr_fd("unexpected EOF while looking for matching `", STDERR_FILENO);
-// 	if (in_double_quotes(content, ft_strlen(content) - 1))
-// 		ft_putendl_fd("\"'", STDERR_FILENO);
-// 	else
-// 		ft_putendl_fd("\''", STDERR_FILENO);
-// }
-
-// void	syntax_error(t_token *token, char *str, t_minishell *ms)
-// {
-// 	if (!ms->syntax_error && token && is_unclosed(token->content))
-// 		syntax_error_unclosed_quotes(token->content, ms);
-// 	else if (!ms->syntax_error && token)
-// 	{
-// 		put_error_prefix(ms);
-// 		ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
-// 		ft_putstr_fd(token->content, STDERR_FILENO);
-// 		ft_putendl_fd("'", STDERR_FILENO);
-// 	}
-// 	else if (ms->syntax_error && str)
-// 	{
-// 		put_error_prefix(ms);
-// 		ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
-// 		ft_putstr_fd(str, STDERR_FILENO);
-// 		ft_putendl_fd("'", STDERR_FILENO);
-// 	}
-// 	else if (ms->syntax_error)
-// 	{
-// 		put_error_prefix(ms);
-// 		ft_putendl_fd("syntax error: unexpected end of file", STDERR_FILENO);
-// 	}
-// 	if (token)
-// 		token->syntax_error = true;
-// 	ms->syntax_error = true;
-// 	ms->syntax_error_input = input_last(ms->head_input);
-// 	ms->exit_code = 258;
-// }
-
 void	put_error_prefix(t_token *token, t_minishell *ms)
 {
 	size_t	line;
@@ -89,15 +49,14 @@ void	put_error_prefix(t_token *token, t_minishell *ms)
 	}
 }
 
-void	syntax_error(t_token *token, char *str, t_minishell *ms)
+void	syntax_error(t_token *token, t_minishell *ms)
 {
-	(void)str;
 	put_error_prefix(token, ms);
 	if (ms->syntax_error == SYN_EOF || !token)
 		ft_putendl_fd("syntax error: unexpected end of file", STDERR_FILENO);
-	// if (token)
 	else if (ms->syntax_error == SYN_NEWLINE)
-		ft_putendl_fd("syntax error near unexpected token `newline'", STDERR_FILENO);
+		ft_putendl_fd("syntax error near unexpected token `newline'",
+			STDERR_FILENO);
 	else if (ms->syntax_error == SYN_OPERATOR)
 	{
 		ft_putstr_fd("syntax error near unexpected token `", STDERR_FILENO);
@@ -106,7 +65,8 @@ void	syntax_error(t_token *token, char *str, t_minishell *ms)
 	}
 	else if (ms->syntax_error == SYN_UNCLOSED)
 	{
-		ft_putstr_fd("unexpected EOF while looking for matching `", STDERR_FILENO);
+		ft_putstr_fd("unexpected EOF while looking for matching `",
+			STDERR_FILENO);
 		if (in_double_quotes(token->content, ft_strlen(token->content) - 1))
 			ft_putendl_fd("\"'", STDERR_FILENO);
 		else
@@ -114,7 +74,37 @@ void	syntax_error(t_token *token, char *str, t_minishell *ms)
 	}
 	if (token)
 		token->syntax_error = true;
+	ms->syntax_error_input = input_last(ms->head_input);
 	ms->exit_code = 258;
+}
+
+void	check_syntax(t_token *token, t_minishell *ms)
+{
+	while (token && !ms->syntax_error && !ms->error)
+	{
+		if (token->operator && token == ms->head_token
+			&& token->operator >= OP_PIPE)
+			ms->syntax_error = SYN_OPERATOR;
+		else if (!token->next && ms->head_input
+			&& ms->head_input->complete && is_unclosed(token->content))
+			ms->syntax_error = SYN_UNCLOSED;
+		else if (token->operator
+			&& token->next && token->next->operator >= token->operator)
+		{
+			ms->syntax_error = SYN_OPERATOR;
+			token = token->next;
+		}
+		else if (token->operator && !token->next && ms->head_input->complete)
+			ms->syntax_error = SYN_EOF;
+		else if (token->operator && !token->next
+			&& token->operator == OP_REDIRECT)
+			ms->syntax_error = SYN_NEWLINE;
+		if (ms->syntax_error == SYN_NEWLINE)
+			init_heredocs(ms->head_token, ms);
+		if (ms->syntax_error)
+			syntax_error(token, ms);
+		token = token->next;
+	}
 }
 
 void	ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms)

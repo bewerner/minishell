@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 18:46:23 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/19 02:50:47 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:23:37 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@
 # include <stdbool.h>
 
 extern int				g_signal;
-extern char				**args;                  ////////////////////////////TEMP
 
 typedef struct s_input	t_input;
 typedef struct s_token	t_token;
@@ -150,7 +149,6 @@ typedef enum e_syntax_error_type
 
 typedef struct s_minishell
 {
-	bool				debug;
 	t_input				*head_input;
 	t_token				*head_token;
 	t_leaf				*head_leaf;
@@ -187,8 +185,6 @@ void		exec_env(t_minishell *ms);
 void		exec_exit(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_export.c
-void		export_key(char *key, t_minishell *ms);
-void		remove_duplicate_env(t_env *env, t_env *tail, t_minishell *ms);
 void		exec_export(t_leaf *leaf, t_token *token, t_minishell *ms);
 
 // builtins/exec_pwd.c
@@ -197,12 +193,18 @@ void		exec_pwd(t_minishell *ms);
 // builtins/exec_unset.c
 void		exec_unset(t_leaf *leaf, t_token *token, t_minishell *ms);
 
-// debug/print.c
-void		debug_print_tokens(t_token **head, size_t option);
-void		debug_print_leafs(t_leaf **head);
+// // debug/print.c
+// void		debug_print_tokens(t_token **head, size_t option);
+// void		debug_print_leafs(t_leaf **head);
 
-// debug/print_tree.c
-void		debug_print_tree(t_leaf *root, t_leaf *head);
+// // debug/print_tree.c
+// void		debug_print_tree(t_leaf *root, t_leaf *head);
+
+// executor/exec_cmd.c
+void		exec_cmd(t_leaf *leaf, char *cmd, t_minishell *ms);
+
+// executor/exec_heredoc.c
+void		exec_heredoc(t_input *heredoc, t_leaf *leaf, t_minishell *ms);
 
 // executor/exec_redirect.c
 void		exec_redirect(t_leaf *leaf, t_minishell *ms);
@@ -210,12 +212,45 @@ void		exec_redirect(t_leaf *leaf, t_minishell *ms);
 // executor/exec_tree.c
 void		exec_tree(t_leaf *leaf, t_minishell *ms);
 
-// executor/exec_cmd.c
+// executor/exec_word.c
+bool		is_builtin(char *cmd);
 void		exec_word(t_leaf *leaf, t_minishell *ms);
 
-// executor/expander.c
+// executor/path_utils.c
+bool		is_path(char *str);
+char		*join_path(char *path, char *connector, char *cmd, t_minishell *ms);
+bool		is_directory(char *path);
+char		**get_paths_from_env(t_minishell *ms);
+
+// expander/expand_leaf.c
 void		remove_quotes(t_token *token, t_minishell *ms);
 void		expand_leaf(t_leaf *leaf, t_minishell *ms);
+
+// expander/expander_utils.c
+char		*get_env_value(t_env *env, char *key, size_t key_len);
+char		*replace_substr(
+				char *s, size_t start, size_t len, char *replacement);
+void		update_remove(
+				t_token *token, size_t i, size_t key_len, char *value);
+void		set_token_contents(t_token *token, char *new_content);
+size_t		get_key_len(t_token *token, char *str, size_t key_pos);
+
+// expander/split_words.c
+t_token		*remove_token_from_leaf(
+				t_token *token, t_leaf *leaf, t_minishell *ms);
+bool		token_content_is_empty(char *content);
+void		split_words(t_token *token, t_leaf *leaf);
+
+// parser/connect_pipes.c
+void		connect_to_right_branch(t_leaf *branch, t_leaf *leaf);
+void		connect_to_left_branch(t_leaf *branch, t_leaf *leaf);
+void		connect_pipes(t_leaf *branch, t_leaf *leaf, t_leaf *head);
+
+// parser/connect_rest.c
+void		connect_rest(t_leaf *head, t_leaf *branch, t_leaf *root);
+
+// lexer/get_next_token_content.c
+char		*get_next_token_content(char *line, t_minishell *ms);
 
 // lexer/init_heredocs.c
 void		init_heredocs(t_token *token, t_minishell *ms);
@@ -223,6 +258,12 @@ void		init_heredocs(t_token *token, t_minishell *ms);
 // lexer/init_tokens.c
 t_char_type	get_char_type(char *str, size_t pos);
 void		init_tokens(t_minishell *ms);
+
+// lexer/update_line.c
+void		free_unclosed_token(t_minishell *ms);
+char		*get_input_content(t_input *head, t_input *input, t_minishell *ms);
+char		*skip_tokenized_content(
+				char *content, t_token *token, t_minishell *ms);
 
 // list_utils/env_utils.c
 t_env		*get_env(char *key, t_env *env);
@@ -232,6 +273,7 @@ void		env_add_back(t_env **lst, t_env *new);
 t_env		*env_new(char *content);
 
 // list_utils/input_utils.c
+void		free_inputs(t_input **head);
 t_input		*input_last(t_input *lst);
 void		input_add_back(t_input **lst, t_input *new);
 t_input		*input_new(char *content);
@@ -256,22 +298,29 @@ void		init_tree(t_minishell *ms);
 // parser/rearrange_tokens.c
 void		rearrange_tokens(t_minishell *ms);
 
+// add_env.c
+void		update_envp(t_env *env, t_minishell *ms);
+void		sort_env(t_env	*head);
+void		add_env(char *str, t_minishell *ms);
+
 // cleanup.c
-void		restore_std_fd(t_minishell *ms);
-void		close_fd_parent_child(bool parent, bool child, t_minishell *ms);
 void		free_tokens(t_token **head);
 void		cleanup(t_minishell *ms);
 void		terminate(int64_t exit_code, t_minishell *ms);
 
 // error.c
 void		put_syntax_error_line(t_input *syntax_error_input, t_minishell *ms);
-void		syntax_error(t_token *token, char *str, t_minishell *ms);
+void		syntax_error(t_token *token, t_minishell *ms);
+void		check_syntax(t_token *token, t_minishell *ms);
 void		ms_error(char *s1, char *s2, int64_t exit_code, t_minishell *ms);
 
+// fd_utils.c
+void		restore_std_fd(t_minishell *ms);
+void		close_fd_parent_child(bool parent, bool child, t_minishell *ms);
+
 // init_env.c
-void		update_envp(t_env *env, t_minishell *ms);
-void		sort_env(t_env	*head);
-void		add_env(char *str, t_minishell *ms);
+void		export_key(char *key, t_minishell *ms);
+void		remove_duplicate_env(t_env *env, t_env *tail, t_minishell *ms);
 void		init_env(char **envp, t_minishell *ms);
 
 // init_input.c
@@ -292,6 +341,5 @@ void		sigquit_handler_exec(int signum);
 void		sigint_handler_exec(int signum);
 void		sigint_handler(int signum);
 void		set_signal(int signum, void (*handler_function)(int));
-void		init_signals(void);
 
 #endif
