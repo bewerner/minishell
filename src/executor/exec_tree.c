@@ -6,17 +6,15 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 20:23:20 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/21 01:41:24 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 20:49:32 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	wait_for_child_processes(t_leaf *leaf, t_leaf *current, t_minishell *ms)
+void	wait_for_child_processes(
+			int child_status, t_leaf *leaf, t_leaf *current, t_minishell *ms)
 {
-	int		child_status;
-
-	child_status = 0;
 	while (leaf && leaf != current)
 	{
 		if (leaf->exit_code != -1 && leaf->operator == OP_REDIRECT)
@@ -37,6 +35,8 @@ void	wait_for_child_processes(t_leaf *leaf, t_leaf *current, t_minishell *ms)
 	}
 	if (WIFSIGNALED(child_status) && WTERMSIG(child_status) == SIGQUIT)
 		write(STDOUT_FILENO, "Quit: 3\n", 8);
+	if (WIFSIGNALED(child_status) && WTERMSIG(child_status) == SIGINT)
+		write(STDOUT_FILENO, "\n", 1);
 	set_signal(SIGQUIT, SIG_IGN);
 	set_signal(SIGINT, sigint_handler);
 }
@@ -45,7 +45,7 @@ void	exec_logical(t_leaf *leaf, t_minishell *ms)
 {
 	dup2(ms->fd_stdin_dup, STDIN_FILENO);
 	dup2(ms->fd_stdout_dup, STDOUT_FILENO);
-	wait_for_child_processes(ms->head_leaf, leaf, ms);
+	wait_for_child_processes(0, ms->head_leaf, leaf, ms);
 	ms->in_pipeline = false;
 	if (ms->exit_code == 0 && leaf->type == LEAF_OR)
 		leaf->right->executed = true;
@@ -113,5 +113,5 @@ void	exec_tree(t_leaf *leaf, t_minishell *ms)
 		else
 			leaf = leaf->parent;
 	}
-	wait_for_child_processes(ms->head_leaf, NULL, ms);
+	wait_for_child_processes(0, ms->head_leaf, NULL, ms);
 }

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 21:26:53 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/21 17:16:30 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 20:59:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	export_append_value(char *content, t_minishell *ms)
 	*ft_strchr(key, '+') = '\0';
 	value = content + ft_strlen(key) + 2;
 	env = get_env(key, ms->head_env);
-	if (env)
+	if (env && env->value)
 	{
 		new_content = ft_strjoin(env->content, value);
 		if (!new_content)
@@ -80,6 +80,7 @@ void	export_append_value(char *content, t_minishell *ms)
 	}
 	ft_memmove(content + ft_strlen(key), value - 1, ft_strlen(value) + 2);
 	add_env(content, ms);
+	remove_duplicate_env(ms->head_env, env_last(ms->head_env), ms);
 }
 
 void	exec_export(t_leaf *leaf, t_token *token, t_minishell *ms)

@@ -6,7 +6,7 @@
 /*   By: bwerner <bwerner@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 21:25:47 by bwerner           #+#    #+#             */
-/*   Updated: 2024/06/21 17:19:53 by bwerner          ###   ########.fr       */
+/*   Updated: 2024/06/21 20:59:47 by bwerner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	sigquit_handler_exec(int signum)
 void	sigint_handler_exec(int signum)
 {
 	g_signal = signum;
-	write(STDOUT_FILENO, "\n", 1);
 }
 
 void	sigint_handler(int signum)
