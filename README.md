@@ -1,6 +1,6 @@
 # Minishell
 
-Minishell is a simple shell implementation inspired by bash, created as part of the 42 school curriculum. This project focuses on process management, pipes, file descriptors, and command interpretation, allowing users to execute commands with the same behavior as a standard shell.
+Minishell is a simple shell implementation inspired by bash, created as part of the 42 school core curriculum. This project focuses on process management, pipes, file descriptors, and command interpretation, allowing users to execute commands with the same behavior as a standard shell.
 
 ## Features
 
@@ -25,7 +25,7 @@ Minishell is a simple shell implementation inspired by bash, created as part of 
 ### Pipes
 - Command pipeline support (`|`): Connect output of one command to input of another
 
-### Built-in Commands
+### Builtins
 - `echo`   with `-n` option
 - `cd`     without options
 - `pwd`    without options
@@ -34,7 +34,7 @@ Minishell is a simple shell implementation inspired by bash, created as part of 
 - `exit`   without options
 - `env`    without options or arguments
 
-### Bonus Features
+### Bonus
 - Logical operators `&&` and `||`
 - Support for both interactive and non-interactive shell
 - Unclosed quotes handling: Allows continuation of input over multiple lines until quotes are closed (like bash)
